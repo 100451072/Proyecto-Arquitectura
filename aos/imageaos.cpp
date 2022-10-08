@@ -3,3 +3,12 @@
 //
 
 #include "imageaos.h"
+
+int main(){
+
+
+
+
+
+
+}
