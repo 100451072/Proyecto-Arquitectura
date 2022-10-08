@@ -1,4 +1,10 @@
-/home/pablopva014/Desktop/clion-2022.2.3/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/home/pablopva014/Desktop/clion-2022.2.3/bin/ninja/linux/ninja -G Ninja -S /home/pablopva014/CLionProjects/untitled -B /home/pablopva014/CLionProjects/untitled/cmake-build-debug
+/home/pablopva014/Desktop/clion-2022.2.3/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/home/pablopva014/Desktop/clion-2022.2.3/bin/ninja/linux/ninja -G Ninja -S /home/pablopva014/CLionProjects/Proyecto-Arquitectura -B /home/pablopva014/CLionProjects/Proyecto-Arquitectura/cmake-build-debug
+-- The CXX compiler identification is GNU 11.2.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
 CMake Error at CMakeLists.txt:11 (add_executable):
   The target name "image−aos" is reserved or not valid for certain CMake
   features, such as generator expressions, and may result in undefined
@@ -11,4 +17,4 @@ CMake Error at CMakeLists.txt:12 (target_link_libraries):
 
 
 -- Configuring incomplete, errors occurred!
-See also "/home/pablopva014/CLionProjects/untitled/cmake-build-debug/CMakeFiles/CMakeOutput.log".
+See also "/home/pablopva014/CLionProjects/Proyecto-Arquitectura/cmake-build-debug/CMakeFiles/CMakeOutput.log".

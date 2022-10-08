@@ -3,42 +3,56 @@
 //
 
 #include "progargs.h"
-#include <iostream>
-#include <stdio.h>
 
-//// AQUI SE COMPRUEBAN LOS ARGUMENTOS *** VER COMO LLAMARLO ***
 
-int main(int argc, char *argv[]){
-    using namespace std;
+// Funciones de inicializacion
+bool Common::comprobarArg(int num_args, std::string argv_1, std::string argv_2, std::string argv_3) {
+    /* Función encargada de validar los argumentos introducidos,
+     * devuelve false en caso de que algun arg sea incorrecto*/
+
+    bool arg_correctos = true;
+
     // comprobamos que el numero de argumentos sea el correcto
-    if (argc < 3){
+    if (num_args != 3) {
         cout << "Wrong format:" << "\n";
         cout << "Image in_path out_path oper" << "\n";
         cout << "Operation: copy, histo, mono, gauss" << "\n";
-        return 0;
+        arg_correctos = false;
     }
     // comprobamos que la accion a realizar sea la indicada
-    if (argv[3] !== "gauss" and argv[3] !== "histo" and argv[3] !== "mono" and argv[3] != ="copy"){
-        cout << "Unexpected operation: " << argv[3] << "\n";
+    if (argv_3 != "gauss" || argv_3 != "histo" || argv_3 != "mono" || argv_3 != "copy") {
+        cout << "Unexpected operation: " << argv_3 << "\n";
         cout << "Image in_path out_path oper" << "\n";
         cout << "Operation: copy, histo, mono, gauss" << "\n";
-        return 0;
+        arg_correctos = false
     }
-    // comprobamos si existen los directorios de entrada
-    if (!opendir(argv[1])){
-        cout << "Input path: " << argv[1] << "\n";
-        cout << "Output path: " << argv[2] << "\n";
-        cout << "Cannot open directory " << "[" << argv[1] << "]" << "\n";
+    // comprobamos si existen los directorios de entrada y salida
+    if (!opendir(argv_1)) {
+        cout << "Input path: " << argv_1 << "\n";
+        cout << "Output path: " << argv_2 << "\n";
+        cout << "Cannot open directory " << "[" << argv_1 << "]" << "\n";
         cout << "Image in_path out_path oper" << "\n";
         cout << "Operation: copy, histo, mono, gauss" << "\n";
-        return 0;
+        arg_correctos = false;
     }
-    if (!opendir(argv[2])){
-        cout << "Input path: " << argv[1] << "\n";
-        cout << "Output path: " << argv[2] << "\n";
-        cout << "Output directory " << "[" << argv[2] << "]" << " does not exist" << "\n";
+    if (!opendir(argv_2)) {
+        cout << "Input path: " << argv_1 << "\n";
+        cout << "Output path: " << argv_2 << "\n";
+        cout << "Output directory " << "[" << argv_2 << "]" << " does not exist" << "\n";
         cout << "Image in_path out_path oper" << "\n";
         cout << "Operation: copy, histo, mono, gauss" << "\n";
-        return 0;
+        arg_correctos = false;
     }
-    // si estatodo correcto se continua y se hacen las operaciones
+
+    return arg_correctos;
+}
+
+// Constructor & Destructor
+Common::Common(int num_args, std::string argv_1, std::string argv_2, std::string argv_3) {
+    // En caso de que los argumentos sean correctos continuamos construyendo
+    if (this->comprobarArg(num_args, argv_1, argv_2, argv_3))
+    {
+
+    }
+
+}
