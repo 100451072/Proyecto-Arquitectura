@@ -1,0 +1,14 @@
+/home/pablopva014/Desktop/clion-2022.2.3/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/home/pablopva014/Desktop/clion-2022.2.3/bin/ninja/linux/ninja -G Ninja -S /home/pablopva014/CLionProjects/untitled -B /home/pablopva014/CLionProjects/untitled/cmake-build-debug
+CMake Error at CMakeLists.txt:11 (add_executable):
+  The target name "image−aos" is reserved or not valid for certain CMake
+  features, such as generator expressions, and may result in undefined
+  behavior.
+
+
+CMake Error at CMakeLists.txt:12 (target_link_libraries):
+  Cannot specify link libraries for target "imgaos" which is not built by
+  this project.
+
+
+-- Configuring incomplete, errors occurred!
+See also "/home/pablopva014/CLionProjects/untitled/cmake-build-debug/CMakeFiles/CMakeOutput.log".
