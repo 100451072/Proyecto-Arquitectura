@@ -56,3 +56,84 @@ Common::Common(int num_args, std::string argv_1, std::string argv_2, std::string
     }
 
 }
+
+
+
+unsigned char* leerBMP(char* filename){
+    // se abre el archivo bmp
+    FILE* file = fopen(filename, "rb");
+    // si no existe se lanza excepcion
+    if (file == NULL){
+        throw "Invalid argument";
+    }
+    // variable de la informacion del formato BMP (54 bytes)
+    unsigned char information[54];
+    // se leen del archivo de entrada
+    fread(information, sizeof(unsigned char), 54, file);
+    // comprobamos los valores de compresion = 0, numero de planos = 1, t de punto = 24
+    if ((*(int*)&information[30]) != 0){
+        throw "Invalid compression value";
+    }
+    if ((*(int*)&information[26]) != 1){
+        throw "Invalid number of level";
+    }
+    if ((*(int*)&information[24]) != 24){ // esto alomejor es cada punto de toda la imagen y no se si tendria q ir en el bucle
+        throw "Invalid point value";
+    }
+    // obtenemos la altura y la anchura del header (estan los bytes en la tabla del pdf)
+    int anchura = *(int*)&information[18];
+    int altura = *(int*)&information[22];
+    // comprobamos los valores
+    cout << endl;
+    cout << "Nombre: " << filename << endl;
+    cout << "Anchura: " << anchura << endl;
+    cout << "Altura: " << altura << endl;
+    // continuamos con la lectura
+    int fila = (anchura*3 + 3) & (~3);
+    unsigned char aux; // variable ayuda a reordenar los pyxeles de BGR a RGB
+    unsigned char* datos_imagen = unsigned char[fila];
+    // lectura de la imagen
+    for (int i = 0; i < altura; i++){
+        fread(datos_imagen, sizeof(unsigned char), fila, file);
+        for (int j = 0; j < anchura*3; j+=3){
+            // es por tres ya que son tres: RGB; se reordenan
+            aux = datos_imagen[j];
+            datos_imagen[j] = datos_imagen[j+2];
+            datos_imagen[j+2] = aux;
+            // se mprime el pyxel
+            cout << "Pyxel R: " <<  (int)datos_imagen[j] << " Pyxel G: " <<  (int)datos_imagen[j+1] << " Pyxel B: " <<  (int)datos_imagen[j+2] << endl;
+        }
+    }
+    fclose(file);
+    return datos_imagen;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

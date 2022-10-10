@@ -39,6 +39,7 @@ private:
 
     // Funciones de inicializacion
     void comprobarArg(int num_args, std::String argv_1, std::String argv_2, std::String argv_3);
+    char leerBMP(char* )
 
 public:
     // Constructor & Destructor
