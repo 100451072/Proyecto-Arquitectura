@@ -12,6 +12,8 @@
  *      estructura con tres valores entre 0 y 255.
  */
 
+// Tamaño max de un array
+int MAX_SIZE = 1000000;
 
 // Structura que almacenara tres enteros por pixel (R, G, B)
 struct Nodo
@@ -25,13 +27,13 @@ class Imageaos {
 private:
     // Atributos
     // Como dice la definicion de aos, un solo array
-    Nodo* arrayPixeles;
+    Nodo arrayPixeles[MAX_SIZE];
 
     // Funciones de inicialización
 
 public:
     // Constructor & Destructor
-    Imageaos
+    Imageaos(int& arrayR, int& arrayG, int& arrayB);
 
     // Getters & Setters
 
