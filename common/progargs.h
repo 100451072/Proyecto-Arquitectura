@@ -29,6 +29,9 @@
 
 #include <iostream>
 #include <stdio.h>
+#include <stdlib.h>
+#include <dirent.h>
+#include <sys/types.h>
 
 using namespace std;
 
@@ -38,8 +41,9 @@ private:
     // Atributos
 
     // Funciones de inicializacion
-    void comprobarArg(int num_args, std::String argv_1, std::String argv_2, std::String argv_3);
-    char leerBMP(char* )
+    bool comprobarArg(int num_args, std::String argv_1, std::String argv_2, std::String argv_3);
+    char leerBMP(char* puntero);
+    void devolver_imagenes(char *dir);
 
 public:
     // Constructor & Destructor

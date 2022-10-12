@@ -3,6 +3,7 @@
 //
 
 #include "progargs.h"
+using namespace std;
 
 
 // Funciones de inicializacion
@@ -57,9 +58,18 @@ Common::Common(int num_args, std::string argv_1, std::string argv_2, std::string
 
 }
 
+void Common::devolver_imagenes(char *directory){
+    DIR *direntrada;
+    struct dirent *diread;
+    // al abrir ya se habra comprobado en la funcion comprobarArg
+    direntrada = opendir(directory);
+    while ((diread = readdir(direntrada)) != NULL) {
+        this->leerBMP(diread); // es un puntero hay qye cambiar leerBMP
+    }
+    closedir(direntrada);
+}
 
-
-unsigned char* leerBMP(char* filename){
+Common::unsigned char* leerBMP(char* filename){
     // se abre el archivo bmp
     FILE* file = fopen(filename, "rb");
     // si no existe se lanza excepcion
