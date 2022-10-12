@@ -3,8 +3,6 @@
 //
 
 #include "progargs.h"
-using namespace std;
-
 
 // Funciones de inicializacion
 bool Common::comprobarArg(int num_args, std::string argv_1, std::string argv_2, std::string argv_3) {
