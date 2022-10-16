@@ -49,24 +49,25 @@ private:
     String outDirectory;
     String operation;
 
+    unsigned char header[54];
     struct dirent* diread;
 
     int type;
-
-    // Funciones de inicializacion
-    bool comprobarArg(int num_args, String argv_1, String argv_2, String argv_3);
-    char leerBMP(char* puntero);
-    void devolver_imagenes(char *dir);
 
 public:
     // Constructor & Destructor
     Common(int type, int num_args, String argv_1, String argv_2, String argv_3);
     Virtual ~Common();
 
-    // Getters & Setters
-
     // Funciones
-
+    bool comprobarArg(int num_args, String argv_1, String argv_2, String argv_3);
+    char leerBMP(char* puntero);
+    void devolver_imagenes(char *dir);
+    // Operaciones de la aplicación
+    void copiarImagen();
+    void histograma();
+    void escalaGrises();
+    void difusionGaussiana();
 };
 
 #endif //UNTITLED_PROGARGS_H

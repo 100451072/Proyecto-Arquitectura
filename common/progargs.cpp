@@ -17,6 +17,7 @@ Common::Common(int type, int num_args, String argv_1, String argv_2, String argv
         this->diread = NULL;
         // Esta variable define si utilizaremos el soa (0) o el aos (1)
         this->type = type;
+        this->header = "";
 
        // Continuamos con la ejecución del programa
        this->realizarOperacion();
@@ -76,7 +77,7 @@ void Common::realizarOperacion(){
 
     // Comoprobamos que el directorio de entrada se abre correctamente
     if ((direntrada = opendir(this->inDirectory)) == NULL) {
-        throw"Error: abriendo el directorio de entrada"
+        throw"Error: abriendo el directorio de entrada";
     }
 
     // Bucle while que ejecutará las operaciones sobre
@@ -84,38 +85,48 @@ void Common::realizarOperacion(){
     while ((diread = readdir(direntrada)) != NULL) {
         // Para no pasar punteros entre funciones
         // utilizamos el atrib this->diread
-        this->diread = diread
-        this->leerBMP()
+        this->diread = diread;
+        this->leerBMP();
+        if (this->operation == "copy") {
+            this->copiarImagen();
+        }
+        if (this->operation == "histo") {
+
+        }
+        if (this->operation == "mono") {
+
+        }
+        if (this->operation == "gauss") {
+
+        }
     }
     closedir(direntrada);
 }
 
-Common::unsigned char* leerBMP(){
+void Common::leerBMP(){
     // se abre el archivo bmp
     // COMPROBAR SI this->diread.name CONTINE LA RUTA ABSOLUTA AL ARCHIVO
-    FILE* file = fopen(this->diread.name, "rb");
+    FILE* file = fopen(this->diread->d_name, "rb");
     // si no existe se lanza excepcion
     if (file == NULL){
         throw "Error: no se pudo encontrar el archivo imagen dentro del directorio";
     }
 
-    // variable de la informacion del formato BMP (54 bytes)
-    unsigned char information[54];
     // se leen del archivo de entrada
-    fread(information, sizeof(unsigned char), 54, file);
+    fread(this->header, sizeof(unsigned char), 54, file);
     // comprobamos los valores de compresion = 0, numero de planos = 1, t de punto = 24
-    if ((*(int*)&information[30]) != 0){
+    if ((*(int*)&this->header[30]) != 0){
         throw "Valor de compresión invalido";
     }
-    if ((*(int*)&information[26]) != 1){
+    if ((*(int*)&this->header[26]) != 1){
         throw "Número de nivel invalido";
     }
-    if ((*(int*)&information[24]) != 24){ // esto alomejor es cada punto de toda la imagen y no se si tendria q ir en el bucle
+    if ((*(int*)&this->header[24]) != 24){ // esto alomejor es cada punto de toda la imagen y no se si tendria q ir en el bucle
         throw "Punto de nivel invalido";
     }
     // Obtenemos la altura y la anchura del header (estan los bytes en la tabla del pdf)
-    int anchura = *(int*)&information[18];
-    int altura = *(int*)&information[22];
+    int anchura = *(int*)&this->header[18];
+    int altura = *(int*)&this->header[22];
     // Comprobamos los valores
     cout << endl;
     cout << "Nombre: " << this->diread.name << endl;
@@ -155,36 +166,52 @@ Common::unsigned char* leerBMP(){
         }
     }
     fclose(file);
-
-    return datos_imagen;
 };
 
+// Operaciones de la aplicación
 
+void Common::copiarImagen() {
+    /* Función que implementa la copia
+     * de imagenes, para ello crea un nuevo archivo*/
 
+    // NO SE SI CONCATENAR CHAR ASI FUNCIONARA
+    ofstream outfile(this->outDirectory + "/" + this->diread->d_name + "_copia.bmp");
 
+    // Añadimos el header
+    outfile << this->header;
 
+    // Hacer un bucle para meter todos los pixeles uno por uno
+    // OJO: ordenarlos como antes estaban ordenados BGR
+    for (int i=0; i<){
 
+    }
+    outfile.close();
+}
 
+void Common::histograma() {
+    /* Función encargada de crear el histograma,
+     * para lo que deberá crear un archivo .hst*/
 
+    // Histograma R, G, B
+    int R[256], G[256], B[256];
 
+    // Creamos el nuevo archivo en el dir de salida
+    ofstream outfile(this->outDirectory + "/" + this->diread->d_name + ".hst");
 
+    // Calculo de los histogramas
 
+    // Añadimos la información de los histogramas al archivo .hst
+    for (int i=0; i<256*3; ++i) {
+        outfile << ;
+    }
 
+    outfile.close();
+}
 
+void Common::escalaGrises() {
 
+}
 
+void Common::difusionGaussiana() {
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+}

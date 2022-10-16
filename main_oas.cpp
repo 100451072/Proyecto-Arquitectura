@@ -10,14 +10,11 @@
 #include <stdio.h>
 #include "common/common.h"
 #include "imageaos.h"
-#include "imagesoa.h"
 
 int main(int argc, char *argv[]){
 
-    // Hay que crear un main para cada .exe
-    // Pasar como argumentos type (de tipo en int) (en el caso de soa (0), y en el caso de aos (1)), argc y los 3 argv, ojo que no se pueden pasar punteros
-    Imagesoa imagesoa();
-    Imageaos imageaos();
+    // El primer argumento sera 0 para soa y 1 para aos
+    Common aosObject(1, argc, argv[0], argv[1], argv[2]);
 
     return 0;
 }
