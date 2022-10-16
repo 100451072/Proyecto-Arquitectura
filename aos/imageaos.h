@@ -28,16 +28,15 @@ private:
     // Atributos
     // Como dice la definicion de aos, un solo array
     Nodo arrayPixeles[MAX_SIZE];
-
-    // Funciones de inicialización
+    // Ultima posición no vacia
+    int lastPos
 
 public:
     // Constructor & Destructor
-    Imageaos(int& arrayR, int& arrayG, int& arrayB);
-
-    // Getters & Setters
+    Imageaos();
 
     // Funciones
+    void addPixel(int R, int G, int B);
 
 };
 

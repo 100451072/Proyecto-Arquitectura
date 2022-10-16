@@ -5,14 +5,24 @@
 #include "imageaos.h"
 
 // Constructor & Destructor
-Imageaos::Imageaos(int &arrayR, int &arrayG, int &arrayB) {
+Imageaos::Imageaos() {
     /* Constructor, encargado de asigar a cada nodo de arrayPixeles
      * su valor de R, G, B*/
 
-    // El bucle debe recorrer el tamaño de los vectores introducidos
-    for (int i=0; i<sizeof(arrayR)/sizeof(int); ++i){
-        this->arrayPixeles[i].R = arrayR[i];
-        this->arrayPixeles[i].G = arrayG[i];
-        this->arrayPixeles[i].B = arrayB[i];
-    }
+    this->arrayPixeles = NULL;
+    this->lastPos = 0;
+
+}
+
+void Imageaos::addPixel(int R, int G, int B) {
+    /* Funcion que ira añadiendo pixeles al final
+     * del arrayPixeles */
+
+    this->arrayPixeles[this->lastPos].R = R;
+    this->arrayPixeles[this->lastPos].G = G;
+    this->arrayPixeles[this->lastPos].B = B;
+
+    // Sumamos uno para ir avanzando en el array
+    this->lastPos++;
+
 }

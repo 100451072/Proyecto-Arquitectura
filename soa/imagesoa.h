@@ -24,15 +24,15 @@ class Imagesoa {
 private:
     // Atributos
     Nodes structurePixels;
-    // Funciones de inicialización
+    // Ultima posición no vacia
+    int lastPos;
 
 public:
     // Constructor & Destructor
-    Imagesoa(int& arrayR, int& arrayG, int& arrayB);
-
-    // Getters & Setters
+    Imagesoa();
 
     // Funciones
+    void addPixel(int R, int G, int B);
 };
 
 

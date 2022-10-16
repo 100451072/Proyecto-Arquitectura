@@ -15,7 +15,7 @@
 int main(int argc, char *argv[]){
 
     // Hay que crear un main para cada .exe
-    // Pasar como argumentos argc y los 3 argv, ojo que no se pueden pasar punteros
+    // Pasar como argumentos type (de tipo en int) (en el caso de soa (0), y en el caso de aos (1)), argc y los 3 argv, ojo que no se pueden pasar punteros
     Imagesoa imagesoa();
     Imageaos imageaos();
 
