@@ -5,10 +5,14 @@
 #ifndef UNTITLED_IMAGESOA_H
 #define UNTITLED_IMAGESOA_H
 
-/*
- * SOA-Structure of arrays:  Se representará una imagen mediante
- *      tres vectores independientes de valores entre 0 y 255
- */
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <dirent.h>
+#include <sys/types.h>
+#include "progargs.h"
+
+using namespace std;
 
 // Tamaño max para formar un array
 int MAX_SIZE = 1000000;
@@ -26,12 +30,17 @@ private:
     Nodes structurePixels;
     // Ultima posición no vacia
     int lastPos;
+    // Componentes comunes
+    Common comun;
 
 public:
     // Constructor & Destructor
-    Imagesoa();
+    Imagesoa(int num_args, String arg_1, String arg_2, String arg_3);
 
     // Funciones
+    void executeProgram();
+    void llenarPixeles();
+    void realizarOperacion();
     void addPixel(int R, int G, int B);
 };
 

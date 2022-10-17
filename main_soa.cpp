@@ -7,14 +7,13 @@
 
 
 #include <iostream>
-#include <stdio.h>
-#include "common/common.h"
+#include <stdio.h>d
 #include "imagesoa.h"
 
-int main(int argc, char *argv[]){
+int main(int argc, char* argv[]){
 
-    // El primer argumento sera 0 para soa y 1 para aos
-    Common soaObject(0, argc, argv[0], argv[1], argv[2]);
+    Imagesoa soaObject(argc, argv[0], argv[1], argv[2]);
+    soaObject.executeProgram();
 
     return 0;
 }

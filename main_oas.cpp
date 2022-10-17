@@ -8,13 +8,12 @@
 
 #include <iostream>
 #include <stdio.h>
-#include "common/common.h"
 #include "imageaos.h"
 
-int main(int argc, char *argv[]){
+int main(int argc, char* argv[]){
 
-    // El primer argumento sera 0 para soa y 1 para aos
-    Common aosObject(1, argc, argv[0], argv[1], argv[2]);
+    Imageaos aosObject(argc, argv[0], argv[1], argv[2]);
+    aosObject.executeProgram();
 
     return 0;
 }

@@ -5,68 +5,54 @@
 #include "progargs.h"
 
 // Constructor & Destructor
-Common::Common(int type, int num_args, String argv_1, String argv_2, String argv_3) {
-    // En caso de que los argumentos sean correctos continuamos construyendo
-    if (this->comprobarArg(num_args, argv_1, argv_2, argv_3))
-    {
-        // Damos valor a los argumentos de la clase
-        this->inDirectory = argv_1;
-        this->outDirectory = argv_2;
-        this->operation = argv_3;
-        // Chekear que esto no de error (puede ser nullptr)
-        this->diread = NULL;
-        // Esta variable define si utilizaremos el soa (0) o el aos (1)
-        this->type = type;
-        this->header = "";
-
-       // Continuamos con la ejecución del programa
-       this->realizarOperacion();
-    }
-
+Common::Common() {
+    // Los valores de los atributos serán aplicados uno a uno
+    this->actualFile = NULL;
+    cout << "Clase common creada con exito" << endl;
 }
 
-bool Common::comprobarArg(int num_args, String argv_1, String argv_2, String argv_3) {
+bool Common::comprobarArg() {
     /* Función encargada de validar los argumentos introducidos,
      * devuelve false en caso de que algun arg sea incorrecto*/
 
     bool arg_correctos = true;
 
     // comprobamos que el numero de argumentos sea el correcto
-    if (num_args != 3) {
+    if (this->numArgumentos != 3) {
         cout << "Wrong format:" << "\n";
         cout << "Image in_path out_path oper" << "\n";
         cout << "Operation: copy, histo, mono, gauss" << "\n";
         arg_correctos = false;
     }
     // comprobamos que la accion a realizar sea la indicada
-    if (argv_3 != "gauss" || argv_3 != "histo" || argv_3 != "mono" || argv_3 != "copy") {
-        cout << "Unexpected operation: " << argv_3 << "\n";
+    if (this->operation != "gauss" || this->operation != "histo" || this->operation != "mono" || this->operation != "copy") {
+        cout << "Unexpected operation: " << this->operation << "\n";
         cout << "Image in_path out_path oper" << "\n";
         cout << "Operation: copy, histo, mono, gauss" << "\n";
         arg_correctos = false
     }
     // comprobamos si existen los directorios de entrada y salida
-    if (!opendir(argv_1)) {
-        cout << "Input path: " << argv_1 << "\n";
-        cout << "Output path: " << argv_2 << "\n";
-        cout << "Cannot open directory " << "[" << argv_1 << "]" << "\n";
-        cout << "Image in_path out_path oper" << "\n";
-        cout << "Operation: copy, histo, mono, gauss" << "\n";
+    if (!opendir(this->inDirectory)) {
+        cout << "Input path: " << this->inDirectory << "\n";
+        cout << "output path: " << this->outDirectory << "\n";
+        cout << "cannot open directory " << "[" << this->inDirectory << "]" << "\n";
+        cout << "image in_path out_path oper" << "\n";
+        cout << "operation: copy, histo, mono, gauss" << "\n";
         arg_correctos = false;
     }
-    if (!opendir(argv_2)) {
-        cout << "Input path: " << argv_1 << "\n";
-        cout << "Output path: " << argv_2 << "\n";
-        cout << "Output directory " << "[" << argv_2 << "]" << " does not exist" << "\n";
-        cout << "Image in_path out_path oper" << "\n";
-        cout << "Operation: copy, histo, mono, gauss" << "\n";
+    if (!opendir(this->outDirectory)) {
+        cout << "input path: " << this->inDirectory << "\n";
+        cout << "output path: " << this->outDirectory << "\n";
+        cout << "output directory " << "[" << this->outDirectory << "]" << " does not exist" << "\n";
+        cout << "image in_path out_path oper" << "\n";
+        cout << "operation: copy, histo, mono, gauss" << "\n";
         arg_correctos = false;
     }
 
     return arg_correctos;
 }
 
-void Common::realizarOperacion(){
+void Common::leerDir(){
     /* Finción que se va a encargar de funcionamiento
      * principal del programa, a cargo de llamar a
      * las funciones que realizarán las operaciones
@@ -82,38 +68,25 @@ void Common::realizarOperacion(){
 
     // Bucle while que ejecutará las operaciones sobre
     // cada fotografía del directorio de entrada
-    while ((diread = readdir(direntrada)) != NULL) {
-        // Para no pasar punteros entre funciones
-        // utilizamos el atrib this->diread
-        this->diread = diread;
-        this->leerBMP();
-        if (this->operation == "copy") {
-            this->copiarImagen();
-        }
-        if (this->operation == "histo") {
-
-        }
-        if (this->operation == "mono") {
-
-        }
-        if (this->operation == "gauss") {
-
-        }
-    }
+    diread = readdir(direntrada);
+    // Para no pasar punteros entre funciones
+    // utilizamos el atrib this->diread
+    this->diread = diread;
+    //this->leerBMP();
     closedir(direntrada);
 }
 
-void Common::leerBMP(){
+void Common::leerHeaderBMP(){
     // se abre el archivo bmp
     // COMPROBAR SI this->diread.name CONTINE LA RUTA ABSOLUTA AL ARCHIVO
-    FILE* file = fopen(this->diread->d_name, "rb");
+    this->actualFile = fopen(this->diread.d_name, "rb");
     // si no existe se lanza excepcion
-    if (file == NULL){
+    if (this->actualFile == NULL){
         throw "Error: no se pudo encontrar el archivo imagen dentro del directorio";
     }
 
     // se leen del archivo de entrada
-    fread(this->header, sizeof(unsigned char), 54, file);
+    fread(this->header, sizeof(unsigned char), 54, this->actualFile);
     // comprobamos los valores de compresion = 0, numero de planos = 1, t de punto = 24
     if ((*(int*)&this->header[30]) != 0){
         throw "Valor de compresión invalido";
@@ -129,78 +102,75 @@ void Common::leerBMP(){
     int altura = *(int*)&this->header[22];
     // Comprobamos los valores
     cout << endl;
-    cout << "Nombre: " << this->diread.name << endl;
+    cout << "Nombre: " << this->diread.d_name << endl;
     cout << "Anchura: " << anchura << endl;
     cout << "Altura: " << altura << endl;
+
+    fclose(file);
+};
+
+int& Common::leerArrayBMP() {
+    /* Continua la lectura del array BMP */
 
     // Continuamos con la lectura
     int fila = (anchura*3 + 3) & (~3);
     unsigned char aux; // variable ayuda a reordenar los pyxeles de BGR a RGB
     unsigned char* datos_imagen = unsigned char[fila];
-    int R;
-    int G;
-    int B;
-    // Lectura de la imagen
+    int* RGB;
+    // lectura de la imagen
     for (int i = 0; i < altura; i++) {
-        fread(datos_imagen, sizeof(unsigned char), fila, file);
+        fread(datos_imagen, sizeof(unsigned char), fila, this->actualfile);
         for (int j = 0; j < anchura * 3; j += 3) {
-            // es por tres ya que son tres: RGB; se reordenan
+            // es por tres ya que son tres: rgb; se reordenan
             aux = datos_imagen[j];
             datos_imagen[j] = datos_imagen[j + 2];
             datos_imagen[j + 2] = aux;
-            // R
-            R = (int)datos_imagen[j];
-            // G
-            G = (int)datos_imagen[j + 1];
-            // B
-            B = (int)datos_imagen[j + 2];
-            // Formamos las estructuras de datos con sus correspondientes pixeles
-            // En caso de que sea la ejecución del tipo soa (type = 0)
-            if (this->type == 0) {
-                this->imageSoa.addPixel(&R, &G, &B);
-            }
-            // En caso de que sea la ejecución del tipo aos (type = 1)
-            else {
-                this->imageAos.addPixel(&R, &G, &B);
+            // r
+            RGB[j] = (int)datos_imagen[j];
+            // g
+            RGB[j + 1] = (int)datos_imagen[j + 1];
+            // b
+            RGB[j + 2] = (int)datos_imagen[j + 2];
             }
         }
     }
     fclose(file);
-};
+    return &RGB;
+}
 
-// Operaciones de la aplicación
+// operaciones de la aplicación///////////////////////////7
 
-void Common::copiarImagen() {
-    /* Función que implementa la copia
+void common::copiarimagen() {
+    /* función que implementa la copia
      * de imagenes, para ello crea un nuevo archivo*/
 
-    // NO SE SI CONCATENAR CHAR ASI FUNCIONARA
-    ofstream outfile(this->outDirectory + "/" + this->diread->d_name + "_copia.bmp");
+    // no se si concatenar char asi funcionara
+    ofstream outfile(this->outdirectory + "/" + this->diread->d_name + "_copia.bmp");
 
-    // Añadimos el header
+    // añadimos el header
     outfile << this->header;
 
-    // Hacer un bucle para meter todos los pixeles uno por uno
-    // OJO: ordenarlos como antes estaban ordenados BGR
+    // hacer un bucle para meter todos los pixeles uno por uno
+    // ojo: ordenarlos como antes estaban ordenados bgr
     for (int i=0; i<){
 
     }
     outfile.close();
 }
 
-void Common::histograma() {
-    /* Función encargada de crear el histograma,
+void common::histograma() {
+    /* función encargada de crear el histograma,
      * para lo que deberá crear un archivo .hst*/
 
-    // Histograma R, G, B
-    int R[256], G[256], B[256];
+    // histograma r, g, b
+    int r[256], g[256], b[256];
 
-    // Creamos el nuevo archivo en el dir de salida
-    ofstream outfile(this->outDirectory + "/" + this->diread->d_name + ".hst");
+    // creamos el nuevo archivo en el dir de salida
+    ofstream outfile(this->outdirectory + "/" + this->diread->d_name + ".hst");
 
-    // Calculo de los histogramas
+    // calculo de los histogramas
 
-    // Añadimos la información de los histogramas al archivo .hst
+    // añadimos la información de los histogramas al archivo .hst
     for (int i=0; i<256*3; ++i) {
         outfile << ;
     }
@@ -208,10 +178,10 @@ void Common::histograma() {
     outfile.close();
 }
 
-void Common::escalaGrises() {
+void common::escalagrises() {
 
 }
 
-void Common::difusionGaussiana() {
+void common::difusiongaussiana() {
 
 }

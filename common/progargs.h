@@ -27,42 +27,31 @@
  *  dejarán los resultados en el dir de salida. Para cada archivo
  */
 
-#include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <dirent.h>
-#include <sys/types.h>
-#include "imagesoa.h"
-#include "imageoas.h"
-
-using namespace std;
+#include "progargs.h"
 
 class Common:
 {
 private:
     // Atributos
-    // Clases encargadas de almacenar los datos dependiendo del caso
-    Imagesoa imagesoa;
-    Imageoas imageoas;
-
+    int numArgumentos;
     String inDirectory;
     String outDirectory;
     String operation;
 
     unsigned char header[54];
     struct dirent* diread;
-
-    int type;
+    FILE* actualFile;
 
 public:
     // Constructor & Destructor
-    Common(int type, int num_args, String argv_1, String argv_2, String argv_3);
+    Common();
     Virtual ~Common();
 
     // Funciones
     bool comprobarArg(int num_args, String argv_1, String argv_2, String argv_3);
-    char leerBMP(char* puntero);
-    void devolver_imagenes(char *dir);
+    void leerDir();
+    void leerHeaderBMP();
+    int& leerArrayBMP();
     // Operaciones de la aplicación
     void copiarImagen();
     void histograma();
