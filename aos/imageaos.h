@@ -31,8 +31,6 @@ private:
     // Atributos
     // Como dice la definicion de aos, un solo array
     Nodo arrayPixeles[MAX_SIZE];
-    // Ultima posición no vacia
-    int lastPos;
     // Elementos comunes
     Common comun;
 
@@ -44,8 +42,6 @@ public:
     void executeProgram();
     void llenarPixeles();
     void realizarOperacion();
-    void addPixel(int R, int G, int B);
-
 };
 
 

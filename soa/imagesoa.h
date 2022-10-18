@@ -28,8 +28,6 @@ class Imagesoa {
 private:
     // Atributos
     Nodes structurePixels;
-    // Ultima posición no vacia
-    int lastPos;
     // Componentes comunes
     Common comun;
 
@@ -41,7 +39,6 @@ public:
     void executeProgram();
     void llenarPixeles();
     void realizarOperacion();
-    void addPixel(int R, int G, int B);
 };
 
 

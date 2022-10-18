@@ -76,7 +76,7 @@ void Common::leerDir(){
     closedir(direntrada);
 }
 
-void Common::leerHeaderBMP(){
+int Common::leerHeaderBMP(){
     // se abre el archivo bmp
     // COMPROBAR SI this->diread.name CONTINE LA RUTA ABSOLUTA AL ARCHIVO
     this->actualFile = fopen(this->diread.d_name, "rb");
@@ -106,8 +106,8 @@ void Common::leerHeaderBMP(){
     cout << "Anchura: " << anchura << endl;
     cout << "Altura: " << altura << endl;
 
-    fclose(file);
-};
+    return anchura;
+}
 
 int& Common::leerArrayBMP() {
     /* Continua la lectura del array BMP */
@@ -134,13 +134,13 @@ int& Common::leerArrayBMP() {
             }
         }
     }
-    fclose(file);
+    fclose(this->actaulfile);
     return &RGB;
 }
 
 // operaciones de la aplicación///////////////////////////7
 
-void common::copiarimagen() {
+void Common::copiarimagen() {
     /* función que implementa la copia
      * de imagenes, para ello crea un nuevo archivo*/
 
@@ -158,7 +158,7 @@ void common::copiarimagen() {
     outfile.close();
 }
 
-void common::histograma() {
+void Common::histograma() {
     /* función encargada de crear el histograma,
      * para lo que deberá crear un archivo .hst*/
 
@@ -174,14 +174,13 @@ void common::histograma() {
     for (int i=0; i<256*3; ++i) {
         outfile << ;
     }
-
     outfile.close();
 }
 
-void common::escalagrises() {
+void Common::escalagrises() {
 
 }
 
-void common::difusiongaussiana() {
+void Common::difusiongaussiana() {
 
 }
