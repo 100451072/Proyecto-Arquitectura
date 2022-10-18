@@ -8,9 +8,6 @@
 Imagesoa::Imagesoa(int num_args, String arg_1, String arg_2, String arg_3) {
     /* Constructor, recibe tres vectores que conformarán
      * el structurePixels*/
-
-    this->lastPos = 0;
-
     // Inicialización de los atributos de common
     this->comun.numArgumentos = num_args;
     this->comun.inDirectory = arg_1;
@@ -41,20 +38,25 @@ void Imagesoa::executeProgram() {
 }
 
 void Imagesoa::llenarPixeles() {
-    /* Función encargada de llenar el array con los pixeles del */
+    /* Función encargada de llenar el array con los pixeles del
+     * archivo BMP de comun*/
 
+    int num_pixeles = 0;
+    int* pixeles;
+    // Leemos el header y abrimos el archivo en el que nos encontramos
+    num_pixeles = this->comun.leerHeaderBMP();
+    // Recibe como parametro una referencia a un array
+    pixeles = this->comun.leerArrayBMP();
 
-
+    for (int i=0; i<mun_pixeles; i += 3) {
+        // Añadimos los pixeles al array
+        this->structurePixels.arrayR[i] = pixeles[i];
+        this->structurePixels.arrayG[i + 1] = pixeles[i + 1];
+        this->structurePixels.arrayB[i + 2] = pixeles[i + 2];
+    }
 }
 
-void Imagesoa::addPixel(int R, int G, int B) {
-    /* Función que irá añadiendo pixeles al final
-     * de los arrays R, G, B*/
-
-    this->structurePixels.R[this->lastPos] = R;
-    this->structurePixels.G[this->lastPos] = G;
-    this->structurePixels.B[this->lastPos] = B;
-
-    // Añadimos uno para ir avanzando en el array
-    this->lastPos++;
+void realizarOperacion() {
+    // Función encargada de realizar la operación
+    if (this->comun.operation == "copy")
 }

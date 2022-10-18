@@ -9,8 +9,6 @@ Imageaos::Imageaos(int num_args, String arg_1, String arg_2, String arg_3) {
     /* Constructor, encargado de asigar a cada nodo de arrayPixeles
      * su valor de R, G, B*/
 
-    this->lastPos = 0;
-
     // Inicialización de los atributos de common
     this->comun.numArgumentos = num_args;
     this->comun.inDirectory = arg_1;
@@ -39,17 +37,25 @@ void Imagesoa::executeProgram() {
         this->comun.leerDir();
     }
 }
+
+void llenarPixeles() {
+    /* Función encargada de llenar el array con los pixeles del
+     * archivo BMP de comun*/
+
+    int num_pixeles = 0;
+    int* pixeles;
+
+    // Leemos el header y abrimos el archivo en el que nos encontramos
+    num_pixeles = this->comun.leerHeaderBMP();
+    pixeles = this->comun.leerArrayBMP();
+
+    for (int i=0; i<mun_pixeles; i += 3) {
+        this->arrayPixeles[i].Red = pixeles[i];
+        this->arrayPixeles[i + 1].Green = pixeles[i + 1];
+        this->arrayPixeles[i + 2].Blue = pixeles[i + 2];
+    }
 }
 
-void Imageaos::addPixel(int R, int G, int B) {
-    /* Funcion que ira añadiendo pixeles al final
-     * del arrayPixeles */
-
-    this->arrayPixeles[this->lastPos].R = R;
-    this->arrayPixeles[this->lastPos].G = G;
-    this->arrayPixeles[this->lastPos].B = B;
-
-    // Sumamos uno para ir avanzando en el array
-    this->lastPos++;
+void realizarOperacion() {
 
 }
