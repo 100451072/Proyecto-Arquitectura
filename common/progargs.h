@@ -50,7 +50,7 @@ public:
     // Funciones
     bool comprobarArg(int num_args, String argv_1, String argv_2, String argv_3);
     void leerDir();
-    int leerHeaderBMP();
+    void leerHeaderBMP();
     int& leerArrayBMP();
     // Operaciones de la aplicación
     void copiarImagen();
