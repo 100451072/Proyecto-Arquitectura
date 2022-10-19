@@ -76,7 +76,7 @@ void Common::leerDir(){
     closedir(direntrada);
 }
 
-void Common::leerHeaderBMP(){
+int Common::leerHeaderBMP(){
     // se abre el archivo bmp
     // COMPROBAR SI this->diread.name CONTINE LA RUTA ABSOLUTA AL ARCHIVO
     this->actualFile = fopen(this->diread.d_name, "rb");
@@ -106,8 +106,8 @@ void Common::leerHeaderBMP(){
     cout << "Anchura: " << anchura << endl;
     cout << "Altura: " << altura << endl;
 
-    fclose(file);
-};
+    return anchura;
+}
 
 int& Common::leerArrayBMP() {
     /* Continua la lectura del array BMP */
@@ -131,16 +131,16 @@ int& Common::leerArrayBMP() {
             RGB[j + 1] = (int)datos_imagen[j + 1];
             // b
             RGB[j + 2] = (int)datos_imagen[j + 2];
-            }
         }
     }
-    fclose(file);
-    return &RGB;
+}
+fclose(this->actaulfile);
+return &RGB;
 }
 
 // operaciones de la aplicación///////////////////////////7
 
-void common::copiarimagen() {
+void Common::copiarImagen() {
     /* función que implementa la copia
      * de imagenes, para ello crea un nuevo archivo*/
 
@@ -158,7 +158,7 @@ void common::copiarimagen() {
     outfile.close();
 }
 
-void common::histograma() {
+void Common::histograma() {
     /* función encargada de crear el histograma,
      * para lo que deberá crear un archivo .hst*/
 
@@ -174,33 +174,53 @@ void common::histograma() {
     for (int i=0; i<256*3; ++i) {
         outfile << ;
     }
-
     outfile.close();
 }
 
-void Common::escalaGrises() {
+void Common::escalagrises() {
 
 }
 
-void Common::difusionGaussiana(BYTE* inputPixels, int size, int anchuraInicial, int alturaInicial,) {
-    int matrizx[] = {1,4,7,4,1,
-                    4,16,26,16,4,
-                    7,26,41,26,7,
-                    4,16,26,16,4,
-                    1,4,7,4,1};
-    int w = 273;
-    int avgR = 0;
-    int avgG = 0;
-    int avgB = 0;
-    // puede ser en aos
-    for (int s = -2; s < 3; ++s){
-        for (int t = -2; t < 3; ++t){
-            avgR = avgR + 1/w*(pyxels[s][t].Red);
-            avgG = avgG + 1/w(pyxels[s][t].Green);
-            avgB = avgB + 1/w*(pyxels[s][t].Blue);
+void Common::difusiongaussiana() {
+    void Common::difusionGaussiana(BYTE* inputPixels, int size, int anchuraInicial, int alturaInicial,) {
+        int matrizx[] = {1,4,7,4,1,
+                         4,16,26,16,4,
+                         7,26,41,26,7,
+                         4,16,26,16,4,
+                         1,4,7,4,1};
+        int w = 273;
+        int avgR = 0;
+        int avgG = 0;
+        int avgB = 0;
+        // puede ser en aos
+        for (int s = -2; s < 3; ++s){
+            for (int t = -2; t < 3; ++t){
+                avgR = avgR + 1/w*(pyxels[s][t].Red);
+                avgG = avgG + 1/w(pyxels[s][t].Green);
+                avgB = avgB + 1/w*(pyxels[s][t].Blue);
+            }
+        }
+
+        // forma general HAY QUE AÑADIR HASTA 24 PIXELES (5*5)
+        int width = alturaInicial*3;
+        for (int i = width*alturaInicial; i < anchuraInicial*; i+= 3){
+
+
+            int newPixel1 = inputPixels[i - width - 3] * matrix[0] + inputPixels[i - width] * matrix[1] + inputPixels[i - width + 3] * matrix[2] +
+                            inputPixels[i - 3] * matrix[3] + inputPixels[i] * matrix[4] + inputPixels[i + 3] * matrix[5] +
+                            inputPixels[i + width - 3] * matrix[6] + inputPixels[i + width] * matrix[7] + inputPixels[i + width + 3] * matrix[8];
+
+
+
+            int newPixel2 = inputPixels[i + 1 - width - 3] * matrix[0] + inputPixels[i + 1 - width] * matrix[1] + inputPixels[i + 1 - width + 3] * matrix[2] +
+                            inputPixels[i + 1 - 3] * matrix[3] + inputPixels[i + 1] * matrix[4] + inputPixels[i + 1 + 3] * matrix[5] +
+                            inputPixels[i + 1 + width - 3] * matrix[6] + inputPixels[i + 1 + width] * matrix[7] + inputPixels[i + 1 + width + 3] * matrix[8];
+
+
+
+            int newPixel3 = inputPixels[i + 2 - width - 3] * matrix[0] + inputPixels[i + 2 - width] * matrix[1] + inputPixels[i + 2 - width + 3] * matrix[2] +
+                            inputPixels[i + 2 - 3] * matrix[3] + inputPixels[i + 2] * matrix[4] + inputPixels[i + 2 + 3] * matrix[5] +
+                            inputPixels[i + 2 + width - 3] * matrix[6] + inputPixels[i + 2 + width] * matrix[7] + inputPixels[i + 2 + width + 3] * matrix[8];
         }
     }
-
-void common::difusiongaussiana() {
-
 }
