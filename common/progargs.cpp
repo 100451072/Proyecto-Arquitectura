@@ -181,46 +181,51 @@ void Common::escalagrises() {
 
 }
 
-void Common::difusiongaussiana() {
-    void Common::difusionGaussiana(BYTE* inputPixels, int size, int anchuraInicial, int alturaInicial,) {
-        int matrizx[] = {1,4,7,4,1,
+unsigned char Common::difusiongaussiana() {
+    void Common::difusionGaussiana(unsigned char *inputPixels, int anchuraInicial, int alturaInicial,) {
+        int matriz[5][5] = {1,4,7,4,1,
                          4,16,26,16,4,
                          7,26,41,26,7,
                          4,16,26,16,4,
                          1,4,7,4,1};
         int w = 273;
-        int avgR = 0;
-        int avgG = 0;
-        int avgB = 0;
-        // puede ser en aos
-        for (int s = -2; s < 3; ++s){
-            for (int t = -2; t < 3; ++t){
-                avgR = avgR + 1/w*(pyxels[s][t].Red);
-                avgG = avgG + 1/w(pyxels[s][t].Green);
-                avgB = avgB + 1/w*(pyxels[s][t].Blue);
+        int avgR = 0, avgG = 0, avgB = 0;
+        int l = anchuraInicial * 3;
+        int tamano = alturaInicial * l;
+        int cByte, b, cGauss, fGauss;
+        unsigned char *pixelesDevolver
+        for (int i = 0; i < alturaInicial - 1; i+=1){
+            for (int j = 0; i < l - 1; j+=3){
+                for (int s = -2; s <= 2; s++){
+                    for (int t = -2; t <= 2; t++){
+                        fGauss = s + 2;
+                        cByte = j + t * 3;
+                        cGauss = t + 2;
+                        b = (i + s)*l + cByte;
+                        if (b >= 0 && cByte <= l - 1 && b <= tamano && 0 <= cByte) // PIXEL R
+                            avgR += matriz[fGauss][cGauss] * inputPixels[b];
+
+                        if (b >= 0 && cByte <= l - 1 && b <= tamano && 0 <= cByte) // PIXEL G
+                            avgG += matriz[fGauss][cGauss] * inputPixels[b];
+                        b += 1;
+                        cByte += 1;
+                        if (b >= 0 && cByte <= l - 1 && b <= tamano && 0 <= cByte) // PIXEL B
+                            avgB+= matriz[fGauss][cGauss] * inputPixels[b];
+                        b += 1;
+                        cByte += 1;
+                    }
+                }
+                avgR = avgR / w; // se divide entre el peso
+                avgG = avgG / w;
+                avgB = avgB / w;
+                pixelesDevolver[(i*l) + j] = avgR; // se guardan los pixeles en el char
+                pixelesDevolver[(i*l) + j + 1] = avgG;
+                pixelesDevolver[(i*j) + j + 2] = avgB;
             }
         }
-
-        // forma general HAY QUE AÑADIR HASTA 24 PIXELES (5*5)
-        int width = alturaInicial*3;
-        for (int i = width*alturaInicial; i < anchuraInicial*; i+= 3){
-
-
-            int newPixel1 = inputPixels[i - width - 3] * matrix[0] + inputPixels[i - width] * matrix[1] + inputPixels[i - width + 3] * matrix[2] +
-                            inputPixels[i - 3] * matrix[3] + inputPixels[i] * matrix[4] + inputPixels[i + 3] * matrix[5] +
-                            inputPixels[i + width - 3] * matrix[6] + inputPixels[i + width] * matrix[7] + inputPixels[i + width + 3] * matrix[8];
+        return pixelesDevolver; // se devuelven los pixeles modificados
 
 
 
-            int newPixel2 = inputPixels[i + 1 - width - 3] * matrix[0] + inputPixels[i + 1 - width] * matrix[1] + inputPixels[i + 1 - width + 3] * matrix[2] +
-                            inputPixels[i + 1 - 3] * matrix[3] + inputPixels[i + 1] * matrix[4] + inputPixels[i + 1 + 3] * matrix[5] +
-                            inputPixels[i + 1 + width - 3] * matrix[6] + inputPixels[i + 1 + width] * matrix[7] + inputPixels[i + 1 + width + 3] * matrix[8];
-
-
-
-            int newPixel3 = inputPixels[i + 2 - width - 3] * matrix[0] + inputPixels[i + 2 - width] * matrix[1] + inputPixels[i + 2 - width + 3] * matrix[2] +
-                            inputPixels[i + 2 - 3] * matrix[3] + inputPixels[i + 2] * matrix[4] + inputPixels[i + 2 + 3] * matrix[5] +
-                            inputPixels[i + 2 + width - 3] * matrix[6] + inputPixels[i + 2 + width] * matrix[7] + inputPixels[i + 2 + width + 3] * matrix[8];
-        }
     }
 }
