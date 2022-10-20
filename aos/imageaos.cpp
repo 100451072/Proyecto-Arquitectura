@@ -41,7 +41,7 @@ void Imagesoa::executeProgram() {
         this->comun.leerInDir();
     }
     // Por ultimo cerramos el dir de entrada
-    this->cerrarInDir();
+    this->comun.cerrarInDir();
 }
 
 void llenarPixeles() {
