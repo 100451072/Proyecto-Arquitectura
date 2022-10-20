@@ -29,15 +29,17 @@ void Imagesoa::executeProgram() {
     }
     // Bucle para ejecutar las ooperaciones sobre todas las fotos del dir
     // Obtenemos la primera pos del dir
-    this->comun.leerDir();
-    while(this->comun.diread != NULL){
+    this->comun.abrirInDir();
+    this->comun.leerInDir();
+    while(this->comun.fileRead != NULL){
         // Rellenamos los pixeles llama a comun.leerBMP()
         this->llenarPixeles();
         // Realizar operacion seleccionada
         this->realizarOperacion();
         // Avanzamos a la siguiente pos del dir
-        this->comun.leerDir();
+        this->comun.leerInDir();
     }
+    this->comun.cerrarInDir();
 }
 
 void Imagesoa::llenarPixeles() {

@@ -16,8 +16,8 @@ Imageaos::Imageaos(int num_args, String arg_1, String arg_2, String arg_3) {
     this->comun.inDirectory = arg_1;
     this->comun.outDirectory = arg_2;
     this->comun.operation = arg_3;
-
 }
+
 void Imagesoa::executeProgram() {
     /* Función principal encargada de la ejecución del programa*/
 
@@ -28,15 +28,20 @@ void Imagesoa::executeProgram() {
     }
     // Bucle para ejecutar las ooperaciones sobre todas las fotos del dir
     // Obtenemos la primera pos del dir
-    this->comun.leerDir();
-    while(this->comun.diread != NULL){
+    this->comun.abrirInDir();
+    // leemos el dir de entrada por primera vez para que el bucle pueda empezar
+    // en caso de que exista algun archivo
+    this->comun.leerInDir();
+    while(this->comun.fileRead != NULL){
         // Rellenamos los pixeles llama a comun.leerBMP()
         this->llenarPixeles();
         // Realizar operacion seleccionada
         this->realizarOperacion();
         // Avanzamos a la siguiente pos del dir
-        this->comun.leerDir();
+        this->comun.leerInDir();
     }
+    // Por ultimo cerramos el dir de entrada
+    this->cerrarInDir();
 }
 
 void llenarPixeles() {

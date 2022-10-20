@@ -34,13 +34,17 @@ class Common:
 private:
     // Atributos
     int numArgumentos;
+    // String pasados por el main
     String inDirectory;
     String outDirectory;
     String operation;
 
+    // Puntero al dir de entrada
+    DIR* inDir;
+    // Guardamos el valor del header en caso de que haya que copiarlo
     unsigned char header[54];
-    struct dirent* diread;
-    FILE* actualFile;
+    // Archivo dentro del dir de entrada, ira cambiando
+    struct dirent* fileRead;
 
 public:
     // Constructor & Destructor
@@ -49,7 +53,9 @@ public:
 
     // Funciones
     bool comprobarArg(int num_args, String argv_1, String argv_2, String argv_3);
-    void leerDir();
+    void abrirInDir();
+    void leerInDir();
+    void cerrarInDir();
     int leerHeaderBMP();
     int& leerArrayBMP();
     // Operaciones de la aplicación
