@@ -1,14 +1,4 @@
-/opt/CLion/clion-2022.2.1/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" -S /home/asier/CLionProjects/Proyecto-Arquitectura -B /home/asier/CLionProjects/Proyecto-Arquitectura/cmake-build-debug
-CMake Error at CMakeLists.txt:11 (add_executable):
-  The target name "image−aos" is reserved or not valid for certain CMake
-  features, such as generator expressions, and may result in undefined
-  behavior.
-
-
-CMake Error at CMakeLists.txt:12 (target_link_libraries):
-  Cannot specify link libraries for target "imgaos" which is not built by
-  this project.
-
-
--- Configuring incomplete, errors occurred!
-See also "/home/asier/CLionProjects/Proyecto-Arquitectura/cmake-build-debug/CMakeFiles/CMakeOutput.log".
+/app/extra/clion/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/app/extra/clion/bin/ninja/linux/ninja -G Ninja -S /home/alvarobuj/Documents/uni/arqui/proyecto/Proyecto-Arquitectura -B /home/alvarobuj/Documents/uni/arqui/proyecto/Proyecto-Arquitectura/cmake-build-debug
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/alvarobuj/Documents/uni/arqui/proyecto/Proyecto-Arquitectura/cmake-build-debug
