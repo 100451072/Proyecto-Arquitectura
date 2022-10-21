@@ -20,6 +20,23 @@ using namespace std;
 // Tamaño max de un array
 int MAX_SIZE = 1000000;
 
+// localizaciones del path
+char origin[256];
+char prox_location[256];
+
+// Estructura que nos permite medir el tiempo
+typedef struct chronometro
+{
+    int loadTime;
+    int gaussTime;
+    int histoTime;
+    int monoTime;
+    int copyTime;
+    int storeTime;
+    int total;
+
+} chronometro;
+
 // Structura que almacenara tres enteros por pixel (R, G, B)
 struct Nodo
 {
@@ -38,7 +55,7 @@ private:
 
 public:
     // Constructor & Destructor
-    Imageaos(int num_args, String arg_1, String arg_2, String arg_3);
+    Imageaos(int num_args, const string& arg_1, const string& arg_2, const string& arg_3);
 
     // Funciones
     void executeProgram();

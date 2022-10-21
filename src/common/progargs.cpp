@@ -11,10 +11,6 @@ Common::Common() {
     cout << "Clase common creada con exito" << endl;
 }
 
-int main(argc, char *argv[]){
-
-}
-
 bool Common::comprobarArg() {
     /* Función encargada de validar los argumentos introducidos,
      * devuelve false en caso de que algun arg sea incorrecto*/
@@ -35,7 +31,7 @@ bool Common::comprobarArg() {
         arg_correctos = false
     }
     // comprobamos si existen los directorios de entrada y salida
-    if (!inDir.open()) {
+    if (!opendir(this->inDirectory)) {
         cout << "Input path: " << this->inDirectory << "\n";
         cout << "output path: " << this->outDirectory << "\n";
         cout << "cannot open directory " << "[" << this->inDirectory << "]" << "\n";
@@ -58,14 +54,9 @@ bool Common::comprobarArg() {
 void Common::abrirInDir() {
     /* Función que se llama para abrir el directorio de entrada*/
     ofstream myfile;
-    if (comprobarArg() == True){
-        // Comoprobamos que el directorio de entrada se abre correctamente
-        if (!myfile.open(this->inDir)) {
-            throw "Error: abriendo el directorio de entrada";
-        }
-        else{
-            while()
-        }
+    // Comoprobamos que el directorio de entrada se abre correctamente
+    if (!opendir(this->inDirectory)) {
+        throw "Error: abriendo el directorio de entrada";
     }
 }
 

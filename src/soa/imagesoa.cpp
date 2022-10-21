@@ -3,20 +3,7 @@
 //
 
 #include "imagesoa.h"
-// variables no se si se pueden uwu
-char origin[256];
-char prox_location[256];
-// estructura para el tiempo
-typedef struct chronometro
-{
-    int loadTime;
-    int gaussTime;
-    int histoTime;
-    int monoTime;
-    int storeTime;
-    int copyTime;
-    int total;
-} chronometro;
+
 //Constructor & Destructor
 Imagesoa::Imagesoa(int num_args, String arg_1, String arg_2, String arg_3) {
     /* Constructor, recibe tres vectores que conformarán
@@ -63,7 +50,7 @@ void Imagesoa::llenarPixeles() {
     // Recibe como parametro una referencia a un array
     pixeles = this->comun.leerArrayBMP();
 
-    for (int i=0; i<mun_pixeles; i += 3) {
+    for (int i=0; i<num_pixeles; i += 3) {
         // Añadimos los pixeles al array
         this->structurePixels.arrayR[i] = pixeles[i];
         this->structurePixels.arrayG[i + 1] = pixeles[i + 1];

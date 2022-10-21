@@ -18,6 +18,21 @@ using namespace std;
 
 // Tamaño max para formar un array
 int MAX_SIZE = 1000000;
+// variables no se si se pueden uwu
+char origin[256];
+char prox_location[256];
+
+// Estructura que nos permitirá medir el tiempo
+typedef struct chronometro
+{
+    int loadTime;
+    int gaussTime;
+    int histoTime;
+    int monoTime;
+    int storeTime;
+    int copyTime;
+    int total;
+} chronometro;
 
 // Estructura que almacenará tres vectores para cada valor R, G, B
 struct Nodes {
@@ -35,7 +50,7 @@ private:
 
 public:
     // Constructor & Destructor
-    Imagesoa(int num_args, String arg_1, String arg_2, String arg_3);
+    Imagesoa(int num_args, const string& arg_1, const string& arg_2, const string& arg_3);
 
     // Funciones
     void executeProgram();

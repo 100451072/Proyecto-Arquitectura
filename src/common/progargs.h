@@ -37,10 +37,10 @@ private:
     // Atributos
     int numArgumentos;
     // String pasados por el main
-    String image;
-    String inDirectory;
-    String outDirectory;
-    String operation;
+    string image;
+    string inDirectory;
+    string outDirectory;
+    string operation;
 
     // Puntero al dir de entrada
     DIR* inDir;
@@ -55,7 +55,7 @@ public:
     Virtual ~Common();
 
     // Funciones
-    bool comprobarArg(int num_args, String argv_1, String argv_2, String argv_3);
+    bool comprobarArg(int num_args, const string& argv_1, const string& argv_2, const string& argv_3);
     void abrirInDir();
     void leerInDir();
     void cerrarInDir();

@@ -3,21 +3,6 @@
 //
 
 #include "imageaos.h"
-// localizaciones del path
-char origin[256];
-char prox_location[256];
-// estructura para el tiempo
-typedef struct chronometro
-{
-    int loadTime;
-    int gaussTime;
-    int histoTime;
-    int monoTime;
-    int copyTime;
-    int storeTime;
-    int total;
-
-} chronometro;
 
 // Constructor & Destructor
 Imageaos::Imageaos(int num_args, String arg_1, String arg_2, String arg_3) {
@@ -68,7 +53,7 @@ void llenarPixeles() {
     num_pixeles = this->comun.leerHeaderBMP();
     pixeles = this->comun.leerArrayBMP();
 
-    for (int i=0; i<mun_pixeles; i += 3) {
+    for (int i=0; i<num_pixeles; i += 3) {
         this->arrayPixeles[i].Red = pixeles[i];
         this->arrayPixeles[i + 1].Green = pixeles[i + 1];
         this->arrayPixeles[i + 2].Blue = pixeles[i + 2];
@@ -89,7 +74,6 @@ void realizarOperacion(char *fichero, chronometro *tiempo) {
         unsigned char *img = histograma(imagen);
         t_fin = chrono::high_resolution_clock::now();
         time -> histoTime = chrono::duration_cast<chrono::microseconds>(t_fin - t_inicio).count();
-
     }
     if (this->comun.operation == "copy"){
         t_inicio = chrono::high_resolution_clock::now();
