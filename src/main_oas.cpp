@@ -12,6 +12,7 @@
 
 int main(int argc, char* argv[]){
 
+
     Imageaos aosObject(argc, argv[0], argv[1], argv[2]);
     aosObject.executeProgram();
 

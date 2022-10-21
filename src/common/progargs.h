@@ -28,6 +28,8 @@
  */
 
 #include "progargs.h"
+#include <iostream>
+#include <filesystem>
 
 class Common:
 {
@@ -35,6 +37,7 @@ private:
     // Atributos
     int numArgumentos;
     // String pasados por el main
+    String image;
     String inDirectory;
     String outDirectory;
     String operation;

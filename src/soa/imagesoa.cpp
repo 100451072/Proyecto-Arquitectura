@@ -6,7 +6,17 @@
 // variables no se si se pueden uwu
 char origin[256];
 char prox_location[256];
-
+// estructura para el tiempo
+typedef struct chronometro
+{
+    int loadTime;
+    int gaussTime;
+    int histoTime;
+    int monoTime;
+    int storeTime;
+    int copyTime;
+    int total;
+} chronometro;
 //Constructor & Destructor
 Imagesoa::Imagesoa(int num_args, String arg_1, String arg_2, String arg_3) {
     /* Constructor, recibe tres vectores que conformarán
@@ -61,32 +71,32 @@ void Imagesoa::llenarPixeles() {
     }
 }
 
-void realizarOperacion(char *fichero, tiempo *time) {
+void realizarOperacion(char *fichero, chronometro *time) {
     // Función encargada de realizar la operación
     if (this->comun.operation == "gauss"){
         t_inicio = chrono::high_resolution_clock::now();
         unsigned char *img = difusionGaussiana(imagen);
         t_fin = chrono::high_resolution_clock::now();
-        time -> tiempoGauss = chrono::duration_cast<chrono::microseconds>(t_fin - t_inicio).count();
+        time -> gaussTime = chrono::duration_cast<chrono::microseconds>(t_fin - t_inicio).count();
     }
     if (this->comun.operation == "histo"){
         t_inicio = chrono::high_resolution_clock::now();
         unsigned char *img = histograma(imagen);
         t_fin = chrono::high_resolution_clock::now();
-        time -> tiempoGauss = chrono::duration_cast<chrono::microseconds>(t_fin - t_inicio).count();
+        time -> histoTime = chrono::duration_cast<chrono::microseconds>(t_fin - t_inicio).count();
 
     }
     if (this->comun.operation == "copy"){
         t_inicio = chrono::high_resolution_clock::now();
         unsigned char *img = copy(imagen);
         t_fin = chrono::high_resolution_clock::now();
-        time -> tiempoGauss = chrono::duration_cast<chrono::microseconds>(t_fin - t_inicio).count();
+        time -> copyTime = chrono::duration_cast<chrono::microseconds>(t_fin - t_inicio).count();
     }
     if (this->comun.operation == "mono"){
         t_inicio = chrono::high_resolution_clock::now();
         unsigned char *img = mono(imagen);
         t_fin = chrono::high_resolution_clock::now();
-        time -> tiempoGauss = chrono::duration_cast<chrono::microseconds>(t_fin - t_inicio).count();
+        time -> monoTime = chrono::duration_cast<chrono::microseconds>(t_fin - t_inicio).count();
     }
 }
 

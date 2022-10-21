@@ -11,14 +11,17 @@ Common::Common() {
     cout << "Clase common creada con exito" << endl;
 }
 
+int main(argc, char *argv[]){
+
+}
+
 bool Common::comprobarArg() {
     /* Función encargada de validar los argumentos introducidos,
      * devuelve false en caso de que algun arg sea incorrecto*/
-
     bool arg_correctos = true;
-
+    cout << "$image " <<  this->inDir << " " << this->outDirectory << " " <<  this->operation << "\n";
     // comprobamos que el numero de argumentos sea el correcto
-    if (this->numArgumentos != 3) {
+    if (this->numArgumentos != 4) {
         cout << "Wrong format:" << "\n";
         cout << "Image in_path out_path oper" << "\n";
         cout << "Operation: copy, histo, mono, gauss" << "\n";
@@ -32,7 +35,7 @@ bool Common::comprobarArg() {
         arg_correctos = false
     }
     // comprobamos si existen los directorios de entrada y salida
-    if (!opendir(this->inDirectory)) {
+    if (!inDir.open()) {
         cout << "Input path: " << this->inDirectory << "\n";
         cout << "output path: " << this->outDirectory << "\n";
         cout << "cannot open directory " << "[" << this->inDirectory << "]" << "\n";
@@ -54,10 +57,15 @@ bool Common::comprobarArg() {
 
 void Common::abrirInDir() {
     /* Función que se llama para abrir el directorio de entrada*/
-
-    // Comoprobamos que el directorio de entrada se abre correctamente
-    if ((this->inDir = opendir(this->inDirectory)) == NULL) {
-        throw"Error: abriendo el directorio de entrada";
+    ofstream myfile;
+    if (comprobarArg() == True){
+        // Comoprobamos que el directorio de entrada se abre correctamente
+        if (!myfile.open(this->inDir)) {
+            throw "Error: abriendo el directorio de entrada";
+        }
+        else{
+            while()
+        }
     }
 }
 
