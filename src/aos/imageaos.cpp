@@ -65,28 +65,28 @@ void llenarPixeles() {
 void realizarOperacion(char *fichero, chronometro *tiempo) {
     // Función encargada de realizar la operación
     if (this->comun.operation == "gauss"){
-        t_inicio = chrono::high_resolution_clock::now();
+        t_inicio = std::chrono::high_resolution_clock::now();
         unsigned char *img = difusionGaussiana(inputPixeles, achura, altura);
-        t_fin = chrono::high_resolution_clock::now();
-        time -> gaussTime = chrono::duration_cast<chrono::microseconds>(t_fin - t_inicio).count();
+        t_fin = std::chrono::high_resolution_clock::now();
+        time -> gaussTime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
     }
     if (this->comun.operation == "histo"){
-        t_inicio = chrono::high_resolution_clock::now();
+        t_inicio = std::chrono::high_resolution_clock::now();
         unsigned char *img = histograma(imagen);
-        t_fin = chrono::high_resolution_clock::now();
-        time -> histoTime = chrono::duration_cast<chrono::microseconds>(t_fin - t_inicio).count();
+        t_fin = std::chrono::high_resolution_clock::now();
+        time -> histoTime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
     }
     if (this->comun.operation == "copy"){
-        t_inicio = chrono::high_resolution_clock::now();
+        t_inicio = std::chrono::high_resolution_clock::now();
         unsigned char *img = copy(imagen);
-        t_fin = chrono::high_resolution_clock::now();
-        time -> copyTime = chrono::duration_cast<chrono::microseconds>(t_fin - t_inicio).count();
+        t_fin = std::chrono::high_resolution_clock::now();
+        time -> copyTime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
     }
     if (this->comun.operation == "mono"){
-        t_inicio = chrono::high_resolution_clock::now();
+        t_inicio = std::chrono::high_resolution_clock::now();
         unsigned char *img = mono(imagen);
-        t_fin = chrono::high_resolution_clock::now();
-        time -> monoTime = chrono::duration_cast<chrono::microseconds>(t_fin - t_inicio).count();
+        t_fin = std::chrono::high_resolution_clock::now();
+        time -> monoTime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
     }
 
 }
