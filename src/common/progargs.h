@@ -57,7 +57,7 @@ public:
     // Funciones
     bool comprobarArg(int num_args, const string& argv_1, const string& argv_2, const string& argv_3);
     void abrirInDir();
-    void leerInDir();
+    vector <string> leerInDir();
     void cerrarInDir();
     int leerHeaderBMP();
     int& leerArrayBMP();

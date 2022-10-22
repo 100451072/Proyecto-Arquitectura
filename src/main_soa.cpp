@@ -7,7 +7,7 @@
 
 
 #include <iostream>
-#include <stdio.h>d
+#include <stdio.h>
 #include "imagesoa.h"
 
 int main(int argc, char* argv[]){

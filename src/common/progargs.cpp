@@ -17,7 +17,7 @@ bool Common::comprobarArg() {
     bool arg_correctos = true;
     cout << "$image " <<  this->inDir << " " << this->outDirectory << " " <<  this->operation << "\n";
     // comprobamos que el numero de argumentos sea el correcto
-    if (this->numArgumentos != 4) {
+    if (this->numArgumentos != 3) {
         cout << "Wrong format:" << "\n";
         cout << "Image in_path out_path oper" << "\n";
         cout << "Operation: copy, histo, mono, gauss" << "\n";
@@ -51,16 +51,13 @@ bool Common::comprobarArg() {
     return arg_correctos;
 }
 
-void Common::abrirInDir() {
+string Common::abrirInDir(string ruta) {
     /* Función que se llama para abrir el directorio de entrada*/
-    ofstream myfile;
-    // Comoprobamos que el directorio de entrada se abre correctamente
-    if (!opendir(this->inDirectory)) {
-        throw "Error: abriendo el directorio de entrada";
-    }
+    auto const& directorio : filesystem::directory_iterator{ruta}; // libreria filesystem
+    return directorio;
 }
 
-void Common::leerInDir(){
+vector <string> Common::leerInDir(auto dir){
     /* Finción que se va a encargar de funcionamiento
      * principal del programa, a cargo de llamar a
      * las funciones que realizarán las operaciones
@@ -68,7 +65,12 @@ void Common::leerInDir(){
 
     // El bucle while deberá ser implementado en la función invocante
     // ya que después de leerse debe realizarse la operación
-    this->fileRead = readdir(direntrada);
+    vector <string> archivos; // bmps en directorio
+    if (dir.path().extension() == ".bmp"){
+        archivos.push_back(dir.path());
+    }
+    return archivos; // se devuelven los bmp
+    //this->fileRead = readdir(direntrada);
 }
 
 void Common::cerrarInDir() {
@@ -110,7 +112,7 @@ int Common::leerHeaderBMP(){
     return anchura * altura;
 }
 
-int& Common::leerArrayBMP() {
+int& Common::leerArrayBMP(string path) {
     /* Continua la lectura del array BMP */
 
     int anchura = *(int*)&this->header[18];

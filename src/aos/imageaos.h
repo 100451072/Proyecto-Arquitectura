@@ -14,6 +14,7 @@
 #include <cmath>
 #include <chrono>
 #include "progargs.h"
+#include <filesystem>
 
 using namespace std;
 
@@ -24,6 +25,15 @@ int MAX_SIZE = 1000000;
 char origin[256];
 char prox_location[256];
 
+// matriz y peso gauss
+int mGauss[5][5] = {{1, 4, 7, 4, 1},
+                    {4, 16, 26, 16, 4},
+                    {7, 26, 41, 26, 7},
+                    {4, 16, 26, 16, 4},
+                    {1, 4, 7, 4, 1}};
+int w = 273;
+
+//
 // Estructura que nos permite medir el tiempo
 typedef struct chronometro
 {
@@ -37,13 +47,36 @@ typedef struct chronometro
 
 } chronometro;
 
+typedef struct BMP
+{
+    char B = 'B';            // Array de chars "BM"
+    char M = 'M';            // Array de chars "BM"
+    int sFile;               // Tamaño del fichero
+    int reservado = 0;       //Espacio reservado
+    int offsetImagen = 54;   //Inicio del contenido de los pixeles de la imagen
+    int sCabecera = 40;      // Tamaño de la cabecera
+    int anchuraInicial;             // Anchura de la imagen
+    int alturaInicial;              // Altura de la imagen
+    short nPlanos = 1;       // Numero de planos de la imagen
+    short bitPorPixel = 24;  //Bits por pixeles de la imange
+    int compresion = 0;      // Compresion de la imagen
+    int sImagen;             // Tamaño total solo de la imagen (altura*anchura*3)
+    int rX = 2835;           // Resolucion horizontal
+    int rY = 2835;           // Resolucion vertical
+    int sColor = 0;          // Tamaño de la tabla de color
+    int colorImportante = 0; // Colores Importantes
+    string infoImagen;   // Datos de la imange BMP
+} BMP;
+
+
 // Structura que almacenara tres enteros por pixel (R, G, B)
-struct Nodo
+struct Pixel
 {
     int Red;
     int Green;
     int Blue;
 };
+
 
 class Imageaos {
 private:
@@ -61,6 +94,7 @@ public:
     void executeProgram();
     void llenarPixeles();
     void realizarOperacion();
+    void difusionGaussiana()
 };
 
 

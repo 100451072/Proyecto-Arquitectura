@@ -16,6 +16,7 @@ Imageaos::Imageaos(int num_args, String arg_1, String arg_2, String arg_3) {
     this->comun.operation = arg_3;
 }
 
+
 void Imagesoa::executeProgram() {
     /* Función principal encargada de la ejecución del programa*/
 
@@ -90,9 +91,58 @@ void realizarOperacion(char *fichero, chronometro *tiempo) {
 
 }
 
-char escalaGrises(unsigned char *inputPixels, int alturaInicial, int anchuraInicial){
-    int avgR = inputPixels.Red, avgG = inputPixels.Green, avgB = inputPixels.Blue; // pixeles del aos .Color
-    unsigned char *pixelesDevolver; // char a devolver
+void escribirImagen(string ruta, string archivo_escritura){
+    // escrbir en la imagen sera distinto entre aos y soa
+    boost::filesystem::path ruta; // toda la ruta
+    nombre = filesystem::ruta.stem(); // nombre del archivo
+    // establecemos offstream
+    ofstream archivo;
+    try{archivo.open(carpeta + "/" + nombre){ // obtenido de libreria filesystem error
+    }
+    catch(filesystem::filesystem_error){
+        throw "Error abriendo";
+    }
+    // continuar para que escriba en tipo soa (no se si lo hemos hecho ya)
+
+}
+
+void histogram()
+
+
+
+
+
+
+void escribirPixel(int r, int g, int b){
+
+}
+
+
+
+float transformacionLineal(float color){
+    // funcion de transformacion lineal
+    if (color <= 0.04045) {
+        int cN = pixel / 12.92;
+    } else {
+        int cN = pow((color + 0.055) / 1.055, 2.4);
+    return cN;
+}
+
+float correccionGamma(float cR, float cG, float cB){
+    // funcion de correccion gamma
+    int cl = 0.2126 * cR + 0.7152 * cG + 0.0722 * cB;
+    if (cl <= 0.0031308) {
+        int cg = 12.92 * cl;
+    } else {
+        int cg = (1.055 * pow(cl, 1 / 2.4)) - 0.055;
+    }
+    return cg;
+}
+
+
+void escalaGrises(BMP data, string ruta_salida){
+    Pixel pixel; // pixeles del aos .Color
+    string pixelesDevolver = data.infoImagen; // char a devolver
     int l = anchuraInicial * 3;
     // paso 1 normalizacion
     for (int i = 0; i < alturaInicial - 1; i+=1) {
@@ -100,50 +150,31 @@ char escalaGrises(unsigned char *inputPixels, int alturaInicial, int anchuraInic
             avgR = avgR / 255; // escala 0 a 1
             avgG = avgG / 255; // escala 0 a 1
             avgB = avgB / 255; // escala 0 a 1
-            if (avgR <= 0.04045) {
-                int cR = avgR / 12.92;
-            } else {
-                int cR = pow((avgR + 0.055) / 1.055, 2.4);
-            }
-            if (avgG <= 0.04045) {
-                int cG = avgG / 12.92;
-            } else {
-                int cG = pow((avgG + 0.055) / 1.055, 2.4);
-            }
-            if (avgB <= 0.04045) {
-                int cB = avgB / 12.92;
-            } else {
-                int cB = pow((avgB + 0.055) / 1.055, 2.4);
-            }
-            int cl = 0.2126 * cR + 0.7152 * cG + 0.0722 * cB;
-            if (cl <= 0.0031308) {
-                int cg = 12.92 * cl;
-            } else {
-                int cg = (1.055 * pow(cl, 1 / 2.4)) - 0.055;
-            }
+            cR = transformacionLineal(avgR); // transformacion lineal de los 3 colores
+            cB = transformacionLineal(avgB);
+            cG = transformacionLineal(agbG);
+            cg = correccionGamma(cR, cG, cB); // sacada ahorro lineas
             int g = cg * 255; // se vuelve a escala de 256 solucion por cada 3 pixeles
-            pixelesDevolver[(i*l) + j].Red = g; // se guardan los pixeles en el char todos el mismo
-            pixelesDevolver[(i*l) + j + 1].Green = g;
-            pixelesDevolver[(i*j) + j + 2].Blue = g;
+            pixelesDevolver[(i*l) + j] = g; // se guardan los pixeles en el char todos el mismo
+            pixelesDevolver[(i*l) + j + 1] = g;
+            pixelesDevolver[(i*j) + j + 2] = g;
         }
     }
+    ruta_salida.write(pixelesDevolver); // se escriben en el archivo out
     return pixelesDevolver;
 }
 
 // lo qe supongo q cambiaria es al abrir la imagen o al pasar los pixeles
-char difusionGaussiana(unsigned char *inputPixels, int anchuraInicial, int alturaInicial) {
-        int matriz[5][5] = {1,4,7,4,1,
-                            4,16,26,16,4,
-                            7,26,41,26,7,
-                            4,16,26,16,4,
-                            1,4,7,4,1};
-        int w = 273;
-        int avgR = inputPixels.Red, avgG = inputPixels.Green, avgB = inputPixels.Blue; // pixeles del aos o poner a 0
-        int l = anchuraInicial * 3;
-        int tamano = alturaInicial * l;
+void difusionGaussiana(BMP data, string ruta_salida) {
+        int anchura = data.anchuraInicial;
+        int altura = data.altura_inicial;
+        int inputPixels = data.infoImagen;
+        Pixel pixel;
+        int l = anchura * 3;
+        int tamano = altura * l;
         int cByte, b, cGauss, fGauss;
-        unsigned char *pixelesDevolver
-        for (int i = 0; i < alturaInicial - 1; i+=1){
+        string pixelesDevolver;
+        for (int i = 0; i < altura - 1; i+=1){
             for (int j = 0; i < l - 1; j+=3){
                 for (int s = -2; s <= 2; s++){
                     for (int t = -2; t <= 2; t++){
@@ -152,14 +183,14 @@ char difusionGaussiana(unsigned char *inputPixels, int anchuraInicial, int altur
                         cGauss = t + 2;
                         b = (i + s)*l + cByte;
                         if (b >= 0 && cByte <= l - 1 && b <= tamano && 0 <= cByte) // PIXEL R
-                            avgR += matriz[fGauss][cGauss] * inputPixels[b];
+                            pixel.Red += matriz[fGauss][cGauss] * inputPixels[b];
 
                         if (b >= 0 && cByte <= l - 1 && b <= tamano && 0 <= cByte) // PIXEL G
-                            avgG += matriz[fGauss][cGauss] * inputPixels[b];
+                            pixel.Green += matriz[fGauss][cGauss] * inputPixels[b];
                         b += 1;
                         cByte += 1;
                         if (b >= 0 && cByte <= l - 1 && b <= tamano && 0 <= cByte) // PIXEL B
-                            avgB+= matriz[fGauss][cGauss] * inputPixels[b];
+                            pixel.Blue += matriz[fGauss][cGauss] * inputPixels[b];
                         b += 1;
                         cByte += 1;
                     }
@@ -167,10 +198,11 @@ char difusionGaussiana(unsigned char *inputPixels, int anchuraInicial, int altur
                 avgR = avgR / w; // se divide entre el peso
                 avgG = avgG / w;
                 avgB = avgB / w;
-                pixelesDevolver[(i*l) + j].Red = avgR; // se guardan los pixeles en el char
-                pixelesDevolver[(i*l) + j + 1].Green = avgG;
-                pixelesDevolver[(i*j) + j + 2].Blue = avgB;
+                pixelesDevolver[(i*l) + j] = pixel.Red; // se guardan los pixeles en el char
+                pixelesDevolver[(i*l) + j + 1] = pixel.Green;
+                pixelesDevolver[(i*j) + j + 2] = pixel.Blue;
             }
         }
-        return pixelesDevolver; // se devuelven los pixeles modificados
+        ruta_salida.write(pixelesDevolver);
+        return pixelesDevolver; // se devuelven los pixeles modificados y habria que escribirlos en el archivo de entrada
 }
