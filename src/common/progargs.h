@@ -44,10 +44,12 @@ private:
     std::string outDirectory;
     std::string operation;
 
-    // Puntero al dir de entrada
+    // Ruta de dir de entrada, necesario para apertura
     std::filesystem::path inDir;
     // Guardamos el valor del header en caso de que haya que copiarlo
     unsigned char header[54];
+    // En caso de que el archivo bmp tenga padding
+    int padding;
     // Archivo dentro del dir de entrada, ira cambiando
     struct dirent* fileRead;
 

@@ -56,6 +56,7 @@ public:
     void executeProgram();
     void llenarPixeles();
     void realizarOperacion();
+    void copiarImagen();
 };
 
 

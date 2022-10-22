@@ -9,7 +9,10 @@
 // Constructor & Destructor
 Common::Common() {
     // Los valores de los atributos serán aplicados uno a uno
-
+    // this->header = "";
+    this->padding = 0;
+    // this->fileRead = NULL;
+    //thsi->inDir = NULL;
     std::cout << "Clase common creada con exito" << std::endl;
 }
 

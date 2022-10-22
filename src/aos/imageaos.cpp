@@ -91,7 +91,7 @@ void realizarOperacion(char *fichero, chronometro *tiempo) {
 
 }
 
-void escribirImagen(std::string ruta, std::string archivo_escritura){
+void copiarImagen(std::string ruta, std::string archivo_escritura){
     // escrbir en la imagen sera distinto entre aos y soa
     boost::filesystem::path ruta; // toda la ruta
     nombre = filesystem::ruta.stem(); // nombre del archivo
@@ -106,11 +106,9 @@ void escribirImagen(std::string ruta, std::string archivo_escritura){
 
 }
 
-void histogram()
+void histogram() {
 
-
-
-
+}
 
 
 void escribirPixel(int r, int g, int b){
