@@ -45,7 +45,7 @@ private:
     std::string operation;
 
     // Puntero al dir de entrada
-    DIR* inDir;
+    std::filesystem::path inDir;
     // Guardamos el valor del header en caso de que haya que copiarlo
     unsigned char header[54];
     // Archivo dentro del dir de entrada, ira cambiando
@@ -54,7 +54,7 @@ private:
 public:
     // Constructor & Destructor
     Common();
-    Virtual ~Common();
+    virtual ~Common();
 
     // Funciones
     bool comprobarArg(int num_args, const std::string& argv_1, const std::string& argv_2, const std::string& argv_3);

@@ -3,11 +3,13 @@
 //
 
 #include "progargs.h"
+#include <filesystem>
+
 
 // Constructor & Destructor
 Common::Common() {
     // Los valores de los atributos serán aplicados uno a uno
-    this->actualFile = NULL;
+
     std::cout << "Clase common creada con exito" << std::endl;
 }
 
@@ -58,7 +60,7 @@ std::string Common::abrirInDir(std::string ruta) {
 }
 
 std::vector <std::string> Common::leerInDir(auto dir){
-    /* Finción que se va a encargar de funcionamiento
+    /* Finción que se va a encarg#include <filesystem>ar de funcionamiento
      * principal del programa, a cargo de llamar a
      * las funciones que realizarán las operaciones
      * necesarias */
@@ -149,7 +151,7 @@ void Common::copiarImagen() {
      * de imagenes, para ello crea un nuevo archivo*/
 
     // no se si concatenar char asi funcionara
-    std::ofstream outfile(this->outdirectory + "/" + this->fileRead->d_name + "_copia.bmp");
+    std::ofstream outfile(this->outDirectory + "/" + this->fileRead->d_name + "_copia.bmp");
 
     // añadimos el header
     outfile << this->header;
@@ -170,7 +172,7 @@ void Common::histograma() {
     int r[256], g[256], b[256];
 
     // creamos el nuevo archivo en el dir de salida
-    std::ofstream outfile(this->outdirectory + "/" + this->fileRead->d_name + ".hst");
+    std::ofstream outfile(this->outDirectory + "/" + this->fileRead->d_name + ".hst");
 
     // calculo de los histogramas
 

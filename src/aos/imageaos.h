@@ -16,10 +16,9 @@
 #include "common/progargs.h"
 #include <filesystem>
 
-using namespace std;
-
 // Tamaño max de un array
-int MAX_SIZE = 1000000;
+#define MAX_SIZE 1000000
+
 
 // localizaciones del path
 char origin[256];
@@ -82,19 +81,19 @@ class Imageaos {
 private:
     // Atributos
     // Como dice la definicion de aos, un solo array
-    Nodo arrayPixeles[MAX_SIZE];
+    Pixel arrayPixeles[MAX_SIZE];
     // Elementos comunes
     Common comun;
 
 public:
     // Constructor & Destructor
-    Imageaos(int num_args, const std::string& arg_1, const std::string& arg_2, const std::string& arg_3);
+    Imageaos(int num_args, const std::string arg_1, const std::string arg_2, const std::string arg_3);
 
     // Funciones
     void executeProgram();
     void llenarPixeles();
     void realizarOperacion();
-    void difusionGaussiana()
+    void difusionGaussiana();
 };
 
 
