@@ -30,17 +30,19 @@
 #include "progargs.h"
 #include <iostream>
 #include <filesystem>
+#include <vector>
 
-class Common:
+
+class Common
 {
 private:
     // Atributos
     int numArgumentos;
     // String pasados por el main
-    string image;
-    string inDirectory;
-    string outDirectory;
-    string operation;
+    std::string image;
+    std::string inDirectory;
+    std::string outDirectory;
+    std::string operation;
 
     // Puntero al dir de entrada
     DIR* inDir;
@@ -55,9 +57,9 @@ public:
     Virtual ~Common();
 
     // Funciones
-    bool comprobarArg(int num_args, const string& argv_1, const string& argv_2, const string& argv_3);
+    bool comprobarArg(int num_args, const std::string& argv_1, const std::string& argv_2, const std::string& argv_3);
     void abrirInDir();
-    vector <string> leerInDir();
+    std::vector <std::string> leerInDir();
     void cerrarInDir();
     int leerHeaderBMP();
     int& leerArrayBMP();

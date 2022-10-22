@@ -50,7 +50,7 @@ private:
 
 public:
     // Constructor & Destructor
-    Imagesoa(int num_args, const string& arg_1, const string& arg_2, const string& arg_3);
+    Imagesoa(int num_args, const std::string& arg_1, const std::string& arg_2, const std::string& arg_3);
 
     // Funciones
     void executeProgram();

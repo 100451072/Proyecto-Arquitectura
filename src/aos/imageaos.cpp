@@ -5,7 +5,7 @@
 #include "imageaos.h"
 
 // Constructor & Destructor
-Imageaos::Imageaos(int num_args, String arg_1, String arg_2, String arg_3) {
+Imageaos::Imageaos(int num_args, std::string arg_1, std::string arg_2, std::string arg_3) {
     /* Constructor, encargado de asigar a cada nodo de arrayPixeles
      * su valor de R, G, B*/
 
@@ -17,7 +17,7 @@ Imageaos::Imageaos(int num_args, String arg_1, String arg_2, String arg_3) {
 }
 
 
-void Imagesoa::executeProgram() {
+void Imageaos::executeProgram() {
     /* Función principal encargada de la ejecución del programa*/
 
     // Comenzamos comprobando los argumentos de entrada
@@ -91,12 +91,12 @@ void realizarOperacion(char *fichero, chronometro *tiempo) {
 
 }
 
-void escribirImagen(string ruta, string archivo_escritura){
+void escribirImagen(std::string ruta, std::string archivo_escritura){
     // escrbir en la imagen sera distinto entre aos y soa
     boost::filesystem::path ruta; // toda la ruta
     nombre = filesystem::ruta.stem(); // nombre del archivo
     // establecemos offstream
-    ofstream archivo;
+    std::ofstream archivo;
     try{archivo.open(carpeta + "/" + nombre){ // obtenido de libreria filesystem error
     }
     catch(filesystem::filesystem_error){
@@ -140,9 +140,9 @@ float correccionGamma(float cR, float cG, float cB){
 }
 
 
-void escalaGrises(BMP data, string ruta_salida){
+void escalaGrises(BMP data, std::string ruta_salida){
     Pixel pixel; // pixeles del aos .Color
-    string pixelesDevolver = data.infoImagen; // char a devolver
+    std::string pixelesDevolver = data.infoImagen; // char a devolver
     int l = anchuraInicial * 3;
     // paso 1 normalizacion
     for (int i = 0; i < alturaInicial - 1; i+=1) {
@@ -165,7 +165,7 @@ void escalaGrises(BMP data, string ruta_salida){
 }
 
 // lo qe supongo q cambiaria es al abrir la imagen o al pasar los pixeles
-void difusionGaussiana(BMP data, string ruta_salida) {
+void difusionGaussiana(BMP data, std::string ruta_salida) {
         int anchura = data.anchuraInicial;
         int altura = data.altura_inicial;
         int inputPixels = data.infoImagen;
@@ -173,7 +173,7 @@ void difusionGaussiana(BMP data, string ruta_salida) {
         int l = anchura * 3;
         int tamano = altura * l;
         int cByte, b, cGauss, fGauss;
-        string pixelesDevolver;
+        std::string pixelesDevolver;
         for (int i = 0; i < altura - 1; i+=1){
             for (int j = 0; i < l - 1; j+=3){
                 for (int s = -2; s <= 2; s++){

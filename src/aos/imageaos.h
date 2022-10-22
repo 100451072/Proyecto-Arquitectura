@@ -13,7 +13,7 @@
 #include <sys/types.h>
 #include <cmath>
 #include <chrono>
-#include "progargs.h"
+#include "common/progargs.h"
 #include <filesystem>
 
 using namespace std;
@@ -65,7 +65,7 @@ typedef struct BMP
     int rY = 2835;           // Resolucion vertical
     int sColor = 0;          // Tamaño de la tabla de color
     int colorImportante = 0; // Colores Importantes
-    string infoImagen;   // Datos de la imange BMP
+    std::string infoImagen;   // Datos de la imange BMP
 } BMP;
 
 
@@ -88,7 +88,7 @@ private:
 
 public:
     // Constructor & Destructor
-    Imageaos(int num_args, const string& arg_1, const string& arg_2, const string& arg_3);
+    Imageaos(int num_args, const std::string& arg_1, const std::string& arg_2, const std::string& arg_3);
 
     // Funciones
     void executeProgram();

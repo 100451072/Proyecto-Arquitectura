@@ -5,7 +5,7 @@
 #include "imagesoa.h"
 
 //Constructor & Destructor
-Imagesoa::Imagesoa(int num_args, String arg_1, String arg_2, String arg_3) {
+Imagesoa::Imagesoa(int num_args, std::string arg_1, std::string arg_2, std::string arg_3) {
     /* Constructor, recibe tres vectores que conformarán
      * el structurePixels*/
     // Inicialización de los atributos de common

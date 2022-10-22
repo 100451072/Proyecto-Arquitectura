@@ -8,56 +8,56 @@
 Common::Common() {
     // Los valores de los atributos serán aplicados uno a uno
     this->actualFile = NULL;
-    cout << "Clase common creada con exito" << endl;
+    std::cout << "Clase common creada con exito" << std::endl;
 }
 
 bool Common::comprobarArg() {
     /* Función encargada de validar los argumentos introducidos,
      * devuelve false en caso de que algun arg sea incorrecto*/
     bool arg_correctos = true;
-    cout << "$image " <<  this->inDir << " " << this->outDirectory << " " <<  this->operation << "\n";
+    std::cout << "$image " <<  this->inDir << " " << this->outDirectory << " " <<  this->operation << "\n";
     // comprobamos que el numero de argumentos sea el correcto
     if (this->numArgumentos != 3) {
-        cout << "Wrong format:" << "\n";
-        cout << "Image in_path out_path oper" << "\n";
-        cout << "Operation: copy, histo, mono, gauss" << "\n";
+        std::cout << "Wrong format:" << "\n";
+        std::cout << "Image in_path out_path oper" << "\n";
+        std::cout << "Operation: copy, histo, mono, gauss" << "\n";
         arg_correctos = false;
     }
     // comprobamos que la accion a realizar sea la indicada
     if (this->operation != "gauss" || this->operation != "histo" || this->operation != "mono" || this->operation != "copy") {
-        cout << "Unexpected operation: " << this->operation << "\n";
-        cout << "Image in_path out_path oper" << "\n";
-        cout << "Operation: copy, histo, mono, gauss" << "\n";
+        std::cout << "Unexpected operation: " << this->operation << "\n";
+        std::cout << "Image in_path out_path oper" << "\n";
+        std::cout << "Operation: copy, histo, mono, gauss" << "\n";
         arg_correctos = false
     }
     // comprobamos si existen los directorios de entrada y salida
     if (!opendir(this->inDirectory)) {
-        cout << "Input path: " << this->inDirectory << "\n";
-        cout << "output path: " << this->outDirectory << "\n";
-        cout << "cannot open directory " << "[" << this->inDirectory << "]" << "\n";
-        cout << "image in_path out_path oper" << "\n";
-        cout << "operation: copy, histo, mono, gauss" << "\n";
+        std::cout << "Input path: " << this->inDirectory << "\n";
+        std::cout << "output path: " << this->outDirectory << "\n";
+        std::cout << "cannot open directory " << "[" << this->inDirectory << "]" << "\n";
+        std::cout << "image in_path out_path oper" << "\n";
+        std::cout << "operation: copy, histo, mono, gauss" << "\n";
         arg_correctos = false;
     }
     if (!opendir(this->outDirectory)) {
-        cout << "input path: " << this->inDirectory << "\n";
-        cout << "output path: " << this->outDirectory << "\n";
-        cout << "output directory " << "[" << this->outDirectory << "]" << " does not exist" << "\n";
-        cout << "image in_path out_path oper" << "\n";
-        cout << "operation: copy, histo, mono, gauss" << "\n";
+        std::cout << "input path: " << this->inDirectory << "\n";
+        std::cout << "output path: " << this->outDirectory << "\n";
+        std::cout << "output directory " << "[" << this->outDirectory << "]" << " does not exist" << "\n";
+        std::cout << "image in_path out_path oper" << "\n";
+        std::cout << "operation: copy, histo, mono, gauss" << "\n";
         arg_correctos = false;
     }
 
     return arg_correctos;
 }
 
-string Common::abrirInDir(string ruta) {
+std::string Common::abrirInDir(std::string ruta) {
     /* Función que se llama para abrir el directorio de entrada*/
     auto const& directorio : filesystem::directory_iterator{ruta}; // libreria filesystem
     return directorio;
 }
 
-vector <string> Common::leerInDir(auto dir){
+std::vector <std::string> Common::leerInDir(auto dir){
     /* Finción que se va a encargar de funcionamiento
      * principal del programa, a cargo de llamar a
      * las funciones que realizarán las operaciones
@@ -65,7 +65,7 @@ vector <string> Common::leerInDir(auto dir){
 
     // El bucle while deberá ser implementado en la función invocante
     // ya que después de leerse debe realizarse la operación
-    vector <string> archivos; // bmps en directorio
+    std::vector <std::string> archivos; // bmps en directorio
     if (dir.path().extension() == ".bmp"){
         archivos.push_back(dir.path());
     }
@@ -112,7 +112,7 @@ int Common::leerHeaderBMP(){
     return anchura * altura;
 }
 
-int& Common::leerArrayBMP(string path) {
+int& Common::leerArrayBMP(std::string path) {
     /* Continua la lectura del array BMP */
 
     int anchura = *(int*)&this->header[18];
@@ -149,7 +149,7 @@ void Common::copiarImagen() {
      * de imagenes, para ello crea un nuevo archivo*/
 
     // no se si concatenar char asi funcionara
-    ofstream outfile(this->outdirectory + "/" + this->fileRead->d_name + "_copia.bmp");
+    std::ofstream outfile(this->outdirectory + "/" + this->fileRead->d_name + "_copia.bmp");
 
     // añadimos el header
     outfile << this->header;
@@ -170,7 +170,7 @@ void Common::histograma() {
     int r[256], g[256], b[256];
 
     // creamos el nuevo archivo en el dir de salida
-    ofstream outfile(this->outdirectory + "/" + this->fileRead->d_name + ".hst");
+    std::ofstream outfile(this->outdirectory + "/" + this->fileRead->d_name + ".hst");
 
     // calculo de los histogramas
 

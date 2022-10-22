@@ -8,7 +8,7 @@
 
 #include <iostream>
 #include <stdio.h>
-#include "imageaos.h"
+#include "aos/imageaos.h"
 
 int main(int argc, char* argv[]){
 
