@@ -10,9 +10,12 @@
 Common::Common() {
     // Los valores de los atributos serán aplicados uno a uno
     // this->header = "";
+    this->altura = 0;
+    this->anchura = 0;
     this->padding = 0;
     // this->fileRead = NULL;
-    //thsi->inDir = NULL;
+    //this->inDir = NULL;
+    //this->archivos  = NULL;
     std::cout << "Clase common creada con exito" << std::endl;
 }
 
@@ -56,13 +59,12 @@ bool Common::comprobarArg() {
     return arg_correctos;
 }
 
-std::string Common::abrirInDir(std::string ruta) {
+std::string Common::abrirInDir() {
     /* Función que se llama para abrir el directorio de entrada*/
-    auto const& directorio : filesystem::directory_iterator{ruta}; // libreria filesystem
-    return directorio;
+    this->inDir : filesystem::directory_iterator{this->inDirectory}; // libreria filesystem
 }
 
-std::vector <std::string> Common::leerInDir(auto dir){
+void Common::leerInDir(){
     /* Finción que se va a encarg#include <filesystem>ar de funcionamiento
      * principal del programa, a cargo de llamar a
      * las funciones que realizarán las operaciones
@@ -70,12 +72,10 @@ std::vector <std::string> Common::leerInDir(auto dir){
 
     // El bucle while deberá ser implementado en la función invocante
     // ya que después de leerse debe realizarse la operación
-    std::vector <std::string> archivos; // bmps en directorio
-    if (dir.path().extension() == ".bmp"){
-        archivos.push_back(dir.path());
+    ; // bmps en directorio
+    if (this->inDir.path().extension() == ".bmp"){
+        this->archivos.push_back(this->inDir.path());
     }
-    return archivos; // se devuelven los bmp
-    //this->fileRead = readdir(direntrada);
 }
 
 void Common::cerrarInDir() {
@@ -89,12 +89,8 @@ void Common::cerrarInDir() {
 int Common::leerHeaderBMP(){
     /* Funciń encargada de leer y comprobar los valores del header*/
 
-    // COMPROBAR SI this->fileRead.name CONTINE LA RUTA ABSOLUTA AL ARCHIVO
-    this->actualFile = fopen(this->fileRead.d_name, "rb");
-    // si no existe se lanza excepcion
-    if (this->actualFile == NULL){
-        throw "Error: no se pudo encontrar el archivo imagen dentro del directorio";
-    }
+    // this->fileRead va tomando los valores del inDir
+    this->header = this->fileRead.get();
 
     // se leen del archivo de entrada
     fread(this->header, sizeof(unsigned char), 54, this->actualFile);
@@ -109,8 +105,8 @@ int Common::leerHeaderBMP(){
         throw "Punto de nivel invalido";
     }
     // Obtenemos la altura y la anchura del header (estan los bytes en la tabla del pdf)
-    int anchura = *(int*)&this->header[18];
-    int altura = *(int*)&this->header[22];
+    this->anchura = *(int*)&this->header[18];
+    this->altura = *(int*)&this->header[22];
 
     // Devolvemos la altura por la anchura, para que la función invocante
     // sepa cuantos pixeles tiene la imagen
@@ -118,19 +114,17 @@ int Common::leerHeaderBMP(){
 }
 
 int& Common::leerArrayBMP(std::string path) {
-    /* Continua la lectura del array BMP */
+    /* Continua la lectura del array BMP, leyendo los pixeles*/
 
-    int anchura = *(int*)&this->header[18];
-    int altura = *(int*)&this->header[22];
     // Continuamos con la lectura
-    int fila = (anchura*3 + 3) & (~3);
+    int fila = (this->anchura*3 + 3) & (~3);
     unsigned char aux; // variable ayuda a reordenar los pyxeles de BGR a RGB
     unsigned char* datos_imagen = unsigned char[fila];
     int* RGB;
     // lectura de la imagen
-    for (int i = 0; i < altura; i++) {
+    for (int i = 0; i < this->altura; i++) {
         fread(datos_imagen, sizeof(unsigned char), fila, this->actualFile);
-        for (int j = 0; j < anchura * 3; j += 3) {
+        for (int j = 0; j < this->anchura * 3; j += 3) {
             // es por tres ya que son tres: rgb; se reordenan
             aux = datos_imagen[j];
             datos_imagen[j] = datos_imagen[j + 2];

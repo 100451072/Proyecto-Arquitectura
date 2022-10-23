@@ -12,6 +12,7 @@
 #include <sys/types.h>
 #include <cmath>
 #include <chrono>
+#include <fstream>
 #include "progargs.h"
 
 using namespace std;

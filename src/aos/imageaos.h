@@ -15,6 +15,7 @@
 #include <chrono>
 #include "common/progargs.h"
 #include <filesystem>
+#include <fstream>
 
 // Tamaño max de un array
 #define MAX_SIZE 1000000
@@ -45,28 +46,6 @@ typedef struct chronometro
     int total;
 
 } chronometro;
-
-typedef struct BMP
-{
-    char B = 'B';            // Array de chars "BM"
-    char M = 'M';            // Array de chars "BM"
-    int sFile;               // Tamaño del fichero
-    int reservado = 0;       //Espacio reservado
-    int offsetImagen = 54;   //Inicio del contenido de los pixeles de la imagen
-    int sCabecera = 40;      // Tamaño de la cabecera
-    int anchuraInicial;             // Anchura de la imagen
-    int alturaInicial;              // Altura de la imagen
-    short nPlanos = 1;       // Numero de planos de la imagen
-    short bitPorPixel = 24;  //Bits por pixeles de la imange
-    int compresion = 0;      // Compresion de la imagen
-    int sImagen;             // Tamaño total solo de la imagen (altura*anchura*3)
-    int rX = 2835;           // Resolucion horizontal
-    int rY = 2835;           // Resolucion vertical
-    int sColor = 0;          // Tamaño de la tabla de color
-    int colorImportante = 0; // Colores Importantes
-    std::string infoImagen;   // Datos de la imange BMP
-} BMP;
-
 
 // Structura que almacenara tres enteros por pixel (R, G, B)
 struct Pixel

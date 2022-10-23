@@ -16,7 +16,7 @@ Imagesoa::Imagesoa(int num_args, std::string arg_1, std::string arg_2, std::stri
 
 }
 
-void Imagesoa::executeProgram() {
+void Imageaos::executeProgram() {
     /* Función principal encargada de la ejecución del programa*/
 
     // Comenzamos comprobando los argumentos de entrada
@@ -27,15 +27,19 @@ void Imagesoa::executeProgram() {
     // Bucle para ejecutar las ooperaciones sobre todas las fotos del dir
     // Obtenemos la primera pos del dir
     this->comun.abrirInDir();
+    // leemos el dir de entrada por primera vez para que el bucle pueda empezar
+    // en caso de que exista algun archivo
     this->comun.leerInDir();
-    while(this->comun.fileRead != NULL){
+    for (std::t_size i=0; i<this->comun.archivos.size(); ++i){
+        // Leemos el archivo en fileRead
+        this->comun.fileRead(this->comun.archivos(i));
         // Rellenamos los pixeles llama a comun.leerBMP()
         this->llenarPixeles();
         // Realizar operacion seleccionada
         this->realizarOperacion();
         // Avanzamos a la siguiente pos del dir
-        this->comun.leerInDir();
     }
+    // Por ultimo cerramos el dir de entrada
     this->comun.cerrarInDir();
 }
 
@@ -58,11 +62,11 @@ void Imagesoa::llenarPixeles() {
     }
 }
 
-void realizarOperacion(char *fichero, chronometro *time) {
+void realizarOperacion() {
     // Función encargada de realizar la operación
     if (this->comun.operation == "gauss"){
         t_inicio = std::chrono::high_resolution_clock::now();
-        unsigned char *img = difusionGaussiana(imagen);
+        unsigned char *img = difusionGaussiana(inputPixeles, achura, altura);
         t_fin = std::chrono::high_resolution_clock::now();
         time -> gaussTime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
     }
@@ -71,21 +75,21 @@ void realizarOperacion(char *fichero, chronometro *time) {
         unsigned char *img = histograma(imagen);
         t_fin = std::chrono::high_resolution_clock::now();
         time -> histoTime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
-
     }
     if (this->comun.operation == "copy"){
         t_inicio = std::chrono::high_resolution_clock::now();
-        unsigned char *img = copy(imagen);
+        unsigned char *img = copiarImagen(imagen);
         t_fin = std::chrono::high_resolution_clock::now();
         time -> copyTime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
     }
     if (this->comun.operation == "mono"){
         t_inicio = std::chrono::high_resolution_clock::now();
-        unsigned char *img = mono(imagen);
+        unsigned char *img = this->escalaGrises(imagen);
         t_fin = std::chrono::high_resolution_clock::now();
         time -> monoTime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
     }
 }
+
 
 // lo qe supongo q cambiaria es al abrir la imagen o al pasar los pixeles
 void difusionGaussiana(unsigned char *inputPixels, int anchuraInicial, int alturaInicial,) {

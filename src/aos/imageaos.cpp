@@ -31,13 +31,14 @@ void Imageaos::executeProgram() {
     // leemos el dir de entrada por primera vez para que el bucle pueda empezar
     // en caso de que exista algun archivo
     this->comun.leerInDir();
-    while(this->comun.fileRead != NULL){
+    for (std::t_size i=0; i<this->comun.archivos.size(); ++i){
+        // Leemos el archivo en fileRead
+        this->comun.fileRead(this->comun.archivos(i));
         // Rellenamos los pixeles llama a comun.leerBMP()
         this->llenarPixeles();
         // Realizar operacion seleccionada
-        this->realizarOperacion(comun.inDirectory);
+        this->realizarOperacion();
         // Avanzamos a la siguiente pos del dir
-        this->comun.leerInDir();
     }
     // Por ultimo cerramos el dir de entrada
     this->comun.cerrarInDir();
@@ -62,7 +63,7 @@ void llenarPixeles() {
     return pixeles;
 }
 
-void realizarOperacion(char *fichero, chronometro *tiempo) {
+void realizarOperacion() {
     // Función encargada de realizar la operación
     if (this->comun.operation == "gauss"){
         t_inicio = std::chrono::high_resolution_clock::now();
@@ -78,17 +79,16 @@ void realizarOperacion(char *fichero, chronometro *tiempo) {
     }
     if (this->comun.operation == "copy"){
         t_inicio = std::chrono::high_resolution_clock::now();
-        unsigned char *img = copy(imagen);
+        unsigned char *img = copiarImagen(imagen);
         t_fin = std::chrono::high_resolution_clock::now();
         time -> copyTime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
     }
     if (this->comun.operation == "mono"){
         t_inicio = std::chrono::high_resolution_clock::now();
-        unsigned char *img = mono(imagen);
+        unsigned char *img = this->escalaGrises(imagen);
         t_fin = std::chrono::high_resolution_clock::now();
         time -> monoTime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
     }
-
 }
 
 void copiarImagen(std::string ruta, std::string archivo_escritura){
@@ -103,7 +103,6 @@ void copiarImagen(std::string ruta, std::string archivo_escritura){
         throw "Error abriendo";
     }
     // continuar para que escriba en tipo soa (no se si lo hemos hecho ya)
-
 }
 
 void histogram() {
@@ -120,7 +119,7 @@ void escribirPixel(int r, int g, int b){
 float transformacionLineal(float color){
     // funcion de transformacion lineal
     if (color <= 0.04045) {
-        int cN = pixel / 12.92;
+        int cN = color / 12.92;
     } else {
         int cN = pow((color + 0.055) / 1.055, 2.4);
     return cN;

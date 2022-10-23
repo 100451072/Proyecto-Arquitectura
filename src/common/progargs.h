@@ -31,6 +31,7 @@
 #include <iostream>
 #include <filesystem>
 #include <vector>
+#include <fstream>
 
 
 class Common
@@ -45,13 +46,22 @@ private:
     std::string operation;
 
     // Ruta de dir de entrada, necesario para apertura
-    std::filesystem::path inDir;
+    auto const& inDir;
+    // Array con archivos del indir
+    std::vector <std::string> archivos;
+    // Archivo dentro del dir de entrada, ira cambiando
+    std::ifstream fileRead;
+
+    // Datos del BMP
     // Guardamos el valor del header en caso de que haya que copiarlo
     unsigned char header[54];
+    // Altura y anchura
+    int altura;
+    int anchura;
     // En caso de que el archivo bmp tenga padding
     int padding;
-    // Archivo dentro del dir de entrada, ira cambiando
-    struct dirent* fileRead;
+
+
 
 public:
     // Constructor & Destructor
@@ -61,7 +71,7 @@ public:
     // Funciones
     bool comprobarArg(int num_args, const std::string& argv_1, const std::string& argv_2, const std::string& argv_3);
     void abrirInDir();
-    std::vector <std::string> leerInDir();
+    void leerInDir();
     void cerrarInDir();
     int leerHeaderBMP();
     int& leerArrayBMP();
