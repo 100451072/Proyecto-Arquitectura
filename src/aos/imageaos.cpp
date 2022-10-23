@@ -97,7 +97,7 @@ void copiarImagen(std::string ruta, std::string archivo_escritura){
     nombre = filesystem::ruta.stem(); // nombre del archivo
     // establecemos offstream
     std::ofstream archivo;
-    try{archivo.open(carpeta + "/" + nombre){ // obtenido de libreria filesystem error
+    try{archivo.open(carpeta + "/" + nombre)}{ // obtenido de libreria filesystem error
     }
     catch(filesystem::filesystem_error){
         throw "Error abriendo";
@@ -105,9 +105,23 @@ void copiarImagen(std::string ruta, std::string archivo_escritura){
     // continuar para que escriba en tipo soa (no se si lo hemos hecho ya)
 }
 
-void histogram() {
+void histogram(std::string arhivo_salida) {
+        // histograma
+        int histo[768] = {0};
+        for (Pixel pixel in pixels){
+            histo[pixel.Red] ++;
+            histo[pixel.Green + 256] ++;
+            histo[pixel.Blue + 512] ++;
+        }
+        ofstream archivo;
+        archivo.open( archivo_salida + "/" + nombre_archivo + ".hs", ios::trunc);
+        for (int i = 0; i<768; i++){
+            arhivo << histo[i] << endl;
+        }
+        archivo.close();
+    }
 
-}
+
 
 
 void escribirPixel(int r, int g, int b){
@@ -192,9 +206,9 @@ void difusionGaussiana(BMP data, std::string ruta_salida) {
                         cByte += 1;
                     }
                 }
-                avgR = avgR / w; // se divide entre el peso
-                avgG = avgG / w;
-                avgB = avgB / w;
+                pixel.Red = pixel.Red / w; // se divide entre el peso
+                pixel.Green = pixel.Green / w;
+                pixel.Blue = pixel.Blue / w;
                 pixelesDevolver[(i*l) + j] = pixel.Red; // se guardan los pixeles en el char
                 pixelesDevolver[(i*l) + j + 1] = pixel.Green;
                 pixelesDevolver[(i*j) + j + 2] = pixel.Blue;

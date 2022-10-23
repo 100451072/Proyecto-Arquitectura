@@ -92,18 +92,16 @@ void realizarOperacion() {
 
 
 // lo qe supongo q cambiaria es al abrir la imagen o al pasar los pixeles
-void difusionGaussiana(unsigned char *inputPixels, int anchuraInicial, int alturaInicial,) {
-    int matriz[5][5] = {1,4,7,4,1,
-                        4,16,26,16,4,
-                        7,26,41,26,7,
-                        4,16,26,16,4,
-                        1,4,7,4,1};
-    int w = 273;
-    int avgR = 0, avgG = 0, avgB = 0;
-    int l = anchuraInicial * 3;
-    int tamano = alturaInicial * l;
+void difusionGaussiana(BMP data, std::string ruta_salida) {
+    int anchura = data.anchuraInicial;
+    int altura = data.altura_inicial;
+    int inputPixels = data.infoImagen;
+    Pixel pixel;
+    int avgR, avgG, avgB;
+    int l = anchura * 3;
+    int tamano = altura * l;
     int cByte, b, cGauss, fGauss;
-    unsigned char *pixelesDevolver
+    std::string pixelesDevolver;
     for (int i = 0; i < alturaInicial - 1; i+=1){
         for (int j = 0; i < l - 1; j+=3){
             for (int s = -2; s <= 2; s++){
@@ -125,9 +123,13 @@ void difusionGaussiana(unsigned char *inputPixels, int anchuraInicial, int altur
                     cByte += 1;
                 }
             }
+            // ver como hacer
             avgR = avgR / w; // se divide entre el peso
             avgG = avgG / w;
             avgB = avgB / w;
+            pixel.arrayR[i] = avgR;
+            pixel.arrayB[i+1] = avgG;
+            pixel.arrayG[i+2] = avgB;
             pixelesDevolver[(i*l) + j] = avgR; // se guardan los pixeles en el char
             pixelesDevolver[(i*l) + j + 1] = avgG;
             pixelesDevolver[(i*j) + j + 2] = avgB;

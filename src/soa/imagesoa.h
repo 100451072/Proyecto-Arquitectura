@@ -23,6 +23,14 @@ int MAX_SIZE = 1000000;
 char origin[256];
 char prox_location[256];
 
+// matriz y peso gauss
+int mGauss[5][5] = {{1, 4, 7, 4, 1},
+                    {4, 16, 26, 16, 4},
+                    {7, 26, 41, 26, 7},
+                    {4, 16, 26, 16, 4},
+                    {1, 4, 7, 4, 1}};
+int w = 273;
+
 // Estructura que nos permitirá medir el tiempo
 typedef struct chronometro
 {
@@ -36,7 +44,7 @@ typedef struct chronometro
 } chronometro;
 
 // Estructura que almacenará tres vectores para cada valor R, G, B
-struct Nodes {
+struct Pixel {
     int arrayR[MAX_SIZE];
     int arrayG[MAX_SIZE];
     int arrayB[MAX_SIZE];
@@ -57,7 +65,9 @@ public:
     void executeProgram();
     void llenarPixeles();
     void realizarOperacion();
-    void copiarImagen();
+    void copiarImagen(arg_3); // mirar si pasar la imagen tambien
+    void difusionGaussiana(arg_3);
+    void escalaGrises(arg_3);
 };
 
 
