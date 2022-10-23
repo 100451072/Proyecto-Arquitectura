@@ -91,6 +91,113 @@ void realizarOperacion() {
 }
 
 
+
+float transformacionLineal(float color) {
+    // funcion de transformacion lineal
+    int cN;
+    if (color <= 0.04045) {
+        cN = color / 12.92;
+    } else {
+        cN = pow((color + 0.055) / 1.055, 2.4);
+        return cN;
+    }
+}
+float correccionGamma(float cR, float cG, float cB){
+    // funcion de correccion gamma
+    int cl = 0.2126 * cR + 0.7152 * cG + 0.0722 * cB;
+    if (cl <= 0.0031308) {
+        int cg = 12.92 * cl;
+    } else {
+        int cg = (1.055 * pow(cl, 1 / 2.4)) - 0.055;
+    }
+    return cg;
+}
+
+
+void escalaGrises(BMP data, std::string ruta_salida){
+    Pixel pixel; // pixeles del aos .Color
+    std::string pixelesDevolver = data.infoImagen; // char a devolver
+    int l = anchuraInicial * 3;
+    // paso 1 normalizacion
+    for (int i = 0; i < alturaInicial - 1; i+=1) {
+        for (int j = 0; i < l - 1; j += 3) {
+            avgR = avgR / 255; // escala 0 a 1
+            avgG = avgG / 255; // escala 0 a 1
+            avgB = avgB / 255; // escala 0 a 1
+            cR = transformacionLineal(avgR); // transformacion lineal de los 3 colores
+            cB = transformacionLineal(avgB);
+            cG = transformacionLineal(agbG);
+            cg = correccionGamma(cR, cG, cB); // sacada ahorro lineas
+            int g = cg * 255; // se vuelve a escala de 256 solucion por cada 3 pixeles
+            pixelesDevolver[(i*l) + j] = g; // se guardan los pixeles en el char todos el mismo
+            pixelesDevolver[(i*l) + j + 1] = g;
+            pixelesDevolver[(i*j) + j + 2] = g;
+        }
+    }
+    ruta_salida.write(pixelesDevolver); // se escriben en el archivo out
+    return pixelesDevolver;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // lo qe supongo q cambiaria es al abrir la imagen o al pasar los pixeles
 void difusionGaussiana(BMP data, std::string ruta_salida) {
     int anchura = data.anchuraInicial;
@@ -104,6 +211,9 @@ void difusionGaussiana(BMP data, std::string ruta_salida) {
     std::string pixelesDevolver;
     for (int i = 0; i < alturaInicial - 1; i+=1){
         for (int j = 0; i < l - 1; j+=3){
+            int tmpR = 0;
+            int tmpG = 0;
+            int tmpB = 0;
             for (int s = -2; s <= 2; s++){
                 for (int t = -2; t <= 2; t++){
                     fGauss = s + 2;
@@ -111,23 +221,23 @@ void difusionGaussiana(BMP data, std::string ruta_salida) {
                     cGauss = t + 2;
                     b = (i + s)*l + cByte;
                     if (b >= 0 && cByte <= l - 1 && b <= tamano && 0 <= cByte) // PIXEL R
-                        avgR += matriz[fGauss][cGauss] * inputPixels[b];
+                        tmpR += matriz[fGauss][cGauss] * inputPixels[b];
 
                     if (b >= 0 && cByte <= l - 1 && b <= tamano && 0 <= cByte) // PIXEL G
-                        avgG += matriz[fGauss][cGauss] * inputPixels[b];
+                        tmpG += matriz[fGauss][cGauss] * inputPixels[b];
                     b += 1;
                     cByte += 1;
                     if (b >= 0 && cByte <= l - 1 && b <= tamano && 0 <= cByte) // PIXEL B
-                        avgB+= matriz[fGauss][cGauss] * inputPixels[b];
+                        tmpB+= matriz[fGauss][cGauss] * inputPixels[b];
                     b += 1;
                     cByte += 1;
                 }
             }
-            // ver como hacer
+            // ver como hacer en soa (añadir en array)
             avgR = avgR / w; // se divide entre el peso
             avgG = avgG / w;
             avgB = avgB / w;
-            pixel.arrayR[i] = avgR;
+            pixel.arrayR[i] = avgR; // dudas de como
             pixel.arrayB[i+1] = avgG;
             pixel.arrayG[i+2] = avgB;
             pixelesDevolver[(i*l) + j] = avgR; // se guardan los pixeles en el char
@@ -135,5 +245,6 @@ void difusionGaussiana(BMP data, std::string ruta_salida) {
             pixelesDevolver[(i*j) + j + 2] = avgB;
         }
     }
+    ruta_salida.write(pixelesDevolver); // hacer funcion escribir
     return pixelesDevolver; // se devuelven los pixeles modificados
 }

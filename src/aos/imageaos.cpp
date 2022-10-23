@@ -123,19 +123,22 @@ void histogram(std::string arhivo_salida) {
 
 
 
-
-void escribirPixel(int r, int g, int b){
-
+// no es definitivo
+void escribirPixel(int indice, int r, int g, int b, std::string pixeles){
+    pixeles[indice].Red = static_cast<u_int8_t>(r);
+    pixeles[indice].Green = static_cast<u_int8_t>(g);
+    pixeles[indice].Blue = static_cast<u_int8_t>(b);
 }
 
 
 
 float transformacionLineal(float color){
     // funcion de transformacion lineal
+    int cN;
     if (color <= 0.04045) {
-        int cN = color / 12.92;
+        cN = color / 12.92;
     } else {
-        int cN = pow((color + 0.055) / 1.055, 2.4);
+        cN = pow((color + 0.055) / 1.055, 2.4);
     return cN;
 }
 
@@ -151,7 +154,7 @@ float correccionGamma(float cR, float cG, float cB){
 }
 
 
-void escalaGrises(BMP data, std::string ruta_salida){
+void escalaGrises(BMP data, std::string ruta_salida){ // revisar
     Pixel pixel; // pixeles del aos .Color
     std::string pixelesDevolver = data.infoImagen; // char a devolver
     int l = anchuraInicial * 3;
@@ -187,6 +190,9 @@ void difusionGaussiana(BMP data, std::string ruta_salida) {
         std::string pixelesDevolver;
         for (int i = 0; i < altura - 1; i+=1){
             for (int j = 0; i < l - 1; j+=3){
+                int tmpR = 0;
+                int tmpG = 0;
+                int tmpB = 0;
                 for (int s = -2; s <= 2; s++){
                     for (int t = -2; t <= 2; t++){
                         fGauss = s + 2;
@@ -194,21 +200,21 @@ void difusionGaussiana(BMP data, std::string ruta_salida) {
                         cGauss = t + 2;
                         b = (i + s)*l + cByte;
                         if (b >= 0 && cByte <= l - 1 && b <= tamano && 0 <= cByte) // PIXEL R
-                            pixel.Red += matriz[fGauss][cGauss] * inputPixels[b];
+                            tmpR += matriz[fGauss][cGauss] * inputPixels[b];
 
                         if (b >= 0 && cByte <= l - 1 && b <= tamano && 0 <= cByte) // PIXEL G
-                            pixel.Green += matriz[fGauss][cGauss] * inputPixels[b];
+                            tmpG += matriz[fGauss][cGauss] * inputPixels[b];
                         b += 1;
                         cByte += 1;
                         if (b >= 0 && cByte <= l - 1 && b <= tamano && 0 <= cByte) // PIXEL B
-                            pixel.Blue += matriz[fGauss][cGauss] * inputPixels[b];
+                            tmpB += matriz[fGauss][cGauss] * inputPixels[b];
                         b += 1;
                         cByte += 1;
                     }
                 }
-                pixel.Red = pixel.Red / w; // se divide entre el peso
-                pixel.Green = pixel.Green / w;
-                pixel.Blue = pixel.Blue / w;
+                pixel.Red = tmpR / w; // se divide entre el peso
+                pixel.Green = tmpG / w;
+                pixel.Blue = tmpB / w;
                 pixelesDevolver[(i*l) + j] = pixel.Red; // se guardan los pixeles en el char
                 pixelesDevolver[(i*l) + j + 1] = pixel.Green;
                 pixelesDevolver[(i*j) + j + 2] = pixel.Blue;

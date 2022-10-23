@@ -21,10 +21,6 @@
 #define MAX_SIZE 1000000
 
 
-// localizaciones del path
-char origin[256];
-char prox_location[256];
-
 // matriz y peso gauss
 int mGauss[5][5] = {{1, 4, 7, 4, 1},
                     {4, 16, 26, 16, 4},
@@ -53,6 +49,7 @@ struct Pixel
     int Red;
     int Green;
     int Blue;
+    int Index; // por si se nevcesita si no borrarlo
 };
 
 
