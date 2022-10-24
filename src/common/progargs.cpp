@@ -115,60 +115,9 @@ int& Common::leerArrayBMP() {
     return &RGB;
 }
 
-std::string Common::rutaArchivoSalida(std::string operation, std::string type) {
-    /* Función encargada de devolver un string con la ruta del
-     * archivo de salida, utilizada en el copy por ejemplo.
-     * Los valores que puede tomar operaion son:
-     *      copy_
-     *      histo_
-     *      grises_
-     *      gauss_
-     * El valor de type define el tipo de archivo.
-     *      .txt
-     *      .bmp
-     *      .hst
-     * OJO que this->actualFile debe estar inicializado con el valor
-     * de archivo actual */
-
-    std::string filePath;
-    char slash = "/"
-
-    filePath = this->outDirectory + "/" + operation;
-    // Obtenemos el nombre del archivo de entrada
-    for (int i=sizeof(this->actualFile); i>0; --i) {
-        // recorrer this->actualFile desde atrás hasta encontrar /
-        if (this->actualFile.at(i) == slash)
-            // una vez obtenido el nombre del archivo terminamos y añadimos a filePath
-            filePath = filePath + this->actualFile.substr(i+1, sizeof(this->actualFIle)-3) + type;
-    }
-    return filePath;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
-
-void Common::histograma(const int& R, const int& G, const int& B) {
-    /* Función encargada de crear y escribir el histograma
-     * sobre el archivo .hst*/
-
-    // Abrimos el archivo de salida con ruta adecuada
-    std::ofstream archivo(this->rutaArchivoSalida("histo_", ".hst"));
-
-    // Llenamos el archivo de salida
-    for (int i=0; i<256; ++i) {
-        archivo << R[i] << endl;
-    }
-    for (int i=0; i<256; ++i) {
-        archivo << G[i] << endl;
-    }
-    for (int i=0; i<256; ++i) {
-        archivo << B[i] << endl;
-    }
-}
-
 void Common::escalagrises() {
 
 }
-
 
 void Common::difusionGaussiana(unsigned char *inputPixels, int anchuraInicial, int alturaInicial,) {
     int matriz[5][5] = {1,4,7,4,1,

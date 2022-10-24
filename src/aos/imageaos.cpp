@@ -88,11 +88,12 @@ void copiarImagen() {
     /* Función encargada de copiar la imagen actual en el directorio de salida*/
 
     // establecemos offstream con la ruta al archivo destino
-    std::ofstream archivo.open(this->comun.rutaArchivoSalida("copy_", "bmp"), std::ofstream::out);
+    std::ofstream archivo.open(rutaArchivoSalida("bmp", this->comun.outDirectory, this->comun.actualFile), std::ofstream::out);
 
     if (!archivo.is_open()) {
         throw"Error: al abrir el archivo destino";
     }
+
     // Escribimos el header en el archivo origen
     archivo << this->comun.header_BMP;
 
@@ -124,8 +125,7 @@ void histograma() {
     }
 
     // Llamamos a la pare comun del histograma
-    this->comun.histograma(R, G, B);
-
+    histograma(R, G, B);
 }
 
 float transformacionLineal(float color){

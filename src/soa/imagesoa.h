@@ -13,7 +13,8 @@
 #include <cmath>
 #include <chrono>
 #include <fstream>
-#include "progargs.h"
+#include "common/porgargs.h"
+#include "common/aux_functions.h"
 
 using namespace std;
 
@@ -65,9 +66,11 @@ public:
     void executeProgram();
     void llenarPixeles();
     void realizarOperacion();
-    void copiarImagen(arg_3); // mirar si pasar la imagen tambien
-    void difusionGaussiana(arg_3);
-    void escalaGrises(arg_3);
+    // Operaciones
+    void copiarImagen();
+    void histograma();
+    void escalaGrises();
+    void difusionGaussiana();
 };
 
 

@@ -50,6 +50,7 @@ void Imagesoa::llenarPixeles() {
         this->structurePixels.arrayG[i + 1] = pixeles[i + 1];
         this->structurePixels.arrayB[i + 2] = pixeles[i + 2];
     }
+    std::cout << "Ejecución finalizada con exito" << std::endl;
 }
 
 void realizarOperacion() {
@@ -86,11 +87,12 @@ void copiarImagen() {
     /* Función encargada de copiar la imagen actual en el directorio de salida*/
 
     // establecemos offstream con la ruta al archivo destino
-    std::ofstream archivo.open(this->comun.rutaArchivoSalida("copy_", "bmp"), std::ofstream::out);
+    std::ofstream archivo.open(rutaArchivoSalida("bmp", this->comun.outDirectory, this->comun.actualFile), std::ofstream::out);
 
     if (!archivo.is_open()) {
         throw"Error: al abrir el archivo destino";
     }
+
     // Escribimos el header en el archivo origen
     archivo << this->comun.header_BMP;
 
@@ -104,6 +106,38 @@ void copiarImagen() {
     }
     // Cerramos el archivo de salida
     archivo.close();
+}
+
+void histograma() {
+    /* Función encargada de crear el histograma y pasarselos al la
+     * función de comon histrograma*/
+
+    int R[256] = { 0 };
+    int G[256] = { 0 };
+    int B[256] = { 0 };
+
+    // Inicializamos el vector RGB a cero
+    std::vector<int> RGB;
+    for (int i=0; i<768; ++i) {
+        RGB.push_back(0);
+    }
+
+    // Sumamos un a cada valor de 0 a 256 de los arrays en caso de aparaición
+    for (int i=0; i<this->comun.imagen_BMP.altura * this->comun.imagen_BMP.anchura ; ++i) {
+        R[this->arraPixeles[i].Red]++;
+        G[this->arraPixeles[i].Green]++;
+        B[this->arraPixeles[i].Blue]++;
+    }
+
+    // Con los valores anteriores llenamos el vector RGB
+    for (int i=0; i<256; ++i) {
+        RGB[i] = R[i];
+        RGB[256 + i] = G[i];
+        RGB[512 + i] = B[i];
+    }
+
+    // Llamamos a la pare comun del histograma
+    histograma(RGB, rutaArchivoSalida("hst", this->comun.outDirectory, this->comun.actualFile));
 }
 
 float transformacionLineal(float color) {

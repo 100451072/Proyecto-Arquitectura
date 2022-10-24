@@ -14,6 +14,7 @@
 #include <cmath>
 #include <chrono>
 #include "common/progargs.h"
+#include "common/aux_functions.h"
 #include <filesystem>
 #include <fstream>
 
@@ -68,9 +69,11 @@ public:
     void executeProgram();
     void llenarPixeles();
     void realizarOperacion();
-    void copiarImagen(); // mirar si pasar la imagen tambien
-    void difusionGaussiana();
+    // Operaciones
+    void copiarImagen();
+    void histograma();
     void escalaGrises();
+    void difusionGaussiana();
 };
 
 
