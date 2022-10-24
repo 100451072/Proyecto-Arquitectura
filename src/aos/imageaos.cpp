@@ -88,9 +88,9 @@ void copiarImagen() {
     /* Función encargada de copiar la imagen actual en el directorio de salida*/
 
     // establecemos offstream con la ruta al archivo destino
-    std::ofstream archivo(this->comun.rutaArchivoSalida());
+    std::ofstream archivo.open(this->comun.rutaArchivoSalida("copy_", "bmp"), std::ofstream::out);
 
-    if (!archivo) {
+    if (!archivo.is_open()) {
         throw"Error: al abrir el archivo destino";
     }
     // Escribimos el header en el archivo origen
@@ -104,24 +104,29 @@ void copiarImagen() {
         archivo << this->arrayPixeles[i].Red;
         // Añadir padding al final de liena en caso de que exista
     }
+    // Cerramos el archivo de salida
+    archivo.close();
 }
 
-void histogram(std::string arhivo_salida) {
-        // histograma
-        int histo[768] = {0};
-        for (Pixel pixel in arrayPixeles){
-            histo[pixel.Red] ++;
-            histo[pixel.Green + 256] ++;
-            histo[pixel.Blue + 512] ++;
-        }
-        ofstream archivo;
-        archivo.open( archivo_salida + "/" + nombre_archivo + ".hs", ios::trunc);
-        for (int i = 0; i<768; i++){
-            arhivo << histo[i] << endl;
-        }
-        archivo.close();
+void histograma() {
+    /* Función encargada de crear el histograma y pasarselos al la
+     * función de comon histrograma*/
+
+    int R[256];
+    int G[256];
+    int B[256];
+
+    // Sumamos un a cada valor de 0 a 256 de los arrays en caso de aparaición
+    for (int i=0; i<256; ++i) {
+        R[this->arraPixeles[i].Red]++;
+        G[this->arraPixeles[i].Green]++;
+        B[this->arraPixeles[i].Blue]++;
     }
 
+    // Llamamos a la pare comun del histograma
+    this->comun.histograma(R, G, B);
+
+}
 
 float transformacionLineal(float color){
     // funcion de transformacion lineal
@@ -143,7 +148,6 @@ float correccionGamma(float cR, float cG, float cB){
     }
     return cg;
 }
-
 
 void escalaGrises(BMP data, std::string ruta_salida){ // revisar
     Pixel pixel; // pixeles del aos .Color

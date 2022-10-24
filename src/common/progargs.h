@@ -82,10 +82,9 @@ public:
     bool comprobarArg(int num_args, const std::string& argv_1, const std::string& argv_2, const std::string& argv_3);
     int leerHeaderBMP();
     int& leerArrayBMP();
-    std::string rutaArchivoSalida();
+    std::string rutaArchivoSalida(std::string operation, std::string type);
     // Operaciones de la aplicación
-    void copiarImagen();
-    void histograma();
+    void histograma(const int& R, const int& G, const int& B);
     void escalaGrises();
     void difusionGaussiana();
 };

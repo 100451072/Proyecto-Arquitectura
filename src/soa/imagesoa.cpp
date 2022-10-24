@@ -86,9 +86,9 @@ void copiarImagen() {
     /* Función encargada de copiar la imagen actual en el directorio de salida*/
 
     // establecemos offstream con la ruta al archivo destino
-    std::ofstream archivo(this->comun.rutaArchivoSalida());
+    std::ofstream archivo.open(this->comun.rutaArchivoSalida("copy_", "bmp"), std::ofstream::out);
 
-    if (!archivo) {
+    if (!archivo.is_open()) {
         throw"Error: al abrir el archivo destino";
     }
     // Escribimos el header en el archivo origen
@@ -102,6 +102,8 @@ void copiarImagen() {
         archivo << this->arrayPixeles.arrayR[i];
         // Añadir padding al final de liena en caso de que exista
     }
+    // Cerramos el archivo de salida
+    archivo.close();
 }
 
 float transformacionLineal(float color) {
@@ -114,6 +116,7 @@ float transformacionLineal(float color) {
         return cN;
     }
 }
+
 float correccionGamma(float cR, float cG, float cB){
     // funcion de correccion gamma
     int cl = 0.2126 * cR + 0.7152 * cG + 0.0722 * cB;
