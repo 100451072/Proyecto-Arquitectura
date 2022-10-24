@@ -9,10 +9,8 @@
 // Constructor & Destructor
 Common::Common() {
     // Los valores de los atributos serán aplicados uno a uno
-    // this->header = "";
-    this->altura = 0;
-    this->anchura = 0;
-    this->padding = 0;
+    // estructura de la imagen
+    this->imagen_BMP = NULL;
     // this->fileRead = NULL;
     //this->inDir = NULL;
     //this->archivos  = NULL;
@@ -73,9 +71,16 @@ void Common::leerInDir(){
     // El bucle while deberá ser implementado en la función invocante
     // ya que después de leerse debe realizarse la operación
     ; // bmps en directorio
+    // hacer bucle for
     if (this->inDir.path().extension() == ".bmp"){
         this->archivos.push_back(this->inDir.path());
     }
+}
+
+string Common::nombre_archivo(std::string& ruta){
+    boost::filesystem::path ruta; // toda la ruta
+    nombre = filesystem::ruta.stem(); // nombre del archivo
+    return nombre;
 }
 
 void Common::cerrarInDir() {
@@ -85,45 +90,35 @@ void Common::cerrarInDir() {
     // cerrará el directorio
     closedir(this->inDir);
 }
-
-int Common::leerHeaderBMP(){
-    /* Funciń encargada de leer y comprobar los valores del header*/
-
-    // this->fileRead va tomando los valores del inDir
-    this->header = this->fileRead.get();
-
-    // se leen del archivo de entrada
-    fread(this->header, sizeof(unsigned char), 54, this->actualFile);
-    // comprobamos los valores de compresion = 0, numero de planos = 1, t de punto = 24
-    if ((*(int*)&this->header[30]) != 0){
-        throw "Valor de compresión invalido";
-    }
-    if ((*(int*)&this->header[26]) != 1){
-        throw "Número de nivel invalido";
-    }
-    if ((*(int*)&this->header[24]) != 24){ // esto alomejor es cada punto de toda la imagen y no se si tendria q ir en el bucle
-        throw "Punto de nivel invalido";
-    }
-    // Obtenemos la altura y la anchura del header (estan los bytes en la tabla del pdf)
-    this->anchura = *(int*)&this->header[18];
-    this->altura = *(int*)&this->header[22];
-
-    // Devolvemos la altura por la anchura, para que la función invocante
-    // sepa cuantos pixeles tiene la imagen
-    return anchura * altura;
-}
-
-void leerContenidoBMP(){
+////////////////////////////////////////////////////////////////////////////////
+void Common::leerHeaderBMP(){
+    /* Funcion encargada de leer y comprobar los valores del header*/
     // contenido del archivo bmp para usarlo en las lecturas
-    int tamano = contenido_bmp[2];
-    int t_padding = ((4 - (anchura * 3) % 4) % 4);
-    int anchura = contenido_bmp[18];
-    int altura = contenido_bmp[22];
-    int datos_imagen = contenido_bmp[10];
-    int numero_planos = contenido_bmp[26];
-    int compresion = contenido_bmp[30];
-    int t_punto = contenido_bmp[28];
-};
+    this->fileRead(this->inDirectory);
+    fileRead >> this->header_bmp;
+    this->imagen_BMP.tamano = header_bmp[2];
+    this->imagen_BMP.anchura = header_bmp[18];
+    this->imagen_BMP.altura = header_bmp[22];
+    this->imagen_BMP.datos_imagen = header_bmp[10];
+    this->imagen_BMP.numero_planos = header_bmp[26];
+    this->imagen_BMP.compresion = header_bmp[30];
+    this->imagen_BMP.t_punto = header_bmp[28];
+    this->padding = ((4 - (this->imagen_BMP.anchura * 3) % 4) % 4);
+
+    if (this->imagen_BMP.t_punto != 24){
+        throw "Error tamaño punto.";
+    }
+    if (this->imagen_BMP.compresion != 0){
+        throw "Error valor de compresion";
+    }
+    if (this->imagen_BMP.numero_planos != 1){
+        throw "Error numero de planos.";
+    }
+    return this->imagen_BMP.anchura * this->imagen_BMP.altura;
+}
+//////////////////////////////////////////////////////////////////////////////////
+
+
 int& Common::leerArrayBMP(std::string path) {
     /* Continua la lectura del array BMP, leyendo los pixeles*/
 

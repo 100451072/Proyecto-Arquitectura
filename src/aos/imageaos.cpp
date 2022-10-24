@@ -16,7 +16,7 @@ Imageaos::Imageaos(int num_args, std::string arg_1, std::string arg_2, std::stri
     this->comun.operation = arg_3;
 }
 
-void leerImagenBMP(std::string ruta){
+void Imageaos::leerImagenBMP(std::string ruta){
     ifstream archivo; // para la lectura
     ruta_archivo = ruta;
     archivo.open(ruta, ios::binary|ios::in); // se abre el archivo
@@ -25,10 +25,9 @@ void leerImagenBMP(std::string ruta){
     }
     archivo.read(reinterpret_cast<char*>(contenido_bmp), sizeof(contenido_bmp)); // se lee el header (contenido del bmp)
     // a continuacion obtenemos los valores de este contenido del bmp
-    common::leerHeaderBMP();
+    this->leerHeaderBMP();
     // usamos seekg para que la imagen no se desplace
-
-
+    archivo.seekg(datos_imagen, ios::beg);
 
 
 }
@@ -125,7 +124,7 @@ void copiarImagen(std::string ruta, std::string archivo_escritura){
 void histogram(std::string arhivo_salida) {
         // histograma
         int histo[768] = {0};
-        for (Pixel pixel in pixels){
+        for (Pixel pixel in arrayPixeles){
             histo[pixel.Red] ++;
             histo[pixel.Green + 256] ++;
             histo[pixel.Blue + 512] ++;
@@ -137,16 +136,6 @@ void histogram(std::string arhivo_salida) {
         }
         archivo.close();
     }
-
-
-
-// no es definitivo
-void escribirPixel(int r, int g, int b, std::string pixeles){
-    pixeles[indice].Red = static_cast<u_int8_t>(r);
-    pixeles[indice].Green = static_cast<u_int8_t>(g);
-    pixeles[indice].Blue = static_cast<u_int8_t>(b);
-}
-
 
 
 float transformacionLineal(float color){

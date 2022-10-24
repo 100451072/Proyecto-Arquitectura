@@ -33,6 +33,19 @@
 #include <vector>
 #include <fstream>
 
+typedef struct contenido_BMP{
+    // contenido del archivo bmp para usarlo en las lecturas NO SON TODOS SON LOS IMPORTANTES
+    int tamano;
+    int t_padding;
+    int anchura;
+    int altura;
+    int datos_imagen;
+    int numero_planos;
+    int compresion;
+    int t_punto;
+
+} contenido_BMP;
+
 
 class Common
 {
@@ -51,15 +64,12 @@ private:
     std::vector <std::string> archivos;
     // Archivo dentro del dir de entrada, ira cambiando
     std::ifstream fileRead;
-
+    contenido_BMP imagen_BMP;
     // Datos del BMP
-    // Altura y anchura
-    int altura;
-    int anchura;
     // En caso de que el archivo bmp tenga padding
     unsigned char padding[3] = {0,1,2}; // padding al escribir
     // contenido o header del bmp
-    unsigned char contenido_bmp[54];// header de el bmp
+    unsigned char header_bmp[54];// header de el bmp
 
 
 
