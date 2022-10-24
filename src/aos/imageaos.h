@@ -68,9 +68,9 @@ public:
     void executeProgram();
     void llenarPixeles();
     void realizarOperacion();
-    void copiarImagen(arg_3); // mirar si pasar la imagen tambien
-    void difusionGaussiana(arg_3);
-    void escalaGrises(arg_3);
+    void copiarImagen(); // mirar si pasar la imagen tambien
+    void difusionGaussiana();
+    void escalaGrises();
 };
 
 

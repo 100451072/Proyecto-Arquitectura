@@ -16,23 +16,6 @@ Imageaos::Imageaos(int num_args, std::string arg_1, std::string arg_2, std::stri
     this->comun.operation = arg_3;
 }
 
-void Imageaos::leerImagenBMP(std::string ruta){
-    ifstream archivo; // para la lectura
-    ruta_archivo = ruta;
-    archivo.open(ruta, ios::binary|ios::in); // se abre el archivo
-    if (!archivo){
-        throw "Error abriendo imagen BMP";
-    }
-    archivo.read(reinterpret_cast<char*>(contenido_bmp), sizeof(contenido_bmp)); // se lee el header (contenido del bmp)
-    // a continuacion obtenemos los valores de este contenido del bmp
-    this->leerHeaderBMP();
-    // usamos seekg para que la imagen no se desplace
-    archivo.seekg(datos_imagen, ios::beg);
-
-
-}
-
-
 void Imageaos::executeProgram() {
     /* Función principal encargada de la ejecución del programa*/
 
@@ -41,23 +24,16 @@ void Imageaos::executeProgram() {
     {
         throw"Error: parametros incorrectos";
     }
-    // Bucle para ejecutar las ooperaciones sobre todas las fotos del dir
-    // Obtenemos la primera pos del dir
-    this->comun.abrirInDir();
-    // leemos el dir de entrada por primera vez para que el bucle pueda empezar
-    // en caso de que exista algun archivo
-    this->comun.leerInDir();
-    for (std::t_size i=0; i<this->comun.archivos.size(); ++i){
-        // Leemos el archivo en fileRead
-        this->comun.fileRead(this->comun.archivos(i));
+    // bucle que nos permitirá operar cada imagen del dir de entrada
+    for (this->comun.inDir : std::filesystem::directory_iterator{this->comun.inDirectory}) {
+        // Actualizamos el archivo actual
+        this->comun.actualFile = this.comun.inDir.path();
         // Rellenamos los pixeles llama a comun.leerBMP()
         this->llenarPixeles();
         // Realizar operacion seleccionada
         this->realizarOperacion();
-        // Avanzamos a la siguiente pos del dir
     }
-    // Por ultimo cerramos el dir de entrada
-    this->comun.cerrarInDir();
+    std::cout << "Ejecución finalizada con exito" << std::endl;
 }
 
 void llenarPixeles() {
@@ -76,7 +52,6 @@ void llenarPixeles() {
         this->arrayPixeles[i + 1].Green = pixeles[i + 1];
         this->arrayPixeles[i + 2].Blue = pixeles[i + 2];
     }
-    return pixeles;
 }
 
 void realizarOperacion() {
@@ -107,18 +82,28 @@ void realizarOperacion() {
     }
 }
 
-void copiarImagen(std::string ruta, std::string archivo_escritura){
-    // escrbir en la imagen sera distinto entre aos y soa
-    boost::filesystem::path ruta; // toda la ruta
-    nombre = filesystem::ruta.stem(); // nombre del archivo
-    // establecemos offstream
-    std::ofstream archivo;
-    try{archivo.open(carpeta + "/" + nombre)}{ // obtenido de libreria filesystem error
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+void copiarImagen() {
+    /* Función encargada de copiar la imagen actual en el directorio de salida*/
+
+    // establecemos offstream con la ruta al archivo destino
+    std::ofstream archivo(this->comun.rutaArchivoSalida());
+
+    if (!archivo) {
+        throw"Error: al abrir el archivo destino";
     }
-    catch(filesystem::filesystem_error){
-        throw "Error abriendo";
+    // Escribimos el header en el archivo origen
+    archivo << this->comun.header_BMP;
+
+    // Escribimos los pixeles, recorriendo todo el array
+    for (int i=0; i<this->comun.imagen_BMP.anchura * this->comun.imagen_BMP.anchura; ++i) {
+        // Recordar que en un archivo BMP los pixeles van en orden BGR
+        archivo << this->arrayPixeles[i].Blue;
+        archivo << this->arrayPixeles[i].Green;
+        archivo << this->arrayPixeles[i].Red;
+        // Añadir padding al final de liena en caso de que exista
     }
-    // continuar para que escriba en tipo soa (no se si lo hemos hecho ya)
 }
 
 void histogram(std::string arhivo_salida) {

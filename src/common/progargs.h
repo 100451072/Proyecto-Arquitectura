@@ -60,19 +60,18 @@ private:
 
     // Ruta de dir de entrada, necesario para apertura
     auto const& inDir;
-    // Array con archivos del indir
-    std::vector <std::string> archivos;
+    // Guarda la ruta al archivo altual
+    std::string actualFile;
     // Archivo dentro del dir de entrada, ira cambiando
     std::ifstream fileRead;
-    contenido_BMP imagen_BMP;
+
     // Datos del BMP
+    // Estructura con los elemnentos importantes del header
+    contenido_BMP imagen_BMP;
     // En caso de que el archivo bmp tenga padding
     unsigned char padding[3] = {0,1,2}; // padding al escribir
     // contenido o header del bmp
     unsigned char header_bmp[54];// header de el bmp
-
-
-
 
 public:
     // Constructor & Destructor
@@ -81,11 +80,9 @@ public:
 
     // Funciones
     bool comprobarArg(int num_args, const std::string& argv_1, const std::string& argv_2, const std::string& argv_3);
-    void abrirInDir();
-    void leerInDir();
-    void cerrarInDir();
     int leerHeaderBMP();
     int& leerArrayBMP();
+    std::string rutaArchivoSalida();
     // Operaciones de la aplicación
     void copiarImagen();
     void histograma();

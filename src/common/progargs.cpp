@@ -57,52 +57,19 @@ bool Common::comprobarArg() {
     return arg_correctos;
 }
 
-std::string Common::abrirInDir() {
-    /* Función que se llama para abrir el directorio de entrada*/
-    this->inDir : filesystem::directory_iterator{this->inDirectory}; // libreria filesystem
-}
-
-void Common::leerInDir(){
-    /* Finción que se va a encarg#include <filesystem>ar de funcionamiento
-     * principal del programa, a cargo de llamar a
-     * las funciones que realizarán las operaciones
-     * necesarias */
-
-    // El bucle while deberá ser implementado en la función invocante
-    // ya que después de leerse debe realizarse la operación
-    ; // bmps en directorio
-    // hacer bucle for
-    if (this->inDir.path().extension() == ".bmp"){
-        this->archivos.push_back(this->inDir.path());
-    }
-}
-
-string Common::nombre_archivo(std::string& ruta){
-    boost::filesystem::path ruta; // toda la ruta
-    nombre = filesystem::ruta.stem(); // nombre del archivo
-    return nombre;
-}
-
-void Common::cerrarInDir() {
-    /* Función encargada de cerrar el dir una vez abierto el dir de entrada*/
-
-    // Una vez acabado el bucle en la función invocante, se
-    // cerrará el directorio
-    closedir(this->inDir);
-}
-////////////////////////////////////////////////////////////////////////////////
 void Common::leerHeaderBMP(){
     /* Funcion encargada de leer y comprobar los valores del header*/
-    // contenido del archivo bmp para usarlo en las lecturas
-    this->fileRead(this->inDirectory);
+    // Volcamos los primeros 54 bytes en header_bmp
+    this->fileRead(this->actualFile);
     fileRead >> this->header_bmp;
-    this->imagen_BMP.tamano = header_bmp[2];
-    this->imagen_BMP.anchura = header_bmp[18];
-    this->imagen_BMP.altura = header_bmp[22];
-    this->imagen_BMP.datos_imagen = header_bmp[10];
-    this->imagen_BMP.numero_planos = header_bmp[26];
-    this->imagen_BMP.compresion = header_bmp[30];
-    this->imagen_BMP.t_punto = header_bmp[28];
+
+    this->imagen_BMP.tamano = this->header_bmp[2];
+    this->imagen_BMP.anchura = this->header_bmp[18];
+    this->imagen_BMP.altura = this->header_bmp[22];
+    this->imagen_BMP.datos_imagen = this->header_bmp[10];
+    this->imagen_BMP.numero_planos = this->header_bmp[26];
+    this->imagen_BMP.compresion = this->header_bmp[30];
+    this->imagen_BMP.t_punto = this->header_bmp[28];
     this->padding = ((4 - (this->imagen_BMP.anchura * 3) % 4) % 4);
 
     if (this->imagen_BMP.t_punto != 24){
@@ -116,20 +83,21 @@ void Common::leerHeaderBMP(){
     }
     return this->imagen_BMP.anchura * this->imagen_BMP.altura;
 }
-//////////////////////////////////////////////////////////////////////////////////
 
-
-int& Common::leerArrayBMP(std::string path) {
+int& Common::leerArrayBMP() {
     /* Continua la lectura del array BMP, leyendo los pixeles*/
+    // Avanzamos a la posición donde empiezand los pixeles
+    // 54 bytes desde el inicio
+    this->fileRead.seekg(54, ios::beg);
 
     // Continuamos con la lectura
-    int fila = (this->anchura*3 + 3) & (~3);
+    int fila = (this->imagen_BMP.anchura*3 + 3) & (~3);
     unsigned char aux; // variable ayuda a reordenar los pyxeles de BGR a RGB
     unsigned char* datos_imagen = unsigned char[fila];
     int* RGB;
     // lectura de la imagen
     for (int i = 0; i < this->altura; i++) {
-        fread(datos_imagen, sizeof(unsigned char), fila, this->actualFile);
+        this->fileRead >> datos_imagen;
         for (int j = 0; j < this->anchura * 3; j += 3) {
             // es por tres ya que son tres: rgb; se reordenan
             aux = datos_imagen[j];
@@ -143,29 +111,30 @@ int& Common::leerArrayBMP(std::string path) {
             RGB[j + 2] = (int)datos_imagen[j + 2];
         }
     }
-    fclose(this->actaulfile);
+    this->fileRead.close();
     return &RGB;
 }
 
-// operaciones de la aplicación///////////////////////////7
+std::string rutaArchivoSalida() {
+    /* Función encargada de devolver un string con la ruta del
+     * archivo de salida, utilizada en el copy por ejemplo.
+     * OJO que this->actualFile debe estar inicializado con el valor
+     * de archivo actual */
 
-void Common::copiarImagen() {
-    /* función que implementa la copia
-     * de imagenes, para ello crea un nuevo archivo*/
+    std::string filePath;
 
-    // no se si concatenar char asi funcionara
-    std::ofstream outfile(this->outDirectory + "/" + this->fileRead->d_name + "_copia.bmp");
-
-    // añadimos el header
-    outfile << this->header;
-
-    // hacer un bucle para meter todos los pixeles uno por uno
-    // ojo: ordenarlos como antes estaban ordenados bgr
-    for (int i=0; i<){
-
+    filePath = this->outDirectory + "/copy";
+    // Obtenemos el nombre del archivo de entrada
+    for (int i=sizeof(this->actualFile); i>0; --i) {
+        // recorrer this->actualFile desde atrás hasta encontrar /
+        if (this->actualFile.at(i) == "/")
+            // una vez obtenido el nombre del archivo terminamos y añadimos a filePath
+            filePath = filePath + this->actualFile.substr(i+1, sizeof(this->actualFIle));
     }
-    outfile.close();
+    return filePath;
 }
+
+/////////////////////////////////////////////////////////////////////////////////////
 
 void Common::histograma() {
     /* función encargada de crear el histograma,
