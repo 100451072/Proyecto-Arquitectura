@@ -113,6 +113,17 @@ int Common::leerHeaderBMP(){
     return anchura * altura;
 }
 
+void leerContenidoBMP(){
+    // contenido del archivo bmp para usarlo en las lecturas
+    int tamano = contenido_bmp[2];
+    int t_padding = ((4 - (anchura * 3) % 4) % 4);
+    int anchura = contenido_bmp[18];
+    int altura = contenido_bmp[22];
+    int datos_imagen = contenido_bmp[10];
+    int numero_planos = contenido_bmp[26];
+    int compresion = contenido_bmp[30];
+    int t_punto = contenido_bmp[28];
+};
 int& Common::leerArrayBMP(std::string path) {
     /* Continua la lectura del array BMP, leyendo los pixeles*/
 

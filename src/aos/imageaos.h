@@ -49,7 +49,6 @@ struct Pixel
     int Red;
     int Green;
     int Blue;
-    int Index; // por si se nevcesita al recorrer si no borrarlo esq nidea
 };
 
 

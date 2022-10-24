@@ -53,13 +53,14 @@ private:
     std::ifstream fileRead;
 
     // Datos del BMP
-    // Guardamos el valor del header en caso de que haya que copiarlo
-    unsigned char header[54];
     // Altura y anchura
     int altura;
     int anchura;
     // En caso de que el archivo bmp tenga padding
-    int padding;
+    unsigned char padding[3] = {0,1,2}; // padding al escribir
+    // contenido o header del bmp
+    unsigned char contenido_bmp[54];// header de el bmp
+
 
 
 

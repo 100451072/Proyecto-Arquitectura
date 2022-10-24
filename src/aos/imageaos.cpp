@@ -16,6 +16,23 @@ Imageaos::Imageaos(int num_args, std::string arg_1, std::string arg_2, std::stri
     this->comun.operation = arg_3;
 }
 
+void leerImagenBMP(std::string ruta){
+    ifstream archivo; // para la lectura
+    ruta_archivo = ruta;
+    archivo.open(ruta, ios::binary|ios::in); // se abre el archivo
+    if (!archivo){
+        throw "Error abriendo imagen BMP";
+    }
+    archivo.read(reinterpret_cast<char*>(contenido_bmp), sizeof(contenido_bmp)); // se lee el header (contenido del bmp)
+    // a continuacion obtenemos los valores de este contenido del bmp
+    common::leerHeaderBMP();
+    // usamos seekg para que la imagen no se desplace
+
+
+
+
+}
+
 
 void Imageaos::executeProgram() {
     /* Función principal encargada de la ejecución del programa*/
@@ -124,7 +141,7 @@ void histogram(std::string arhivo_salida) {
 
 
 // no es definitivo
-void escribirPixel(int indice, int r, int g, int b, std::string pixeles){
+void escribirPixel(int r, int g, int b, std::string pixeles){
     pixeles[indice].Red = static_cast<u_int8_t>(r);
     pixeles[indice].Green = static_cast<u_int8_t>(g);
     pixeles[indice].Blue = static_cast<u_int8_t>(b);
