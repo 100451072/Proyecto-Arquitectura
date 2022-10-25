@@ -31,7 +31,7 @@ bool Common::comprobarArg(int num_args, const std::string& argv_1, const std::st
     }
     // comprobamos que la accion a realizar sea la indicada
     if (this->operation != "gauss" || this->operation != "histo" || this->operation != "mono" || this->operation != "copy") {
-        std::cout << "Unexpected operation: " << this->operation << "\n";
+        std::cout << "Unexpected opeoperationration: " << this->operation << "\n";
         std::cout << "Image in_path out_path oper" << "\n";
         std::cout << "Operation: copy, histo, mono, gauss" << "\n";
         arg_correctos = false;
@@ -88,7 +88,7 @@ int& Common::leerArrayBMP() {
     /* Continua la lectura del array BMP, leyendo los pixeles*/
     // Avanzamos a la posición donde empiezand los pixeles
     // 54 bytes desde el inicio
-    this->fileRead.seekg(54, ios::beg);
+    this->fileRead.seekg(this->imagen_BMP.datos_imagen, ios::beg);
 
     // Continuamos con la lectura
     int fila = (this->imagen_BMP.anchura*3 + 3) & (~3);

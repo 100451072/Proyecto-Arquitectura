@@ -58,6 +58,7 @@ private:
     // Atributos
     // Como dice la definicion de aos, un solo array
     Pixel arrayPixeles[MAX_SIZE];
+    chronometro time;
     // Elementos comunes
     Common comun;
 

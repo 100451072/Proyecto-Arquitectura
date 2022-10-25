@@ -4,6 +4,7 @@
 // Participantes:
 //      Asier Justo Turuelo 100451012
 //      Pablo Vallspín Aranguren 100451072
+//      Alvaro Buj Mancha 100406530
 
 
 #include <iostream>
