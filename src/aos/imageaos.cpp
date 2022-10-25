@@ -139,52 +139,29 @@ void histograma() {
 
     // Llamamos a la pare comun del histograma
     histograma(RGB, rutaArchivoSalida("hst", this->comun.outDirectory, this->comun.actualFile));
-
 }
 
-float transformacionLineal(float color){
-    // funcion de transformacion lineal
-    int cN;
-    if (color <= 0.04045) {
-        cN = color / 12.92;
-    } else {
-        cN = pow((color + 0.055) / 1.055, 2.4);
-    return cN;
-}
 
-float correccionGamma(float cR, float cG, float cB){
-    // funcion de correccion gamma
-    int cl = 0.2126 * cR + 0.7152 * cG + 0.0722 * cB;
-    if (cl <= 0.0031308) {
-        int cg = 12.92 * cl;
-    } else {
-        int cg = (1.055 * pow(cl, 1 / 2.4)) - 0.055;
-    }
-    return cg;
-}
 
 void escalaGrises(BMP data, std::string ruta_salida){ // revisar
-    Pixel pixel; // pixeles del aos .Color
-    std::string pixelesDevolver = data.infoImagen; // char a devolver
-    int l = anchuraInicial * 3;
+    /* Función encargada de hacer la transformación de grises de una imagen*/
+
+    float cR = 0;
+    float cG = 0;
+    float cB = 0;
+
     // paso 1 normalizacion
-    for (int i = 0; i < alturaInicial - 1; i+=1) {
-        for (int j = 0; i < l - 1; j += 3) {
-            avgR = avgR / 255; // escala 0 a 1
-            avgG = avgG / 255; // escala 0 a 1
-            avgB = avgB / 255; // escala 0 a 1
-            cR = transformacionLineal(avgR); // transformacion lineal de los 3 colores
-            cB = transformacionLineal(avgB);
-            cG = transformacionLineal(agbG);
-            cg = correccionGamma(cR, cG, cB); // sacada ahorro lineas
-            int g = cg * 255; // se vuelve a escala de 256 solucion por cada 3 pixeles
-            pixelesDevolver[(i*l) + j] = g; // se guardan los pixeles en el char todos el mismo
-            pixelesDevolver[(i*l) + j + 1] = g;
-            pixelesDevolver[(i*j) + j + 2] = g;
-        }
+    for (int i=0; i<this->comun.imagen_BMP.anchura * this->comun.imagen_BMP.altura; ++i) {
+            cR = transformacionLineal(this->arrayPixeles[i].Red / 255); // transformacion lineal de los 3 colores
+            cG = transformacionLineal(this->arrayPixeles[i].Green / 255);
+            cB = transformacionLineal(this->arrayPixeles[i].Blue / 255);
+            cG = correccionGamma(cR, cG, cB); // sacada ahorro lineas
+            cG *= 255; // se vuelve a escala de 256 solucion por cada 3 pixeles
+            this->arrayPixeles[i].Red = cG; // se guardan los pixeles en el char todos el mismo
+            this->arrayPixeles[i].Green = cG; // se guardan los pixeles en el char todos el mismo
+            this->arrayPixeles[i].Blue = cG; // se guardan los pixeles en el char todos el mismo
     }
-    ruta_salida.write(pixelesDevolver); // se escriben en el archivo out
-    return pixelesDevolver;
+    this->copiarImagen();
 }
 
 // lo qe supongo q cambiaria es al abrir la imagen o al pasar los pixeles

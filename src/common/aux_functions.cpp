@@ -2,6 +2,7 @@
 //
 //
 
+#include <cmath>
 #include "aux_functions.h"
 
 
@@ -51,5 +52,33 @@ void histograma(const std::vector<int>& RGB,
 
 void escalaGrises() {
     /* Función de apoyo para realizar el histograma*/
-    
+
+}
+
+float transformacionLineal(int value) {
+    /* Función encargada de realizar la transformación lineal sobre
+     * los valores de los pixeles normalizdos*/
+
+    float c_value;
+
+    if (value <= 0.04045)
+        c_value = value / 12.92;
+    else
+        c_value = pow((value + 0.055) / 1.055, 2.4);
+
+    return c_value;
+}
+
+float correccionGamma(float cR, float cG, float cB) {
+    /* Funcion encargada de la reaalización de la correccion gamma*/
+
+    int cL = 0.2126 * cR + 0.7152 * cG + 0.0722 * cB;
+
+    if (cL <= 0.0031308) {
+        int cG = 12.92 * cL;
+    } else {
+        int cG = (1.055 * pow(cl, 1 / 2.4)) - 0.055;
+    }
+
+    return cG;
 }
