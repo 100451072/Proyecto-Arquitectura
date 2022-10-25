@@ -158,6 +158,7 @@ void escalaGrises(BMP data, std::string ruta_salida){ // revisar
         this->structPixeles.arrayGreen[i] = cG; // se guardan los pixeles en el char todos el mismo
         this->structPixeles.arrayBlue[i] = cG; // se guardan los pixeles en el char todos el mismo
     }
+    // Copiamos la imagen en el directorio de salida
     this->copiarImagen();
 }
 
