@@ -7,8 +7,6 @@
 //      Alvaro Buj Mancha 100406530
 
 
-#include <iostream>
-#include <stdio.h>
 #include "aos/imageaos.h"
 
 int main(int argc, char* argv[]){

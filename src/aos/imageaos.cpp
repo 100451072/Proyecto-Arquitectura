@@ -8,27 +8,24 @@
 Imageaos::Imageaos(int num_args, const std::string arg_1, const std::string arg_2, const std::string arg_3) {
     /* Constructor, encargado de asigar a cada nodo de arrayPixeles
      * su valor de R, G, B*/
+    this->numArgumentos = num_args;
+    this->inDirectory = arg_1;
+    this->outDirectory = arg_2;
+    this->operation = arg_3;
 
-    // Inicialización de los atributos de common
-    this->comun.numArgumentos = num_args;
-    this->comun.inDirectory = arg_1;
-    this->comun.outDirectory = arg_2;
-    this->comun.operation = arg_3;
 }
 
 void Imageaos::executeProgram() {
     /* Función principal encargada de la ejecución del programa*/
 
     // Comenzamos comprobando los argumentos de entrada
-    if (!this->comun.comprobarArg())
-    {
-        throw std::invalid_argument("Error: parametros incorrectos");
-    }
+    if (!Common::comprobarArg(this->numArgumentos, this->inDirectory, this->outDirectory, this->operation))
+        throw std::invalid_argument("Error: parámetros incorrectos");
+
     // bucle que nos permitirá operar cada imagen del dir de entrada
-    for (this->comun.inDir : std::filesystem::directory_iterator{this->comun.inDirectory}) {
+    for (auto const& currentPath : std::filesystem::directory_iterator{this->inDirectory}) {
         // Actualizamos el archivo actual
-        this->comun.actualFile = this->comun.inDir.path();
-        // Rellenamos los pixeles llama a comun.leerBMP()
+        // Rellenamos los pixeles llama a leerBMP()
         this->llenarPixeles();
         // Realizar operacion seleccionada
         this->realizarOperacion();
@@ -44,8 +41,8 @@ void Imageaos::llenarPixeles() {
     int* pixeles;
 
     // Leemos el header y abrimos el archivo en el que nos encontramos
-    num_pixeles = this->comun.leerHeaderBMP();
-    pixeles = this->comun.leerArrayBMP();
+    num_pixeles = this->leerHeaderBMP();
+    pixeles = this->leerArrayBMP();
 
     for (int i=0; i<num_pixeles; i += 3) {
         this->arrayPixeles[i].Red = pixeles[i];
@@ -55,26 +52,29 @@ void Imageaos::llenarPixeles() {
 }
 
 void Imageaos::realizarOperacion() {
+
+    std::chrono::high_resolution_clock::time_point t_inicio, t_fin;
+
     // Función encargada de realizar la operación
-    if (this->comun.operation == "gauss"){
+    if (this->operation == "gauss"){
         t_inicio = std::chrono::high_resolution_clock::now();
         this->difusionGaussiana();
         t_fin = std::chrono::high_resolution_clock::now();
         this->time.gaussTime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
     }
-    if (this->comun.operation == "histo"){
+    if (this->operation == "histo"){
         t_inicio = std::chrono::high_resolution_clock::now();
         this->histograma();
         t_fin = std::chrono::high_resolution_clock::now();
         this->time.histoTime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
     }
-    if (this->comun.operation == "copy"){
+    if (this->operation == "copy"){
         t_inicio = std::chrono::high_resolution_clock::now();
         this->copiarImagen();
         t_fin = std::chrono::high_resolution_clock::now();
         this->time.copyTime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
     }
-    if (this->comun.operation == "mono"){
+    if (this->operation == "mono"){
         t_inicio = std::chrono::high_resolution_clock::now();
         this->escalaGrises();
         t_fin = std::chrono::high_resolution_clock::now();
@@ -89,17 +89,17 @@ void Imageaos::copiarImagen() {
 
     // establecemos offstream con la ruta al archivo destino
     std::ofstream archivo;
-    archivo.open(rutaArchivoSalida("bmp", this->comun.outDirectory, this->comun.actualFile), std::ofstream::out);
+    archivo.open(rutaArchivoSalida("bmp", this->outDirectory, this->actualFile), std::ofstream::out);
 
     if (!archivo.is_open()) {
         throw std::invalid_argument("Error: al abrir el archivo destino");
     }
 
     // Escribimos el header en el archivo origen
-    archivo << this->comun.header_BMP;
+    archivo << this->header_BMP;
 
     // Escribimos los pixeles, recorriendo todo el array
-    for (int i=0; i<this->comun.imagen_BMP.anchura * this->comun.imagen_BMP.anchura; ++i) {
+    for (int i=0; i<this->imagen_BMP.anchura * this->imagen_BMP.anchura; ++i) {
         // Recordar que en un archivo BMP los pixeles van en orden BGR
         archivo << this->arrayPixeles[i].Blue;
         archivo << this->arrayPixeles[i].Green;
@@ -125,7 +125,7 @@ void Imageaos::histograma() {
     }
 
     // Sumamos un a cada valor de 0 a 256 de los arrays en caso de aparaición
-    for (int i=0; i<this->comun.imagen_BMP.altura * this->comun.imagen_BMP.anchura ; ++i) {
+    for (int i=0; i<this->imagen_BMP.altura * this->imagen_BMP.anchura ; ++i) {
         R[this->arrayPixeles[i].Red]++;
         G[this->arrayPixeles[i].Green]++;
         B[this->arrayPixeles[i].Blue]++;
@@ -139,7 +139,7 @@ void Imageaos::histograma() {
     }
 
     // Llamamos a la pare comun del histograma
-    histograma(RGB, rutaArchivoSalida("hst", this->comun.outDirectory, this->comun.actualFile));
+    histograma(RGB, rutaArchivoSalida("hst", this->outDirectory, this->actualFile));
 }
 
 
@@ -154,7 +154,7 @@ void Imageaos::escalaGrises(){ // revisar
     float g = 0;
 
     // paso 1 normalizacion
-    for (int i=0; i<this->comun.imagen_BMP.anchura * this->comun.imagen_BMP.altura; ++i) {
+    for (int i=0; i<this->imagen_BMP.anchura * this->imagen_BMP.altura; ++i) {
             cR = transformacionLineal(this->arrayPixeles[i].Red / 255); // transformacion lineal de los 3 colores
             cG = transformacionLineal(this->arrayPixeles[i].Green / 255);
             cB = transformacionLineal(this->arrayPixeles[i].Blue / 255);
@@ -170,8 +170,8 @@ void Imageaos::escalaGrises(){ // revisar
 
 //gauss aos
 void Imageaos::difusionGaussiana() {
-    int altura = this->comun.imagen_BMP.anchura;
-    int anchura = this->comun.imagen_BMP.anchura;
+    int altura = this->imagen_BMP.anchura;
+    int anchura = this->imagen_BMP.anchura;
     int tmpR, tmpG, tmpB; // variables auxiliares
     int l = anchura * 3; // pixeles por fila
     int tamano = altura * l; // tamaño total en bytes

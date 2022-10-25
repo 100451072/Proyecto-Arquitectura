@@ -39,7 +39,7 @@ void histograma(const std::vector<int>& RGB,
      * sobre el archivo .hst*/
 
     // Abrimos el archivo de salida con ruta adecuada
-    std::ofstream archivo.open(outFile, std::ofstream::out);
+    std::ofstream archivo(outFile, std::ofstream::out);
 
     if (!archivo.is_open()) {
         throw"Error: al abrir el archivo de destino";

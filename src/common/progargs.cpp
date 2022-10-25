@@ -6,99 +6,95 @@
 #include <filesystem>
 
 
-// Constructor & Destructor
-Common::Common() {
-    // Los valores de los atributos serán aplicados uno a uno
-    // estructura de la imagen
-    this->imagen_BMP = NULL;
-    // this->fileRead = NULL;
-    //this->inDir = NULL;
-    //this->archivos  = NULL;
-    std::cout << "Clase common creada con exito" << std::endl;
-}
 
-bool Common::comprobarArg(int num_args, const std::string& argv_1, const std::string& argv_2, const std::string& argv_3) {
+static bool comprobarArg(int num_args, const std::string& inDir, const std::string& outDir, const std::string& operation) {
     /* Función encargada de validar los argumentos introducidos,
      * devuelve false en caso de que algun arg sea incorrecto*/
-    bool arg_correctos = true;
-    std::cout << "$image " <<  this->inDir << " " << this->outDirectory << " " <<  this->operation << "\n";
+    std::cout << "$image " <<  inDir << " " << outDir << " " <<  operation << "\n";
     // comprobamos que el numero de argumentos sea el correcto
-    if (this->numArgumentos != 3) {
+    if (num_args != 3) {
         std::cout << "Wrong format:" << "\n";
         std::cout << "Image in_path out_path oper" << "\n";
         std::cout << "Operation: copy, histo, mono, gauss" << "\n";
-        arg_correctos = false;
+        return false;
     }
     // comprobamos que la accion a realizar sea la indicada
-    if (this->operation != "gauss" || this->operation != "histo" || this->operation != "mono" || this->operation != "copy") {
-        std::cout << "Unexpected opeoperationration: " << this->operation << "\n";
+    if (operation != "gauss" || operation != "histo" || operation != "mono" || operation != "copy") {
+        std::cout << "Unexpected opeoperationration: " << operation << "\n";
         std::cout << "Image in_path out_path oper" << "\n";
         std::cout << "Operation: copy, histo, mono, gauss" << "\n";
-        arg_correctos = false;
+        return false;
     }
     // comprobamos si existen los directorios de entrada y salida
-    if (!opendir(this->inDirectory)) {
-        std::cout << "Input path: " << this->inDirectory << "\n";
-        std::cout << "output path: " << this->outDirectory << "\n";
-        std::cout << "cannot open directory " << "[" << this->inDirectory << "]" << "\n";
+    std::ifstream inputFile(inDir);
+    if (inputFile.bad()) {
+        std::cout << "Input path: " << inDir << "\n";
+        std::cout << "output path: " << outDir << "\n";
+        std::cout << "cannot open directory " << "[" << inDir << "]" << "\n";
         std::cout << "image in_path out_path oper" << "\n";
         std::cout << "operation: copy, histo, mono, gauss" << "\n";
-        arg_correctos = false;
+        return false;
     }
-    if (!opendir(this->outDirectory)) {
-        std::cout << "input path: " << this->inDirectory << "\n";
-        std::cout << "output path: " << this->outDirectory << "\n";
-        std::cout << "output directory " << "[" << this->outDirectory << "]" << " does not exist" << "\n";
+    std::ifstream outputFile(inDir);
+    if (outputFile.bad()) {
+        std::cout << "input path: " << inDir << "\n";
+        std::cout << "output path: " << outDir << "\n";
+        std::cout << "output directory " << "[" << outDir << "]" << " does not exist" << "\n";
         std::cout << "image in_path out_path oper" << "\n";
         std::cout << "operation: copy, histo, mono, gauss" << "\n";
-        arg_correctos = false;
+        return false;
     }
 
-    return arg_correctos;
+    return true;
 }
 
-int Common::leerHeaderBMP(){
+static int leerHeaderBMP(std::string filePath){
     /* Funcion encargada de leer y comprobar los valores del header*/
     // Volcamos los primeros 54 bytes en header_bmp
-    this->fileRead(this->actualFile);
-    fileRead >> this->header_bmp;
+    std::ifstream BMP_file;
+    const int BMP_header_size = 54;
+    unsigned char BMP_info[BMP_header_size];
+    contenido_BMP imagen_BMP;
 
-    this->imagen_BMP.tamano = this->header_bmp[2];
-    this->imagen_BMP.anchura = this->header_bmp[18];
-    this->imagen_BMP.altura = this->header_bmp[22];
-    this->imagen_BMP.datos_imagen = this->header_bmp[10];
-    this->imagen_BMP.numero_planos = this->header_bmp[26];
-    this->imagen_BMP.compresion = this->header_bmp[30];
-    this->imagen_BMP.t_punto = this->header_bmp[28];
-    this->padding = ((4 - (this->imagen_BMP.anchura * 3) % 4) % 4);
+    BMP_file.open(filePath, std::ios::in | std::ios::binary);
 
-    if (this->imagen_BMP.t_punto != 24){
+    BMP_file.read(reinterpret_cast<char*> (BMP_info), BMP_header_size);
+    imagen_BMP.tamano = BMP_info[2];
+    imagen_BMP.anchura = BMP_info[18];
+    imagen_BMP.altura = BMP_info[22];
+    imagen_BMP.datos_imagen = BMP_info[10];
+    imagen_BMP.numero_planos = BMP_info[26];
+    imagen_BMP.compresion = BMP_info[30];
+    imagen_BMP.t_punto = BMP_info[28];
+    imagen_BMP.t_padding = (4 - (imagen_BMP.anchura * 3) % 4) % 4;
+
+    if (imagen_BMP.t_punto != 24){
         throw "Error tamaño punto.";
     }
-    if (this->imagen_BMP.compresion != 0){
+    if (imagen_BMP.compresion != 0){
         throw "Error valor de compresion";
     }
-    if (this->imagen_BMP.numero_planos != 1){
+    if (imagen_BMP.numero_planos != 1){
         throw "Error numero de planos.";
     }
-    return this->imagen_BMP.anchura * this->imagen_BMP.altura;
+    return imagen_BMP.anchura * imagen_BMP.altura;
 }
 
 int& Common::leerArrayBMP() {
     /* Continua la lectura del array BMP, leyendo los pixeles*/
     // Avanzamos a la posición donde empiezand los pixeles
     // 54 bytes desde el inicio
-    this->fileRead.seekg(this->imagen_BMP.datos_imagen, ios::beg);
+    fileRead.seekg(imagen_BMP.datos_imagen, ios::beg);
 
     // Continuamos con la lectura
-    int fila = (this->imagen_BMP.anchura*3 + 3) & (~3);
+    int fila = (imagen_BMP.anchura*3 + 3) & (~3);
     unsigned char aux; // variable ayuda a reordenar los pyxeles de BGR a RGB
     unsigned char* datos_imagen = unsigned char[fila];
     int* RGB;
     // lectura de la imagen
-    for (int i = 0; i < this->altura; i++) {
-        this->fileRead >> datos_imagen;
-        for (int j = 0; j < this->anchura * 3; j += 3) {
+    for (int i = 0; i < altura; i++) {
+        fileRead >> datos_imagen;
+        for (int j = 0; j < anchura * 3; j += 3) {
             // es por tres ya que son tres: rgb; se reordenan
             aux = datos_imagen[j];
             datos_imagen[j] = datos_imagen[j + 2];
@@ -111,24 +107,24 @@ int& Common::leerArrayBMP() {
             RGB[j + 2] = (int)datos_imagen[j + 2];
         }
     }
-    this->fileRead.close();
-    return &RGB;
+    fileRead.close();
+    return *RGB;
 }
 
-void Common::difusionGaussiana(unsigned char *inputPixels, int anchuraInicial, int alturaInicial,) {
-    int matriz[5][5] = {1,4,7,4,1,
-                     4,16,26,16,4,
-                     7,26,41,26,7,
-                     4,16,26,16,4,
-                     1,4,7,4,1};
+void Common::difusionGaussiana(unsigned char *inputPixels, int anchuraInicial, int alturaInicial) {
+    int matriz[5][5] = {{1,4,7,4,1},
+                     {4,16,26,16,4},
+                     {7,26,41,26,7},
+                     {4,16,26,16,4},
+                     {1,4,7,4,1}};
     int w = 273;
     int avgR = 0, avgG = 0, avgB = 0;
     int l = anchuraInicial * 3;
     int tamano = alturaInicial * l;
     int cByte, b, cGauss, fGauss;
-    unsigned char *pixelesDevolver
+    unsigned char *pixelesDevolver;
     for (int i = 0; i < alturaInicial - 1; i+=1){
-        for (int j = 0; i < l - 1; j+=3){
+        for (int j = 0; j < l - 1; j+=3){
             for (int s = -2; s <= 2; s++){
                 for (int t = -2; t <= 2; t++){
                     fGauss = s + 2;

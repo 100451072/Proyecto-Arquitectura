@@ -59,8 +59,13 @@ private:
     // Como dice la definicion de aos, un solo array
     Pixel arrayPixeles[MAX_SIZE];
     chronometro time;
-    // Elementos comunes
-    Common comun;
+
+    int numArgumentos;
+    // String pasados por el main
+    std::string image;
+    std::string inDirectory;
+    std::string outDirectory;
+    std::string operation;
 
 public:
     // Constructor & Destructor

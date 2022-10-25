@@ -47,42 +47,15 @@ typedef struct contenido_BMP{
 } contenido_BMP;
 
 
-class Common
-{
-private:
-    // Atributos
-    int numArgumentos;
-    // String pasados por el main
-    std::string image;
-    std::string inDirectory;
-    std::string outDirectory;
-    std::string operation;
-
-    // Ruta de dir de entrada, necesario para apertura
-    auto const& inDir;
-    // Guarda la ruta al archivo altual
-    std::string actualFile;
-    // Archivo dentro del dir de entrada, ira cambiando
-    std::ifstream fileRead;
-
-    // Datos del BMP
-    // Estructura con los elemnentos importantes del header
-    contenido_BMP imagen_BMP;
-    // En caso de que el archivo bmp tenga padding
-    unsigned char padding[3] = {0,1,2}; // padding al escribir
-    // contenido o header del bmp
-    unsigned char header_bmp[54];// header de el bmp
+class Common {
 
 public:
-    // Constructor & Destructor
-    Common();
-
     // Funciones
-    bool comprobarArg(int num_args, const std::string& argv_1, const std::string& argv_2, const std::string& argv_3);
-    int leerHeaderBMP();
+    static bool comprobarArg(int num_args, const std::string& argv_1, const std::string& argv_2, const std::string& argv_3);
+    static int leerHeaderBMP();
     int& leerArrayBMP();
     // Operaciones de la aplicación
-    void difusionGaussiana();
+    void difusionGaussiana(unsigned char *inputPixels, int anchuraInicial, int alturaInicial);
 };
 
 #endif //UNTITLED_PROGARGS_H
