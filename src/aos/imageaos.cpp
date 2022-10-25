@@ -113,19 +113,33 @@ void histograma() {
     /* Función encargada de crear el histograma y pasarselos al la
      * función de comon histrograma*/
 
-    int R[256];
-    int G[256];
-    int B[256];
+    int R[256] = { 0 };
+    int G[256] = { 0 };
+    int B[256] = { 0 };
+
+    // Inicializamos el vector RGB a cero
+    std::vector<int> RGB;
+    for (int i=0; i<768; ++i) {
+        RGB.push_back(0);
+    }
 
     // Sumamos un a cada valor de 0 a 256 de los arrays en caso de aparaición
+    for (int i=0; i<this->comun.imagen_BMP.altura * this->comun.imagen_BMP.anchura ; ++i) {
+        R[this->arrayPixeles[i].Red]++;
+        G[this->arrayPixeles[i].Green]++;
+        B[this->arrayPixeles[i].Blue]++;
+    }
+
+    // Con los valores anteriores llenamos el vector RGB
     for (int i=0; i<256; ++i) {
-        R[this->arraPixeles[i].Red]++;
-        G[this->arraPixeles[i].Green]++;
-        B[this->arraPixeles[i].Blue]++;
+        RGB[i] = R[i];
+        RGB[256 + i] = G[i];
+        RGB[512 + i] = B[i];
     }
 
     // Llamamos a la pare comun del histograma
-    histograma(R, G, B);
+    histograma(RGB, rutaArchivoSalida("hst", this->comun.outDirectory, this->comun.actualFile));
+
 }
 
 float transformacionLineal(float color){

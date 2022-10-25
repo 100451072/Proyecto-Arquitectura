@@ -48,3 +48,8 @@ void histograma(const std::vector<int>& RGB,
 
     archivo.close();
 }
+
+void escalaGrises() {
+    /* Función de apoyo para realizar el histograma*/
+    
+}

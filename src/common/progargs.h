@@ -83,7 +83,6 @@ public:
     int leerHeaderBMP();
     int& leerArrayBMP();
     // Operaciones de la aplicación
-    void escalaGrises();
     void difusionGaussiana();
 };
 

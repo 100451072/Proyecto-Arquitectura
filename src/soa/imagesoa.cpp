@@ -124,9 +124,9 @@ void histograma() {
 
     // Sumamos un a cada valor de 0 a 256 de los arrays en caso de aparaición
     for (int i=0; i<this->comun.imagen_BMP.altura * this->comun.imagen_BMP.anchura ; ++i) {
-        R[this->arraPixeles[i].Red]++;
-        G[this->arraPixeles[i].Green]++;
-        B[this->arraPixeles[i].Blue]++;
+        R[this->structPixeles.arrayR[i]]++;
+        G[this->structPixeles.arrayG[i]]++;
+        B[this->structPixeles.arrayB[i]]++;
     }
 
     // Con los valores anteriores llenamos el vector RGB

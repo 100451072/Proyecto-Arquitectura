@@ -115,10 +115,6 @@ int& Common::leerArrayBMP() {
     return &RGB;
 }
 
-void Common::escalagrises() {
-
-}
-
 void Common::difusionGaussiana(unsigned char *inputPixels, int anchuraInicial, int alturaInicial,) {
     int matriz[5][5] = {1,4,7,4,1,
                      4,16,26,16,4,
