@@ -21,12 +21,11 @@ using namespace std;
 // Tamaño max para formar un array
 #define MAX_SIZE 1000000;
 
-// variables no se si se pueden uwu
-char origin[256];
-char prox_location[256];
+// variables no se si se pueden
+//
 
 // matriz y peso gauss
-int mgauss[5][5] = {{1, 4, 7, 4, 1},
+int mGauss[5][5] = {{1, 4, 7, 4, 1},
                     {4, 16, 26, 16, 4},
                     {7, 26, 41, 26, 7},
                     {4, 16, 26, 16, 4},
@@ -52,16 +51,17 @@ struct Pixeles {
     int arrayB[MAX_SIZE];
 };
 
-class imagesoa {
+class Imagesoa {
 private:
     // atributos
-    Pixeles structurePixels;
+    Pixeles structPixels;
+    chronometro time;
     // componentes comunes
     Common comun;
 
 public:
     // constructor & destructor
-    imagesoa(int num_args, const std::string& arg_1, const std::string& arg_2, const std::string& arg_3);
+    Imagesoa(int num_args, const std::string& arg_1, const std::string& arg_2, const std::string& arg_3);
 
     // Funciones
     void executeProgram();
