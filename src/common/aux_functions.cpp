@@ -3,6 +3,9 @@
 //
 
 #include <cmath>
+#include <iostream>
+#include <vector>
+#include <fstream>
 #include "aux_functions.h"
 
 
@@ -17,9 +20,9 @@ std::string rutaArchivoSalida(std::string type,
      *      hst*/
 
     std::string filePath;
-    char slash = "/"
+    char slash = '/';
 
-    filePath = outdir + "/";
+    filePath = outdir + slash;
     // Obtenemos el nombre del archivo de entrada
     for (int i=sizeof(infile); i>0; --i) {
         // recorrer this->actualFile desde atrás hasta encontrar /
@@ -44,7 +47,7 @@ void histograma(const std::vector<int>& RGB,
 
     // Llenamos el archivo de salida con los histogramas
     for (int i=0; i<768; ++i) {
-        archivo << RGB[i] << endl;
+        archivo << RGB[i] << std::endl;
     }
 
     archivo.close();
@@ -75,9 +78,9 @@ float correccionGamma(float cR, float cG, float cB) {
     int cL = 0.2126 * cR + 0.7152 * cG + 0.0722 * cB;
 
     if (cL <= 0.0031308) {
-        int cG = 12.92 * cL;
+        cG = 12.92 * cL;
     } else {
-        int cG = (1.055 * pow(cl, 1 / 2.4)) - 0.055;
+        cG = (1.055 * pow(cL, 1 / 2.4)) - 0.055;
     }
 
     return cG;

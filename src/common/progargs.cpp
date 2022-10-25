@@ -17,7 +17,7 @@ Common::Common() {
     std::cout << "Clase common creada con exito" << std::endl;
 }
 
-bool Common::comprobarArg() {
+bool Common::comprobarArg(int num_args, const std::string& argv_1, const std::string& argv_2, const std::string& argv_3) {
     /* Función encargada de validar los argumentos introducidos,
      * devuelve false en caso de que algun arg sea incorrecto*/
     bool arg_correctos = true;
@@ -34,7 +34,7 @@ bool Common::comprobarArg() {
         std::cout << "Unexpected operation: " << this->operation << "\n";
         std::cout << "Image in_path out_path oper" << "\n";
         std::cout << "Operation: copy, histo, mono, gauss" << "\n";
-        arg_correctos = false
+        arg_correctos = false;
     }
     // comprobamos si existen los directorios de entrada y salida
     if (!opendir(this->inDirectory)) {
@@ -57,7 +57,7 @@ bool Common::comprobarArg() {
     return arg_correctos;
 }
 
-void Common::leerHeaderBMP(){
+int Common::leerHeaderBMP(){
     /* Funcion encargada de leer y comprobar los valores del header*/
     // Volcamos los primeros 54 bytes en header_bmp
     this->fileRead(this->actualFile);

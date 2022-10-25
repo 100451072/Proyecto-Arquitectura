@@ -76,7 +76,6 @@ private:
 public:
     // Constructor & Destructor
     Common();
-    virtual ~Common();
 
     // Funciones
     bool comprobarArg(int num_args, const std::string& argv_1, const std::string& argv_2, const std::string& argv_3);
