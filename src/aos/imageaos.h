@@ -72,13 +72,13 @@ public:
     // Funciones
     void executeProgram();
     void llenarPixeles(std::string filePath);
-    void realizarOperacion();
+    void realizarOperacion(contenido_BMP imagen_BMP);
 
     // Operaciones
     void copiarImagen();
-    void histograma();
-    void escalaGrises();
-    void difusionGaussiana();
+    void histograma(contenido_BMP imagen_BMP);
+    void escalaGrises(contenido_BMP imagen_BMP);
+    void difusionGaussiana(contenido_BMP imagen_BMP);
 };
 
 

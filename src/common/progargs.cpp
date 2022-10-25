@@ -47,7 +47,7 @@
     return true;
 }
 
-int leerHeaderBMP(std::string filePath){
+contenido_BMP leerHeaderBMP(std::string filePath){
     /* Funcion encargada de leer y comprobar los valores del header*/
     // Volcamos los primeros 54 bytes en header_bmp
     std::ifstream BMP_file;
@@ -76,15 +76,19 @@ int leerHeaderBMP(std::string filePath){
     if (imagen_BMP.numero_planos != 1){
         throw "Error numero de planos.";
     }
-    return imagen_BMP.tamano;
+    return imagen_BMP;
 }
 
 
-int* leerArrayBMP(contenido_BMP imagen_BMP) {
+int* leerArrayBMP(std::string filePath, contenido_BMP imagen_BMP) {
     /* Continua la lectura del array BMP, leyendo los pixeles*/
     // Avanzamos a la posición donde empiezand los pixeles
     // 54 bytes desde el inicio
-    fileRead.seekg(imagen_BMP.datos_imagen, ios::beg);
+    std::ifstream BMP_file;
+    BMP_file.open(filePath, std::ios::in | std::ios::binary);
+
+    int anchura = imagen_BMP.anchura;
+    int altura = imagen_BMP.altura;
 
     // Continuamos con la lectura
     int fila = (imagen_BMP.anchura*3 + 3) & (~3);
@@ -111,7 +115,7 @@ int* leerArrayBMP(contenido_BMP imagen_BMP) {
     return *RGB;
 }
 
-void Common::difusionGaussiana(unsigned char *inputPixels, int anchuraInicial, int alturaInicial) {
+void difusionGaussiana(unsigned char *inputPixels, int anchuraInicial, int alturaInicial) {
     int matriz[5][5] = {{1,4,7,4,1},
                      {4,16,26,16,4},
                      {7,26,41,26,7},

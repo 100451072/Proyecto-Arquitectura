@@ -21,7 +21,7 @@ void Imageaos::executeProgram() {
     /* Función principal encargada de la ejecución del programa*/
 
     // Comenzamos comprobando los argumentos de entrada
-    if (!Common::comprobarArg(this->numArgumentos, this->inDirectory, this->outDirectory, this->operation))
+    if (!comprobarArg(this->numArgumentos, this->inDirectory, this->outDirectory, this->operation))
         throw std::invalid_argument("Error: parámetros incorrectos");
 
     // bucle que nos permitirá operar cada imagen del dir de entrada
@@ -54,32 +54,32 @@ void Imageaos::llenarPixeles(const std::string filePath) {
     }
 }
 
-void Imageaos::realizarOperacion() {
+void Imageaos::realizarOperacion(contenido_BMP imagen_BMP) {
 
     std::chrono::high_resolution_clock::time_point t_inicio, t_fin;
 
     // Función encargada de realizar la operación
     if (this->operation == "gauss"){
         t_inicio = std::chrono::high_resolution_clock::now();
-        this->difusionGaussiana();
+        this->difusionGaussiana(imagen_BMP);
         t_fin = std::chrono::high_resolution_clock::now();
         this->time.gaussTime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
     }
     if (this->operation == "histo"){
         t_inicio = std::chrono::high_resolution_clock::now();
-        this->histograma();
+        this->histograma(imagen_BMP);
         t_fin = std::chrono::high_resolution_clock::now();
         this->time.histoTime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
     }
     if (this->operation == "copy"){
         t_inicio = std::chrono::high_resolution_clock::now();
-        this->copiarImagen();
+        this->copiarImagen(imagen_BMP);
         t_fin = std::chrono::high_resolution_clock::now();
         this->time.copyTime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
     }
     if (this->operation == "mono"){
         t_inicio = std::chrono::high_resolution_clock::now();
-        this->escalaGrises();
+        this->escalaGrises(imagen_BMP);
         t_fin = std::chrono::high_resolution_clock::now();
         this->time.monoTime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
     }
@@ -113,7 +113,7 @@ void Imageaos::copiarImagen() {
     archivo.close();
 }
 
-void Imageaos::histograma() {
+void Imageaos::histograma(contenido_BMP imagen_BMP) {
     /* Función encargada de crear el histograma y pasarselos al la
      * función de comon histrograma*/
 
@@ -128,7 +128,7 @@ void Imageaos::histograma() {
     }
 
     // Sumamos un a cada valor de 0 a 256 de los arrays en caso de aparaición
-    for (int i=0; i<this->imagen_BMP.altura * this->imagen_BMP.anchura ; ++i) {
+    for (int i=0; i<imagen_BMP.altura * imagen_BMP.anchura ; ++i) {
         R[this->arrayPixeles[i].Red]++;
         G[this->arrayPixeles[i].Green]++;
         B[this->arrayPixeles[i].Blue]++;
@@ -147,7 +147,7 @@ void Imageaos::histograma() {
 
 
 
-void Imageaos::escalaGrises(){ // revisar
+void Imageaos::escalaGrises(contenido_BMP imagen_BMP){ // revisar
     /* Función encargada de hacer la transformación de grises de una imagen*/
 
     float cR = 0;
@@ -157,7 +157,7 @@ void Imageaos::escalaGrises(){ // revisar
     float g = 0;
 
     // paso 1 normalizacion
-    for (int i=0; i<this->imagen_BMP.anchura * this->imagen_BMP.altura; ++i) {
+    for (int i=0; i<imagen_BMP.anchura * imagen_BMP.altura; ++i) {
             cR = transformacionLineal(this->arrayPixeles[i].Red / 255); // transformacion lineal de los 3 colores
             cG = transformacionLineal(this->arrayPixeles[i].Green / 255);
             cB = transformacionLineal(this->arrayPixeles[i].Blue / 255);
@@ -172,9 +172,9 @@ void Imageaos::escalaGrises(){ // revisar
 }
 
 //gauss aos
-void Imageaos::difusionGaussiana() {
-    int altura = this->imagen_BMP.anchura;
-    int anchura = this->imagen_BMP.anchura;
+void Imageaos::difusionGaussiana(contenido_BMP imagen_BMP) {
+    int altura = imagen_BMP.altura;
+    int anchura = imagen_BMP.anchura;
     int tmpR, tmpG, tmpB; // variables auxiliares
     int l = anchura * 3; // pixeles por fila
     int tamano = altura * l; // tamaño total en bytes
