@@ -2,9 +2,9 @@ set(BINARY ${CMAKE_PROJECT_NAME})
 set(SOURCES ${SOURCES})
 
 # Añadimos las bibliotecas
-add_library(common common/progargs.cpp common/progargs.h)
-add_library(aos aos/imageaos.cpp aos/imageaos.h)
-add_library(soa soa/imagesoa.cpp soa/imagesoa.h)
+add_library(common common/progargs.cpp common/aux_functions.cpp)
+add_library(aos aos/imageaos.cpp)
+add_library(soa soa/imagesoa.cpp)
 
 # Generamos el ejecutable para AOS
 add_executable(imgaos main_aos.cpp)
