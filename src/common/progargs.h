@@ -31,6 +31,7 @@
 #include <iostream>
 #include <filesystem>
 #include <vector>
+#include <string>
 #include <fstream>
 
 typedef struct contenido_BMP{
@@ -47,15 +48,12 @@ typedef struct contenido_BMP{
 } contenido_BMP;
 
 
-class Common {
+// Funciones
+bool comprobarArg(int num_args, std::string& argv_1, std::string& argv_2, std::string& argv_3);
+int leerHeaderBMP(std::string filePath);
+int* leerArrayBMP(contenido_BMP);
+// Operaciones de la aplicación
+void difusionGaussiana(unsigned char *inputPixels, int anchuraInicial, int alturaInicial);
 
-public:
-    // Funciones
-    static bool comprobarArg(int num_args, const std::string& argv_1, const std::string& argv_2, const std::string& argv_3);
-    static int leerHeaderBMP();
-    int& leerArrayBMP();
-    // Operaciones de la aplicación
-    void difusionGaussiana(unsigned char *inputPixels, int anchuraInicial, int alturaInicial);
-};
 
 #endif //UNTITLED_PROGARGS_H

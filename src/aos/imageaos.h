@@ -7,10 +7,6 @@
 
 
 #include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <dirent.h>
-#include <sys/types.h>
 #include <cmath>
 #include <chrono>
 #include "common/progargs.h"
@@ -55,13 +51,15 @@ struct Pixel
 
 class Imageaos {
 private:
-    // Atributos
+
     // Como dice la definicion de aos, un solo array
     Pixel arrayPixeles[MAX_SIZE];
+
+    // Cronómetro
     chronometro time;
 
+    // Argumentos pasados por main
     int numArgumentos;
-    // String pasados por el main
     std::string image;
     std::string inDirectory;
     std::string outDirectory;
@@ -69,12 +67,13 @@ private:
 
 public:
     // Constructor & Destructor
-    Imageaos(int num_args, const std::string arg_1, const std::string arg_2, const std::string arg_3);
+    Imageaos(int num_args, std::string arg_1, std::string arg_2, std::string arg_3);
 
     // Funciones
     void executeProgram();
-    void llenarPixeles();
+    void llenarPixeles(std::string filePath);
     void realizarOperacion();
+
     // Operaciones
     void copiarImagen();
     void histograma();

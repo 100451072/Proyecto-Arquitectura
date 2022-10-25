@@ -4,6 +4,8 @@
 
 #include "imageaos.h"
 
+#include <utility>
+
 // Constructor & Destructor
 Imageaos::Imageaos(int num_args, const std::string arg_1, const std::string arg_2, const std::string arg_3) {
     /* Constructor, encargado de asigar a cada nodo de arrayPixeles
@@ -23,26 +25,27 @@ void Imageaos::executeProgram() {
         throw std::invalid_argument("Error: parámetros incorrectos");
 
     // bucle que nos permitirá operar cada imagen del dir de entrada
-    for (auto const& currentPath : std::filesystem::directory_iterator{this->inDirectory}) {
+    for (auto const& currentFile : std::filesystem::directory_iterator{this->inDirectory}) {
         // Actualizamos el archivo actual
         // Rellenamos los pixeles llama a leerBMP()
-        this->llenarPixeles();
+        this->llenarPixeles(currentFile.path());
         // Realizar operacion seleccionada
         this->realizarOperacion();
     }
     std::cout << "Ejecución finalizada con exito" << std::endl;
 }
 
-void Imageaos::llenarPixeles() {
+void Imageaos::llenarPixeles(const std::string filePath) {
     /* Función encargada de llenar el array con los pixeles del
      * archivo BMP de comun*/
 
     int num_pixeles = 0;
     int* pixeles;
-
+    contenido_BMP header;
     // Leemos el header y abrimos el archivo en el que nos encontramos
-    num_pixeles = this->leerHeaderBMP();
-    pixeles = this->leerArrayBMP();
+    header = leerHeaderBMP(filePath);
+    num_pixeles = header.tamano;
+    pixeles = leerArrayBMP(header);
 
     for (int i=0; i<num_pixeles; i += 3) {
         this->arrayPixeles[i].Red = pixeles[i];

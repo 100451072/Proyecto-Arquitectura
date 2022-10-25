@@ -6,8 +6,7 @@
 #include <filesystem>
 
 
-
-static bool comprobarArg(int num_args, const std::string& inDir, const std::string& outDir, const std::string& operation) {
+ bool comprobarArg(int num_args, const std::string& inDir, const std::string& outDir, const std::string& operation) {
     /* Función encargada de validar los argumentos introducidos,
      * devuelve false en caso de que algun arg sea incorrecto*/
     std::cout << "$image " <<  inDir << " " << outDir << " " <<  operation << "\n";
@@ -48,7 +47,7 @@ static bool comprobarArg(int num_args, const std::string& inDir, const std::stri
     return true;
 }
 
-static int leerHeaderBMP(std::string filePath){
+int leerHeaderBMP(std::string filePath){
     /* Funcion encargada de leer y comprobar los valores del header*/
     // Volcamos los primeros 54 bytes en header_bmp
     std::ifstream BMP_file;
@@ -77,10 +76,11 @@ static int leerHeaderBMP(std::string filePath){
     if (imagen_BMP.numero_planos != 1){
         throw "Error numero de planos.";
     }
-    return imagen_BMP.anchura * imagen_BMP.altura;
+    return imagen_BMP.tamano;
 }
 
-int& Common::leerArrayBMP() {
+
+int* leerArrayBMP(contenido_BMP imagen_BMP) {
     /* Continua la lectura del array BMP, leyendo los pixeles*/
     // Avanzamos a la posición donde empiezand los pixeles
     // 54 bytes desde el inicio
@@ -88,7 +88,7 @@ int& Common::leerArrayBMP() {
 
     // Continuamos con la lectura
     int fila = (imagen_BMP.anchura*3 + 3) & (~3);
-    unsigned char aux; // variable ayuda a reordenar los pyxeles de BGR a RGB
+    unsigned char aux; // variable ayuda a reordenar los pixeles de BGR a RGB
     unsigned char* datos_imagen = unsigned char[fila];
     int* RGB;
     // lectura de la imagen
@@ -153,4 +153,5 @@ void Common::difusionGaussiana(unsigned char *inputPixels, int anchuraInicial, i
         }
     }
     return pixelesDevolver; // se devuelven los pixeles modificados
+
 }
