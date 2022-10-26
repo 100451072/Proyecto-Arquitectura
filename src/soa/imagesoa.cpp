@@ -5,7 +5,7 @@
 #include "imagesoa.h"
 
 //Constructor & Destructor
-Imagesoa::Imagesoa(int num_args, const std::string arg_1, const std::string arg_2, const std::string arg_3) {
+Imagesoa::Imagesoa(int num_args, const std::string& arg_1, const std::string& arg_2, const std::string& arg_3) {
     /* Constructor, recibe tres vectores que conformarán
      * el structurePixels*/
     // Inicialización de los atributos de common
@@ -13,24 +13,26 @@ Imagesoa::Imagesoa(int num_args, const std::string arg_1, const std::string arg_
     this->comun.inDirectory = arg_1;
     this->comun.outDirectory = arg_2;
     this->comun.operation = arg_3;
+    this->actualFile = "";
 }
 
 void Imagesoa::executeProgram() {
     /* Función principal encargada de la ejecución del programa*/
 
     // Comenzamos comprobando los argumentos de entrada
-    if (!this->comun.comprobarArg())
-    {
-        throw std::invalid_argument("Error: parametros incorrectos");
-    }
-    for (this->comun.inDir : std::filesystem::directory_iterator{this->comun.inDirectory}) {
+    if (!comprobarArg(this->numArgumentos, this->inDirectory, this->outDirectory, this->operation))
+        throw std::invalid_argument("Error: parámetros incorrectos");
+
+    // bucle que nos permitirá operar cada imagen del dir de entrada
+    for (auto const &currentFile: std::filesystem::directory_iterator{this->inDirectory}) {
         // Actualizamos el archivo actual
-        this->comun.actualFile = this->comun.inDir.path();
-        // Rellenamos los pixeles llama a comun.leerBMP()
+        this->actualFile = currentFile.path();
+        // Rellenamos los pixeles llama a leerBMP()
         this->llenarPixeles();
         // Realizar operacion seleccionada
         this->realizarOperacion();
     }
+    std::cout << "Ejecución finalizada con exito" << std::endl;
 }
 
 void Imagesoa::llenarPixeles() {
@@ -39,10 +41,12 @@ void Imagesoa::llenarPixeles() {
 
     int num_pixeles = 0;
     int* pixeles;
+    contenido_BMP header;
     // Leemos el header y abrimos el archivo en el que nos encontramos
-    num_pixeles = this->comun.leerHeaderBMP();
+    header = leerHeaderBMP(this->actualFile);
+    num_pixeles = header.tamano;
     // Recibe como parametro una referencia a un array
-    pixeles = this->comun.leerArrayBMP();
+    pixeles = leerArrayBMP(header);
 
     for (int i=0; i<num_pixeles; i += 3) {
         // Añadimos los pixeles al array
@@ -50,56 +54,59 @@ void Imagesoa::llenarPixeles() {
         this->structPixels.arrayG[i + 1] = pixeles[i + 1];
         this->structPixels.arrayB[i + 2] = pixeles[i + 2];
     }
-    std::cout << "Ejecución finalizada con exito" << std::endl;
 }
 
-void Imagesoa::realizarOperacion() {
+void Imagesoa::realizarOperacion(contenido_BMP imagen_BMP) {
     // Función encargada de realizar la operación
 
-    if (this->comun.operation == "gauss"){
+    std::chrono::high_resolution_clock::time_point t_inicio, t_fin;
+
+    // Función encargada de realizar la operación
+    if (this->operation == "gauss"){
         t_inicio = std::chrono::high_resolution_clock::now();
-        this->difusionGaussiana();
+        this->difusionGaussiana(imagen_BMP);
         t_fin = std::chrono::high_resolution_clock::now();
-        this->time.gausstime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
-    }1000000
-    if (this->comun.operation == "histo"){
-        t_inicio = std::chrono::high_resolution_clock::now();
-        this->histograma();
-        t_fin = std::chrono::high_resolution_clock::now();
-        this->time.histotime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
+        this->time.gaussTime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
     }
-    if (this->comun.operation == "copy"){
+    if (this->operation == "histo"){
         t_inicio = std::chrono::high_resolution_clock::now();
-        this->copiarImagen();
+        this->histograma(imagen_BMP);
         t_fin = std::chrono::high_resolution_clock::now();
-        this->time.copytime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
+        this->time.histoTime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
     }
-    if (this->comun.operation == "mono"){
+    if (this->operation == "copy"){
         t_inicio = std::chrono::high_resolution_clock::now();
-        this->escalaGrises();
+        this->copiarImagen(imagen_BMP);
         t_fin = std::chrono::high_resolution_clock::now();
-        this->time.monotime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
+        this->time.copyTime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
     }
+    if (this->operation == "mono"){
+        t_inicio = std::chrono::high_resolution_clock::now();
+        this->escalaGrises(imagen_BMP);
+        t_fin = std::chrono::high_resolution_clock::now();
+        this->time.monoTime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
+    }
+}
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-void Imagesoa::copiarImagen() {
+void Imagesoa::copiarImagen(contenido_BMP imagen_BMP) {
     /* Función encargada de copiar la imagen actual en el directorio de salida*/
 
     // establecemos offstream con la ruta al archivo destino
     std::ofstream archivo;
-    archivo.open(rutaArchivoSalida("bmp", this->comun.outDirectory, this->comun.actualFile), std::ofstream::out);
+    archivo.open(rutaArchivoSalida("bmp", this->outDirectory, this->actualFile), std::ofstream::out);
 
     if (!archivo.is_open()) {
         throw std::invalid_argument("Error: al abrir el archivo destino");
     }
 
     // Escribimos el header en el archivo origen
-    archivo << this->comun.header_BMP;
+    archivo << imagen_BMP;
 
     // Escribimos los pixeles, recorriendo todo el array
-    for (int i=0; i<this->comun.imagen_BMP.anchura * this->comun.imagen_BMP.anchura; ++i) {
+    for (int i=0; i<this->imagen_BMP.anchura * this->imagen_BMP.anchura; ++i) {
         // Recordar que en un archivo BMP los pixeles van en orden BGR
         archivo << this->structPixels.arrayB[i];
         archivo << this->structPixels.arrayG[i];
@@ -110,7 +117,7 @@ void Imagesoa::copiarImagen() {
     archivo.close();
 }
 
-void Imagesoa::histograma() {
+void Imagesoa::histograma(contenido_BMP imagen_BMP) {
     /* Función encargada de crear el histograma y pasarselos al la
      * función de comon histrograma*/
 
@@ -119,13 +126,10 @@ void Imagesoa::histograma() {
     int B[256] = { 0 };
 
     // Inicializamos el vector RGB a cero
-    std::vector<int> RGB;
-    for (int i=0; i<768; ++i) {
-        RGB.push_back(0);
-    }
+    std::vector<int> RGB(768);
 
     // Sumamos un a cada valor de 0 a 256 de los arrays en caso de aparaición
-    for (int i=0; i<this->comun.imagen_BMP.altura * this->comun.imagen_BMP.anchura ; ++i) {
+    for (int i=0; i<imagen_BMP.altura * imagen_BMP.anchura ; ++i) {
         R[this->structPixels.arrayR[i]]++;
         G[this->structPixels.arrayG[i]]++;
         B[this->structPixels.arrayB[i]]++;
@@ -139,10 +143,10 @@ void Imagesoa::histograma() {
     }
 
     // Llamamos a la pare comun del histograma
-    histograma(RGB, rutaArchivoSalida("hst", this->comun.outDirectory, this->comun.actualFile));
+    histograma(RGB, rutaArchivoSalida("hst", this->outDirectory, this->actualFile));
 }
 
-void Imagesoa::escalaGrises(){ // revisar
+void Imagesoa::escalaGrises(contenido_BMP imagen_BMP){ // revisar
     /* Función encargada de hacer la transformación de grises de una imagen*/
 
     float cR = 0;
@@ -152,15 +156,15 @@ void Imagesoa::escalaGrises(){ // revisar
     float g = 0;
 
     // paso 1 normalizacion
-    for (int i=0; i<this->comun.imagen_BMP.anchura * this->comun.imagen_BMP.altura; ++i) {
+    for (int i=0; i<imagen_BMP.anchura * imagen_BMP.altura; ++i) {
         cR = transformacionLineal(this->structPixels.arrayR[i] / 255); // transformacion lineal de los 3 colores
         cG = transformacionLineal(this->structPixels.arrayG[i] / 255);
         cB = transformacionLineal(this->structPixels.arrayB[i] / 255);
         cg = correccionGama(cR, cG, cB); // sacada ahorro lineas
         g = cg * 255; // se vuelve a escala de 256 solucion por cada 3 pixeles
-        this->structPixels.arrayR[i] = g; // se guardan los pixeles en el char todos el mismo
-        this->structPixels.arrayG[i] = g; // se guardan los pixeles en el char todos el mismo
-        this->structPixels.arrayB[i] = g; // se guardan los pixeles en el char todos el mismo
+        this->structPixels.arrayR[i] = static_cast<int>(g); // se guardan los pixeles en el char todos el mismo
+        this->structPixels.arrayG[i] =  static_cast<int>(g); // se guardan los pixeles en el char todos el mismo
+        this->structPixels.arrayB[i] =  static_cast<int>(g); // se guardan los pixeles en el char todos el mismo
     }
     // Copiamos la imagen en el directorio de salida
     this->copiarImagen();

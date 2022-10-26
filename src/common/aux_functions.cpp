@@ -9,8 +9,8 @@
 #include "aux_functions.h"
 
 
-std::string rutaArchivoSalida(std::string type,
-                              std::string outdir,
+std::string rutaArchivoSalida(const std::string& type,
+                              const std::string& outdir,
                               std::string infile) {
     /* Función encargada de devolver un string con la ruta del
      * archivo de salida, utilizada en el copy por ejemplo.
@@ -24,17 +24,17 @@ std::string rutaArchivoSalida(std::string type,
 
     filePath = outdir + slash;
     // Obtenemos el nombre del archivo de entrada
-    for (int i=sizeof(infile); i>0; --i) {
+    for (int i=infile.size(); i>0; --i) {
         // recorrer this->actualFile desde atrás hasta encontrar /
         if (infile.at(i) == slash)
             // una vez obtenido el nombre del archivo terminamos y añadimos a filePath
-            filePath = filePath + infile.substr(i+1, sizeof(infile)-3) + type;
+            filePath += infile.substr(i+1, infile.size()-3) + type;
     }
     return filePath;
 }
 
 void histograma(const std::vector<int>& RGB,
-                std::string outFile) {
+                const std::string& outFile) {
     /* Función encargada de crear y escribir el histograma
      * sobre el archivo .hst*/
 

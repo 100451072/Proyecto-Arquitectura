@@ -12,6 +12,7 @@
 #include <sys/types.h>
 #include <cmath>
 #include <chrono>
+#include <vector>
 #include <fstream>
 #include "common/progargs.h"
 #include "common/aux_functions.h"
@@ -32,17 +33,20 @@ int mGauss[5][5] = {{1, 4, 7, 4, 1},
                     {1, 4, 7, 4, 1}};
 int w = 273;
 
-// estructura que nos permitirá medir el tiempo
+//
+// Estructura que nos permite medir el tiempo
 typedef struct chronometro
 {
-    int loadtime;
-    int gausstime;
-    int histotime;
-    int monotime;
-    int storetime;
-    int copytime;
+    int loadTime;
+    int gaussTime;
+    int histoTime;
+    int monoTime;
+    int copyTime;
+    int storeTime;
     int total;
+
 } chronometro;
+
 
 // estructura que almacenará tres vectores para cada valor r, g, b
 struct Pixeles {
@@ -55,9 +59,18 @@ class Imagesoa {
 private:
     // atributos
     Pixeles structPixels;
+
     chronometro time;
+
     // componentes comunes
-    Common comun;
+    int numArgumentos;
+    std::string image;
+    std::string inDirectory;
+    std::string outDirectory;
+    std::string operation;
+
+    // Ruta al archivo de trabajo actual
+    std::string actualFile;
 
 public:
     // constructor & destructor
@@ -66,12 +79,12 @@ public:
     // Funciones
     void executeProgram();
     void llenarPixeles();
-    void realizarOperacion();
+    void realizarOperacion(contenido_BMP imagen_BMP));
     // Operaciones
-    void copiarImagen();
-    void histograma();
-    void escalaGrises();
-    void difusionGaussiana();
+    void copiarImagen(contenido_BMP imagen_BMP));
+    void histograma(contenido_BMP imagen_BMP));
+    void escalaGrises(contenido_BMP imagen_BMP));
+    void difusionGaussiana(contenido_BMP imagen_BMP));
 };
 
 

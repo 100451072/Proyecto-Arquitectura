@@ -50,8 +50,11 @@ typedef struct contenido_BMP{
 
 // Funciones
 bool comprobarArg(int num_args, std::string& argv_1, std::string& argv_2, std::string& argv_3);
+
 contenido_BMP leerHeaderBMP(std::string filePath);
-int* leerArrayBMP(contenido_BMP);
+
+int& leerArrayBMP(contenido_BMP);
+
 // Operaciones de la aplicación
 difusionGaussiana(unsigned char *inputPixels, int anchuraInicial, int alturaInicial);
 

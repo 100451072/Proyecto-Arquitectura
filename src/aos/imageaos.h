@@ -9,6 +9,7 @@
 #include <iostream>
 #include <cmath>
 #include <chrono>
+#include <vector>
 #include "common/progargs.h"
 #include "common/aux_functions.h"
 #include <filesystem>
@@ -65,17 +66,20 @@ private:
     std::string outDirectory;
     std::string operation;
 
+    // Ruta al archivo sobre el que estamos trabajando en el momneto
+    std::string actualFile;
+
 public:
     // Constructor & Destructor
     Imageaos(int num_args, std::string arg_1, std::string arg_2, std::string arg_3);
 
     // Funciones
     void executeProgram();
-    void llenarPixeles(std::string filePath);
+    void llenarPixeles();
     void realizarOperacion(contenido_BMP imagen_BMP);
 
     // Operaciones
-    void copiarImagen();
+    void copiarImagen(contenido_BMP imagen_BMP));
     void histograma(contenido_BMP imagen_BMP);
     void escalaGrises(contenido_BMP imagen_BMP);
     void difusionGaussiana(contenido_BMP imagen_BMP);

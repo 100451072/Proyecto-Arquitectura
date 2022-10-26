@@ -7,14 +7,14 @@
 #include <utility>
 
 // Constructor & Destructor
-Imageaos::Imageaos(int num_args, const std::string arg_1, const std::string arg_2, const std::string arg_3) {
+Imageaos::Imageaos(int num_args, std::string arg_1, std::string arg_2, std::string arg_3) {
     /* Constructor, encargado de asigar a cada nodo de arrayPixeles
      * su valor de R, G, B*/
     this->numArgumentos = num_args;
     this->inDirectory = arg_1;
     this->outDirectory = arg_2;
     this->operation = arg_3;
-
+    this->actualFile = "";
 }
 
 void Imageaos::executeProgram() {
@@ -27,15 +27,16 @@ void Imageaos::executeProgram() {
     // bucle que nos permitirá operar cada imagen del dir de entrada
     for (auto const& currentFile : std::filesystem::directory_iterator{this->inDirectory}) {
         // Actualizamos el archivo actual
+        this->actualFile = currentFile.path();
         // Rellenamos los pixeles llama a leerBMP()
-        this->llenarPixeles(currentFile.path());
+        this->llenarPixeles();
         // Realizar operacion seleccionada
         this->realizarOperacion();
     }
     std::cout << "Ejecución finalizada con exito" << std::endl;
 }
 
-void Imageaos::llenarPixeles(const std::string filePath) {
+void Imageaos::llenarPixeles() {
     /* Función encargada de llenar el array con los pixeles del
      * archivo BMP de comun*/
 
@@ -43,7 +44,7 @@ void Imageaos::llenarPixeles(const std::string filePath) {
     int* pixeles;
     contenido_BMP header;
     // Leemos el header y abrimos el archivo en el que nos encontramos
-    header = leerHeaderBMP(filePath);
+    header = leerHeaderBMP(this->actualFile);
     num_pixeles = header.tamano;
     pixeles = leerArrayBMP(header);
 
@@ -87,7 +88,7 @@ void Imageaos::realizarOperacion(contenido_BMP imagen_BMP) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-void Imageaos::copiarImagen() {
+void Imageaos::copiarImagen(contenido_BMP imagen_BMP) {
     /* Función encargada de copiar la imagen actual en el directorio de salida*/
 
     // establecemos offstream con la ruta al archivo destino
@@ -99,7 +100,7 @@ void Imageaos::copiarImagen() {
     }
 
     // Escribimos el header en el archivo origen
-    archivo << this->header_BMP;
+    archivo << imagen_BMP;
 
     // Escribimos los pixeles, recorriendo todo el array
     for (int i=0; i<this->imagen_BMP.anchura * this->imagen_BMP.anchura; ++i) {
@@ -122,10 +123,7 @@ void Imageaos::histograma(contenido_BMP imagen_BMP) {
     int B[256] = { 0 };
 
     // Inicializamos el vector RGB a cero
-    std::vector<int> RGB;
-    for (int i=0; i<768; ++i) {
-        RGB.push_back(0);
-    }
+    std::vector<int> RGB(768);
 
     // Sumamos un a cada valor de 0 a 256 de los arrays en caso de aparaición
     for (int i=0; i<imagen_BMP.altura * imagen_BMP.anchura ; ++i) {
@@ -163,9 +161,9 @@ void Imageaos::escalaGrises(contenido_BMP imagen_BMP){ // revisar
             cB = transformacionLineal(this->arrayPixeles[i].Blue / 255);
             cg = correccionGama(cR, cG, cB); // sacada ahorro lineas
             g = cg * 255; // se vuelve a escala de 256 solucion por cada 3 pixeles
-            this->arrayPixeles[i].Red = g; // se guardan los pixeles en el char todos el mismo
-            this->arrayPixeles[i].Green = g; // se guardan los pixeles en el char todos el mismo
-            this->arrayPixeles[i].Blue = g; // se guardan los pixeles en el char todos el mismo
+            this->arrayPixeles[i].Red =  static_cast<int>(g); // se guardan los pixeles en el char todos el mismo
+            this->arrayPixeles[i].Green = static_cast<int>(g); // se guardan los pixeles en el char todos el mismo
+            this->arrayPixeles[i].Blue = static_cast<int>(g); // se guardan los pixeles en el char todos el mismo
     }
     // Copiamos la imagen en el directorio de salida
     this->copiarImagen();
