@@ -3,7 +3,6 @@
 //
 
 #include "progargs.h"
-#include <filesystem>
 
 
  bool comprobarArg(int num_args, const std::string& inDir, const std::string& outDir, const std::string& operation) {
@@ -47,7 +46,7 @@
     return true;
 }
 
-contenido_BMP leerHeaderBMP(std::string filePath){
+contenido_BMP leerHeaderBMP(const std::string& filePath){
     /* Funcion encargada de leer y comprobar los valores del header*/
     // Volcamos los primeros 54 bytes en header_bmp
     std::ifstream BMP_file;
@@ -80,7 +79,7 @@ contenido_BMP leerHeaderBMP(std::string filePath){
 }
 
 
-int& leerArrayBMP(std::string filePath, contenido_BMP imagen_BMP) {
+const std::vector<int>& leerArrayBMP(const std::string& filePath, contenido_BMP imagen_BMP) {
     /* Continua la lectura del array BMP, leyendo los pixeles*/
     // Avanzamos a la posición donde empiezand los pixeles
     // 54 bytes desde el inicio
@@ -94,7 +93,7 @@ int& leerArrayBMP(std::string filePath, contenido_BMP imagen_BMP) {
     int fila = (imagen_BMP.anchura*3 + 3) & (~3);
     unsigned char aux; // variable ayuda a reordenar los pixeles de BGR a RGB
     unsigned char* datos_imagen = unsigned char[fila];
-    int* RGB;
+    std::vector<int> RGB;
     // lectura de la imagen
     for (int i = 0; i < altura; i++) {
         fileRead >> datos_imagen;
@@ -104,11 +103,11 @@ int& leerArrayBMP(std::string filePath, contenido_BMP imagen_BMP) {
             datos_imagen[j] = datos_imagen[j + 2];
             datos_imagen[j + 2] = aux;
             // r
-            RGB[j] = (int)datos_imagen[j];
+            RGB.push_back((int)datos_imagen[j]);
             // g
-            RGB[j + 1] = (int)datos_imagen[j + 1];
+            RGB.push_back((int)datos_imagen[j + 1]);
             // b
-            RGB[j + 2] = (int)datos_imagen[j + 2];
+            RGB.push_back((int)datos_imagen[j + 2]);
         }
     }
     fileRead.close();

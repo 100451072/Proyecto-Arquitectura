@@ -4,7 +4,6 @@
 
 #include "imageaos.h"
 
-#include <utility>
 
 // Constructor & Destructor
 Imageaos::Imageaos(int num_args, std::string arg_1, std::string arg_2, std::string arg_3) {
@@ -171,43 +170,42 @@ void Imageaos::escalaGrises(contenido_BMP imagen_BMP){ // revisar
 
 //gauss aos
 void Imageaos::difusionGaussiana(contenido_BMP imagen_BMP) {
-    int altura = imagen_BMP.altura;
-    int anchura = imagen_BMP.anchura;
-    int tmpR, tmpG, tmpB; // variables auxiliares
-    int l = anchura * 3; // pixeles por fila
-    int tamano = altura * l; // tamaño total en bytes
-    int cByte, b, cGauss, fGauss; // columna byte, byte, columna gauss, fila gauss
-    for (int i = 0; i < altura - 1; i += 1){
-        for (int j = 0; j < l - 1; j += 3){
-            tmpR = 0;
-            tmpG = 0;
-            tmpB = 0;
-            for (int s = -2; s <= 2; s++){
-                for (int t = -2; t <= 2; t++){
-                    fGauss = s + 2;
-                    cByte = j + t * 3;
-                    cGauss = t + 2;
-                    b = (i + s)*l + cByte;
-                    if (b >= 0 && cByte <= l - 1 && b <= tamano && 0 <= cByte) // PIXEL R
-                        tmpR += mGauss[fGauss][cGauss] * this->arrayPixeles[b].Red;
+    /* Función encargada de realizar la difusion gaussiana sobre
+    la imagen de entrada*/
 
-                    if (b >= 0 && cByte <= l - 1 && b <= tamano && 0 <= cByte) // PIXEL G
-                        tmpG += mGauss[fGauss][cGauss] * this->arrayPixeles[b].Green;
-                    b += 1;
-                    cByte += 1;
-                    if (b >= 0 && cByte <= l - 1 && b <= tamano && 0 <= cByte) // PIXEL B
-                        tmpB += mGauss[fGauss][cGauss] * this->arrayPixeles[b].Blue;
-                    b += 1;
-                    cByte += 1;
-                }
+    int anchura = imagen_BMP.anchura;
+    int altura = imagen_BMP.altura;
+    int total = anchura*altura;
+
+    int temp1[imagen_BMP.anchura*imagen_BMP.altura] = {0};
+    int temp2[imagen_BMP.anchura*imagen_BMP.altura] = {0};
+    int temp3[imagen_BMP.anchura*imagen_BMP.altura] = {0};
+
+    // Recorremos el array de pixeles por completo
+    for (int i=0; i<total; ++i) {
+        //Filas
+        for (int k=-2; k<2; ++k) {
+            // Columnas
+            for (int l=-2; l<2; ++l) {
+                // Nos desplazamos en el array de pixeles obteniendo las pos requeridas
+                // Multiplicar por el valor anchura nos permite desplazarnos entre las filas
+                temp1[i] += mGauss[k+3][k+3] * this->arrayPixeles[i + (anchura*k + l)].Red;
+                temp2[i] += mGauss[k+3][k+3] * this->arrayPixeles[i + (anchura*k + l)].Green;
+                temp3[i] += mGauss[k+3][k+3] * this->arrayPixeles[i + (anchura*k + l)].Blue;
             }
-            tmpR = tmpR / w; // se divide entre el peso
-            tmpG = tmpG / w;
-            tmpB = tmpB / w;
-            this->arrayPixeles[i].Red = tmpR; // se guardan los pixeles en el array de pixeles
-            this->arrayPixeles[i].Green = tmpG;
-            this->arrayPixeles[i].Blue = tmpB;
         }
+        // Dividimos entre w
+        temp1[i] /= 273;
+        temp2[i] /= 273;
+        temp3[i] /= 273;
     }
+    // Asignamos al array global sus respectivos valores, no se puede hacer en el bucle de arriba
+    // ya que alterariamos el calculo de los siguientes valores
+    for (int i=0; i<total; ++i) {
+        this->arrayPixeles[i].Red = temp1[i];
+        this->arrayPixeles[i].Green = temp2[i];
+        this->arrayPixeles[i].Blue = temp3[i];
+    }
+    // Finalmente creamos el archivo de salida
     this->copiarImagen();
 }

@@ -33,21 +33,6 @@ int mGauss[5][5] = {{1, 4, 7, 4, 1},
                     {1, 4, 7, 4, 1}};
 int w = 273;
 
-//
-// Estructura que nos permite medir el tiempo
-typedef struct chronometro
-{
-    int loadTime;
-    int gaussTime;
-    int histoTime;
-    int monoTime;
-    int copyTime;
-    int storeTime;
-    int total;
-
-} chronometro;
-
-
 // estructura que almacenará tres vectores para cada valor r, g, b
 struct Pixeles {
     int arrayR[MAX_SIZE];
@@ -79,12 +64,12 @@ public:
     // Funciones
     void executeProgram();
     void llenarPixeles();
-    void realizarOperacion(contenido_BMP imagen_BMP));
+    void realizarOperacion(contenido_BMP imagen_BMP);
     // Operaciones
-    void copiarImagen(contenido_BMP imagen_BMP));
-    void histograma(contenido_BMP imagen_BMP));
-    void escalaGrises(contenido_BMP imagen_BMP));
-    void difusionGaussiana(contenido_BMP imagen_BMP));
+    void copiarImagen(contenido_BMP imagen_BMP);
+    void histograma(contenido_BMP imagen_BMP);
+    void escalaGrises(contenido_BMP imagen_BMP);
+    void difusionGaussiana(contenido_BMP imagen_BMP);
 };
 
 

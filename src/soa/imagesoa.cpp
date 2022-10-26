@@ -170,47 +170,43 @@ void Imagesoa::escalaGrises(contenido_BMP imagen_BMP){ // revisar
     this->copiarImagen();
 }
 
-// funcion gauss para soa
-void Imagesoa::difusionGaussiana() {
-    int altura = this->comun.imagen_BMP.anchura;
-    int anchura = this->comun.imagen_BMP.anchura;
-    int tmpR, tmpG, tmpB; // pixeles auxiliares
-    int l = anchura * 3; // pixeles por fila
-    int tamano = altura * l; // tamaño total en bytes
-    int cByte, b, cGauss, fGauss;
-    for (int i = 0; i < altura- 1; i+=1){ // se recorre la altura
-        for (int j = 0; j < l - 1; j+=3){ // se recorre en anchura
-            tmpR = 0;
-            tmpG = 0;
-            tmpB = 0;
-            for (int s = -2; s <= 2; s++){
-                for (int t = -2; t <= 2; t++){
-                    fGauss = s + 2;
-                    cByte = j + t * 3;
-                    cGauss = t + 2;
-                    b = (i + s)*l + cByte;
-                    if (b >= 0 && cByte <= l - 1 && b <= tamano && 0 <= cByte) // PIXEL R
-                        tmpR += mGauss[fGauss][cGauss] * this->structPixels.arrayR[b];
+void Imagesoa::difusionGaussiana(contenido_BMP imagen_BMP) {
+    /* Función encargada de realizar la difusion gaussiana sobre
+    la imagen de entrada*/
 
-                    if (b >= 0 && cByte <= l - 1 && b <= tamano && 0 <= cByte) // PIXEL G
-                        tmpG += mGauss[fGauss][cGauss] * this->structPixels.arrayG[b];
-                    b += 1;
-                    cByte += 1;
-                    if (b >= 0 && cByte <= l - 1 && b <= tamano && 0 <= cByte) // PIXEL B
-                        tmpB+= mGauss[fGauss][cGauss] * this->structPixels.arrayB[b];
-                    b += 1;
-                    cByte += 1;
-                }
+    int anchura = imagen_BMP.anchura;
+    int altura = imagen_BMP.altura;
+    int total = anchura*altura;
+
+    int temp1[imagen_BMP.altura * imagen_BMP.anchura] = {0};
+    int temp2[imagen_BMP.altura * imagen_BMP.anchura] = {0};
+    int temp3[imagen_BMP.altura * imagen_BMP.anchura] = {0};
+
+    // Recorremos el array de pixeles por completo
+    for (int i=0; i<total; ++i) {
+        //Filas
+        for (int k=-2; k<2; ++k) {
+            // Columnas
+            for (int l=-2; l<2; ++l) {
+                // Nos desplazamos en el array de pixeles obteniendo las pos requeridas
+                // Multiplicar por el valor anchura nos permite desplazarnos entre las filas
+                temp1[i] += mGauss[k+3][k+3] * this->structPixels.arrayR[i + (anchura*k + l)];
+                temp2[i] += mGauss[k+3][k+3] * this->structPixels.arrayG[i + (anchura*k + l)];
+                temp3[i] += mGauss[k+3][k+3] * this->structPixels.arrayB[i + (anchura*k + l)];
             }
-            // ver como hacer en soa (añadir en array)
-            tmpR = tmpR / w; // se divide entre el peso
-            tmpG = tmpG / w;
-            tmpB = tmpB / w;
-            this->structPixels.arrayR[i] = tmpR;
-            this->structPixels.arrayG[i] = tmpG;
-            this->structPixels.arrayB[i] = tmpB;
         }
+        // Dividimos entre w
+        temp1[i] /= 273;
+        temp2[i] /= 273;
+        temp3[i] /= 273;
     }
+    // Asignamos al array global sus respectivos valores, no se puede hacer arriba
+    // ya que alterariamos los siguientes valores
+    for (int i=0; i<total; ++i) {
+        this->structPixels.arrayR[i] = temp1[i];
+        this->structPixels.arrayG[i] = temp2[i];
+        this->structPixels.arrayB[i] = temp3[i];
+    }
+    // Finalmente creamos el archivo de salida
     this->copiarImagen();
-
 }

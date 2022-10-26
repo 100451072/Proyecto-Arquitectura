@@ -10,6 +10,7 @@
 #include <cmath>
 #include <chrono>
 #include <vector>
+#include <utility>
 #include "common/progargs.h"
 #include "common/aux_functions.h"
 #include <filesystem>
@@ -26,20 +27,6 @@ int mGauss[5][5] = {{1, 4, 7, 4, 1},
                     {4, 16, 26, 16, 4},
                     {1, 4, 7, 4, 1}};
 int w = 273;
-
-//
-// Estructura que nos permite medir el tiempo
-typedef struct chronometro
-{
-    int loadTime;
-    int gaussTime;
-    int histoTime;
-    int monoTime;
-    int copyTime;
-    int storeTime;
-    int total;
-
-} chronometro;
 
 // Structura que almacenara tres enteros por pixel (R, G, B)
 struct Pixel
@@ -84,6 +71,5 @@ public:
     void escalaGrises(contenido_BMP imagen_BMP);
     void difusionGaussiana(contenido_BMP imagen_BMP);
 };
-
 
 #endif //UNTITLED_IMAGEAOS_H

@@ -2,10 +2,7 @@
 //
 //
 
-#include <cmath>
-#include <iostream>
-#include <vector>
-#include <fstream>
+
 #include "aux_functions.h"
 
 
@@ -42,7 +39,7 @@ void histograma(const std::vector<int>& RGB,
     std::ofstream archivo(outFile, std::ofstream::out);
 
     if (!archivo.is_open()) {
-        throw"Error: al abrir el archivo de destino";
+        throw std::invalid_argument("Error: al abrir el archivo de destino");
     }
 
     // Llenamos el archivo de salida con los histogramas
@@ -51,11 +48,6 @@ void histograma(const std::vector<int>& RGB,
     }
 
     archivo.close();
-}
-
-void escalaGrises() {
-    /* Función de apoyo para realizar el histograma*/
-
 }
 
 float transformacionLineal(int value) {
