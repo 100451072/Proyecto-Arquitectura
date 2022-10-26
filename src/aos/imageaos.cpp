@@ -188,10 +188,13 @@ void Imageaos::difusionGaussiana(contenido_BMP imagen_BMP) {
             // Columnas
             for (int l=-2; l<2; ++l) {
                 // Nos desplazamos en el array de pixeles obteniendo las pos requeridas
-                // Multiplicar por el valor anchura nos permite desplazarnos entre las filas
-                temp1[i] += mGauss[k+3][k+3] * this->arrayPixeles[i + (anchura*k + l)].Red;
-                temp2[i] += mGauss[k+3][k+3] * this->arrayPixeles[i + (anchura*k + l)].Green;
-                temp3[i] += mGauss[k+3][k+3] * this->arrayPixeles[i + (anchura*k + l)].Blue;
+                // Para que los pixeles de fuera sumen cero, comprobamos cuando los valores se salen de la matriz
+                if ((0 <= i % anchura + l < anchura) && (0 <= i / anchura + k < altura)) {
+                    // Multiplicar por el valor anchura nos permite desplazarnos entre las filas
+                    temp1[i] += mGauss[k + 3][k + 3] * this->arrayPixeles[i + (anchura * k + l)].Red;
+                    temp2[i] += mGauss[k + 3][k + 3] * this->arrayPixeles[i + (anchura * k + l)].Green;
+                    temp3[i] += mGauss[k + 3][k + 3] * this->arrayPixeles[i + (anchura * k + l)].Blue;
+                }
             }
         }
         // Dividimos entre w
