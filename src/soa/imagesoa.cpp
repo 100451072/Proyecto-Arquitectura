@@ -190,6 +190,7 @@ void Imagesoa::difusionGaussiana(contenido_BMP imagen_BMP) {
             for (int l=-2; l<2; ++l) {
                 // Nos desplazamos en el array de pixeles obteniendo las pos requeridas
                 // Multiplicar por el valor anchura nos permite desplazarnos entre las filas
+                // FALTA TENER EN CUENTA CUANDO SE SALE POR LOS LADOS
                 temp1[i] += mGauss[k+3][k+3] * this->structPixels.arrayR[i + (anchura*k + l)];
                 temp2[i] += mGauss[k+3][k+3] * this->structPixels.arrayG[i + (anchura*k + l)];
                 temp3[i] += mGauss[k+3][k+3] * this->structPixels.arrayB[i + (anchura*k + l)];
