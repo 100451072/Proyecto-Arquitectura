@@ -49,19 +49,21 @@ contenido_BMP Imagesoa::llenarPixeles(std::vector<BYTE>& array_BMP) {
     int* pixeles;
     contenido_BMP header;
     // Leemos el header y abrimos el archivo en el que nos encontramos
-    header = leerHeaderBMP(this->actualFile);
+    header = leerHeaderBMP(this->actualFile, array_BMP);
     num_pixeles = header.tamano;
     // Recibe como parametro una referencia a un array
     pixeles = leerArrayBMP(header);
 
+    // El vector pixeles es tres veces más largo que structPixeles, por eso
+    // lo recorremos asi
     for (int i=0; i<num_pixeles; i += 3) {
         // Añadimos los pixeles al array
-        this->structPixels.arrayR[i] = pixeles[i];
-        this->structPixels.arrayG[i + 1] = pixeles[i + 1];
-        this->structPixels.arrayB[i + 2] = pixeles[i + 2];
+        this->structPixels.arrayR[i/3] = pixeles[i];
+        this->structPixels.arrayG[i/3] = pixeles[i + 1];
+        this->structPixels.arrayB[i/3] = pixeles[i + 2];
     }
 
-    return header
+    return header;
 }
 
 void Imagesoa::realizarOperacion(contenido_BMP imagen_BMP, std::vector<BYTE>& array_BMP) {

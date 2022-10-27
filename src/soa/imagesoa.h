@@ -70,8 +70,8 @@ public:
     // Operaciones
     void copiarImagen(contenido_BMP imagen_BMP, const std::vector<BYTE>& array_BMP);
     void histograma(contenido_BMP imagen_BMP);
-    void escalaGrises(contenido_BMP imagen_BMP, std::vector<BYTE>& arra_BMP));
-    void difusionGaussiana(contenido_BMP imagen_BMP, std::vector<BYTE>& arra_BMP));
+    void escalaGrises(contenido_BMP imagen_BMP, std::vector<BYTE>& array_BMP);
+    void difusionGaussiana(contenido_BMP imagen_BMP, std::vector<BYTE>& array_BMP);
 };
 
 

@@ -44,7 +44,7 @@ void Imageaos::executeProgram() {
     std::cout << "Ejecución finalizada con exito" << std::endl;
 }
 
-void Imageaos::llenarPixeles(std::vector<BYTE>& archivo_BMP) {
+contenido_BMP Imageaos::llenarPixeles(std::vector<BYTE>& archivo_BMP) {
     /* Función encargada de llenar el array con los pixeles del
      * archivo BMP de comun*/
 
@@ -53,14 +53,17 @@ void Imageaos::llenarPixeles(std::vector<BYTE>& archivo_BMP) {
     contenido_BMP header;
     // Leemos el header y abrimos el archivo en el que nos encontramos
     header = leerHeaderBMP(this->actualFile, archivo_BMP);
-    num_pixeles = header.tamano;
-    pixeles = leerArrayBMP(header);
+    num_pixeles = header.anchura * header.altura;
+    pixeles = leerArrayBMP(header, archivo_BMP);
 
+    // El vector pixeles es tres veces más largo que arrayPixeles, por eso
+    // lo recorremos asi
     for (int i=0; i<num_pixeles; i += 3) {
-        this->arrayPixeles[i].Red = pixeles[i];
-        this->arrayPixeles[i + 1].Green = pixeles[i + 1];
-        this->arrayPixeles[i + 2].Blue = pixeles[i + 2];
+        this->arrayPixeles[i/3].Red = pixeles[i];
+        this->arrayPixeles[i/3].Green = pixeles[i + 1];
+        this->arrayPixeles[i/3].Blue = pixeles[i + 2];
     }
+    return header;
 }
 
 void Imageaos::realizarOperacion(contenido_BMP imagen_BMP, std::vector<BYTE>& array_BMP) {
