@@ -112,12 +112,13 @@ const std::vector<int>& leerArrayBMP(contenido_BMP imagen_BMP, std::vector<BYTE>
     // lectura de la imagen
     for (int i=0; i< altura; ++i) {
         for (int j=0; j<anchura * 3; j += 3) {
+            // Importante en archivo_BMP esta en BGR
             // r                                (bytes que ya hemos leido)
-            RGB.push_back((int) archivo_BMP[inicio + (i * anchura * 3 + i * padding) + j]);
+            RGB.push_back((int) archivo_BMP[inicio + (i * anchura * 3 + i * padding) + j + 2]);
             // g
             RGB.push_back((int) archivo_BMP[inicio + (i * anchura * 3 + i * padding) + j + 1]);
             // b
-            RGB.push_back((int) archivo_BMP[inicio + (i * anchura * 3 + i * padding) + j + 2]);
+            RGB.push_back((int) archivo_BMP[inicio + (i * anchura * 3 + i * padding) + j]);
         }
     }
     return RGB;
