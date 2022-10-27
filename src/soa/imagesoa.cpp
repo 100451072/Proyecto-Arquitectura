@@ -99,8 +99,11 @@ void Imagesoa::realizarOperacion(contenido_BMP imagen_BMP, std::vector<BYTE>& ar
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-void Imagesoa::copiarImagen(contenido_BMP imagen_BMP, std::vector<BYTE>& array_BMP) {
+void Imagesoa::copiarImagen(contenido_BMP imagen_BMP, const std::vector<BYTE>& array_BMP) {
     /* Función encargada de copiar la imagen actual en el directorio de salida*/
+
+    // Iterador para llenar el archivo de salida
+    int i = 0;
 
     // establecemos offstream con la ruta al archivo destino
     std::ofstream archivo;
@@ -110,17 +113,28 @@ void Imagesoa::copiarImagen(contenido_BMP imagen_BMP, std::vector<BYTE>& array_B
         throw std::invalid_argument("Error: al abrir el archivo destino");
     }
 
-    // Escribimos el header en el archivo origen
-    archivo << imagen_BMP;
+    // Escribimos el header en el archivo origen solo hasta la dirección de inicio de pixeles
+    for (i; i<imagen_BMP.dir_datos_imagen; ++i) {
+        archivo.write(reinterpret_cast<const char *>(array_BMP[i]), sizeof(BYTE));
+    }
 
     // Escribimos los pixeles, recorriendo todo el array
-    for (int i=0; i<imagen_BMP.anchura * imagen_BMP.anchura; ++i) {
+    for (i; i<imagen_BMP.anchura * imagen_BMP.anchura; ++i) {
         // Recordar que en un archivo BMP los pixeles van en orden BGR
         archivo << this->structPixels.arrayB[i];
         archivo << this->structPixels.arrayG[i];
         archivo << this->structPixels.arrayR[i];
-        // Añadir padding al final de liena en caso de que exista
+        if (fin_de_linea) {
+            // Añadir padding al final de liena en caso de que exista
+            archivo << imagen_BMP.t_padding;
+        }
     }
+
+    // Añadimos la parte de después del array de pixeles en caso de que exista
+    for (i; i<imagen_BMP.tamano; ++i) {
+        archivo.write(reinterpret_cast<const char *>(array_BMP[i]), sizeof(BYTE));
+    }
+
     // Cerramos el archivo de salida
     archivo.close();
 }
@@ -154,7 +168,7 @@ void Imagesoa::histograma(contenido_BMP imagen_BMP) {
     histograma(RGB, rutaArchivoSalida("hst", this->outDirectory, this->actualFile));
 }
 
-void Imagesoa::escalaGrises(contenido_BMP imagen_BMP){ // revisar
+void Imagesoa::escalaGrises(contenido_BMP imagen_BMP, std::vector<BYTE>& array_BMP) { // revisar
     /* Función encargada de hacer la transformación de grises de una imagen*/
 
     float cR = 0;
@@ -175,10 +189,10 @@ void Imagesoa::escalaGrises(contenido_BMP imagen_BMP){ // revisar
         this->structPixels.arrayB[i] =  static_cast<int>(g); // se guardan los pixeles en el char todos el mismo
     }
     // Copiamos la imagen en el directorio de salida
-    this->copiarImagen();
+    this->copiarImagen(imagen_BMP, array_BMP);
 }
 
-void Imagesoa::difusionGaussiana(contenido_BMP imagen_BMP) {
+void Imagesoa::difusionGaussiana(contenido_BMP imagen_BMP, std::vector<BYTE>& array_BMP) {
     /* Función encargada de realizar la difusion gaussiana sobre
     la imagen de entrada*/
 
@@ -220,5 +234,5 @@ void Imagesoa::difusionGaussiana(contenido_BMP imagen_BMP) {
         this->structPixels.arrayB[i] = temp3[i];
     }
     // Finalmente creamos el archivo de salida
-    this->copiarImagen(imagen_BMP);
+    this->copiarImagen(imagen_BMP, array_BMP);
 }

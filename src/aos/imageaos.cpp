@@ -70,7 +70,7 @@ void Imageaos::realizarOperacion(contenido_BMP imagen_BMP, std::vector<BYTE>& ar
     // Función encargada de realizar la operación
     if (this->operation == "gauss"){
         t_inicio = std::chrono::high_resolution_clock::now();
-        this->difusionGaussiana(imagen_BMP);
+        this->difusionGaussiana(imagen_BMP, array_BMP);
         t_fin = std::chrono::high_resolution_clock::now();
         this->time.gaussTime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
     }
@@ -88,7 +88,7 @@ void Imageaos::realizarOperacion(contenido_BMP imagen_BMP, std::vector<BYTE>& ar
     }
     if (this->operation == "mono"){
         t_inicio = std::chrono::high_resolution_clock::now();
-        this->escalaGrises(imagen_BMP);
+        this->escalaGrises(imagen_BMP, array_BMP);
         t_fin = std::chrono::high_resolution_clock::now();
         this->time.monoTime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
     }
@@ -96,8 +96,13 @@ void Imageaos::realizarOperacion(contenido_BMP imagen_BMP, std::vector<BYTE>& ar
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-void Imageaos::copiarImagen(contenido_BMP imagen_BMP, std::vector<BYTE>& array_BMP) {
-    /* Función encargada de copiar la imagen actual en el directorio de salida*/
+void Imageaos::copiarImagen(contenido_BMP imagen_BMP, const std::vector<BYTE>& array_BMP) {
+    /* Función encargada de copiar la imagen actual en el directorio de salida,
+     * de forma que se puede utilizar para escribir la imagen despues de realizar
+     * cualquier operacion previamente*/
+
+    // Iterador para ir llenando cada posición del archivo
+    int i = 0;
 
     // establecemos offstream con la ruta al archivo destino
     std::ofstream archivo;
@@ -107,17 +112,28 @@ void Imageaos::copiarImagen(contenido_BMP imagen_BMP, std::vector<BYTE>& array_B
         throw std::invalid_argument("Error: al abrir el archivo destino");
     }
 
-    // Escribimos el header en el archivo origen
-    archivo << imagen_BMP;
+    // Escribimos el header en el archivo origen solo hasta la dirección de inicio de pixeles
+    for (i; i<imagen_BMP.dir_datos_imagen; ++i) {
+        archivo.write(reinterpret_cast<const char *>(array_BMP[i]), sizeof(BYTE));
+    }
 
     // Escribimos los pixeles, recorriendo todo el array
-    for (int i=0; i<imagen_BMP.anchura * imagen_BMP.anchura; ++i) {
+    for (i; i<imagen_BMP.anchura * imagen_BMP.anchura; ++i) {
         // Recordar que en un archivo BMP los pixeles van en orden BGR
         archivo << this->arrayPixeles[i].Blue;
         archivo << this->arrayPixeles[i].Green;
         archivo << this->arrayPixeles[i].Red;
-        // Añadir padding al final de liena en caso de que exista
+        if (fin_linea) {
+            // Añadir padding al final de liena en caso de que exista
+            archivo << imagen_BMP.t_padding;
+        }
     }
+
+    // Añadimos la parte de después del array de pixeles en caso de que exista
+    for (i; i<imagen_BMP.tamano; ++i) {
+        archivo.write(reinterpret_cast<const char *>(array_BMP[i]), sizeof(BYTE));
+    }
+
     // Cerramos el archivo de salida
     archivo.close();
 }
@@ -151,9 +167,7 @@ void Imageaos::histograma(contenido_BMP imagen_BMP) {
     histograma(RGB, rutaArchivoSalida("hst", this->outDirectory, this->actualFile));
 }
 
-
-
-void Imageaos::escalaGrises(contenido_BMP imagen_BMP){ // revisar
+void Imageaos::escalaGrises(contenido_BMP imagen_BMP, std::vector<BYTE>& arraY_BMP){ // revisar
     /* Función encargada de hacer la transformación de grises de una imagen*/
 
     float cR = 0;
@@ -174,11 +188,11 @@ void Imageaos::escalaGrises(contenido_BMP imagen_BMP){ // revisar
             this->arrayPixeles[i].Blue = static_cast<int>(g); // se guardan los pixeles en el char todos el mismo
     }
     // Copiamos la imagen en el directorio de salida
-    this->copiarImagen();
+    this->copiarImagen(imagen_BMP, arraY_BMP);
 }
 
 //gauss aos
-void Imageaos::difusionGaussiana(contenido_BMP imagen_BMP) {
+void Imageaos::difusionGaussiana(contenido_BMP imagen_BMP, std::vector<BYTE>& arraY_BMP) {
     /* Función encargada de realizar la difusion gaussiana sobre
     la imagen de entrada*/
 
@@ -219,5 +233,5 @@ void Imageaos::difusionGaussiana(contenido_BMP imagen_BMP) {
         this->arrayPixeles[i].Blue = temp3[i];
     }
     // Finalmente creamos el archivo de salida
-    this->copiarImagen();
+    this->copiarImagen(imagen_BMP, arraY_BMP);
 }
