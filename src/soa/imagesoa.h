@@ -17,6 +17,7 @@
 #include <filesystem>
 #include "common/progargs.h"
 #include "common/aux_functions.h"
+#include "../common/progargs.h"
 
 using namespace std;
 
@@ -64,10 +65,10 @@ public:
 
     // Funciones
     void executeProgram();
-    void llenarPixeles();
-    void realizarOperacion(contenido_BMP imagen_BMP);
+    contenido_BMP llenarPixeles(std::vector<BYTE>& archivo_BMP);
+    void realizarOperacion(contenido_BMP imagen_BMP, std::vector<BYTE>& archivo_BMP);
     // Operaciones
-    void copiarImagen(contenido_BMP imagen_BMP);
+    void copiarImagen(contenido_BMP imagen_BMP, std::vector<BYTE>& array_BMP);
     void histograma(contenido_BMP imagen_BMP);
     void escalaGrises(contenido_BMP imagen_BMP);
     void difusionGaussiana(contenido_BMP imagen_BMP);

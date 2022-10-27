@@ -19,7 +19,6 @@
 // Tamaño max de un array
 #define MAX_SIZE 1000000
 
-
 // matriz y peso gauss
 int mGauss[5][5] = {{1, 4, 7, 4, 1},
                     {4, 16, 26, 16, 4},
@@ -60,11 +59,11 @@ public:
 
     // Funciones
     void executeProgram();
-    void llenarPixeles();
-    void realizarOperacion(contenido_BMP imagen_BMP);
+    contenido_BMP llenarPixeles(std::vector<BYTE>& archivo_BMP);
+    void realizarOperacion(contenido_BMP imagen_BMP, std::vector<BYTE>& arhcivo_BMP);
 
     // Operaciones
-    void copiarImagen(contenido_BMP imagen_BMP);
+    void copiarImagen(contenido_BMP imagen_BMP, std::vector<BYTE>& array_BMP);
     void histograma(contenido_BMP imagen_BMP);
     void escalaGrises(contenido_BMP imagen_BMP);
     void difusionGaussiana(contenido_BMP imagen_BMP);

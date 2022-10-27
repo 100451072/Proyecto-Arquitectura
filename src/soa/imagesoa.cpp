@@ -3,6 +3,7 @@
 //
 
 #include "imagesoa.h"
+#include "../common/progargs.h"
 
 //Constructor & Destructor
 Imagesoa::Imagesoa(int num_args, const std::string& arg_1, const std::string& arg_2, const std::string& arg_3) {
@@ -19,6 +20,11 @@ Imagesoa::Imagesoa(int num_args, const std::string& arg_1, const std::string& ar
 void Imagesoa::executeProgram() {
     /* Función principal encargada de la ejecución del programa*/
 
+    // Almacen de valores importantes
+    contenido_BMP imagen;
+    // Almacen de todo el archivo para poder copiar
+    std::vector<BYTE> array_BMP;
+
     // Comenzamos comprobando los argumentos de entrada
     if (!comprobarArg(this->numArgumentos, this->inDirectory, this->outDirectory, this->operation))
         throw std::invalid_argument("Error: parámetros incorrectos");
@@ -28,14 +34,14 @@ void Imagesoa::executeProgram() {
         // Actualizamos el archivo actual
         this->actualFile = currentFile.path();
         // Rellenamos los pixeles llama a leerBMP()
-        this->llenarPixeles();
+        imagen = this->llenarPixeles(array_BMP);
         // Realizar operacion seleccionada
-        this->realizarOperacion();
+        this->realizarOperacion(imagen, array_BMP);
     }
     std::cout << "Ejecución finalizada con exito" << std::endl;
 }
 
-void Imagesoa::llenarPixeles() {
+contenido_BMP Imagesoa::llenarPixeles(std::vector<BYTE>& array_BMP) {
     /* Función encargada de llenar el array con los pixeles del
      * archivo BMP de comun*/
 
@@ -54,9 +60,11 @@ void Imagesoa::llenarPixeles() {
         this->structPixels.arrayG[i + 1] = pixeles[i + 1];
         this->structPixels.arrayB[i + 2] = pixeles[i + 2];
     }
+
+    return header
 }
 
-void Imagesoa::realizarOperacion(contenido_BMP imagen_BMP) {
+void Imagesoa::realizarOperacion(contenido_BMP imagen_BMP, std::vector<BYTE>& array_BMP) {
     // Función encargada de realizar la operación
 
     std::chrono::high_resolution_clock::time_point t_inicio, t_fin;
@@ -76,7 +84,7 @@ void Imagesoa::realizarOperacion(contenido_BMP imagen_BMP) {
     }
     if (this->operation == "copy"){
         t_inicio = std::chrono::high_resolution_clock::now();
-        this->copiarImagen(imagen_BMP);
+        this->copiarImagen(imagen_BMP, array_BMP);
         t_fin = std::chrono::high_resolution_clock::now();
         this->time.copyTime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
     }
@@ -91,7 +99,7 @@ void Imagesoa::realizarOperacion(contenido_BMP imagen_BMP) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-void Imagesoa::copiarImagen(contenido_BMP imagen_BMP) {
+void Imagesoa::copiarImagen(contenido_BMP imagen_BMP, std::vector<BYTE>& array_BMP) {
     /* Función encargada de copiar la imagen actual en el directorio de salida*/
 
     // establecemos offstream con la ruta al archivo destino
@@ -106,7 +114,7 @@ void Imagesoa::copiarImagen(contenido_BMP imagen_BMP) {
     archivo << imagen_BMP;
 
     // Escribimos los pixeles, recorriendo todo el array
-    for (int i=0; i<this->imagen_BMP.anchura * this->imagen_BMP.anchura; ++i) {
+    for (int i=0; i<imagen_BMP.anchura * imagen_BMP.anchura; ++i) {
         // Recordar que en un archivo BMP los pixeles van en orden BGR
         archivo << this->structPixels.arrayB[i];
         archivo << this->structPixels.arrayG[i];
@@ -212,5 +220,5 @@ void Imagesoa::difusionGaussiana(contenido_BMP imagen_BMP) {
         this->structPixels.arrayB[i] = temp3[i];
     }
     // Finalmente creamos el archivo de salida
-    this->copiarImagen();
+    this->copiarImagen(imagen_BMP);
 }

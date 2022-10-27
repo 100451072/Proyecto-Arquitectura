@@ -3,9 +3,10 @@
 //
 
 #include "progargs.h"
+#include "../aos/imageaos.h"
 
 
- bool comprobarArg(int num_args, const std::string& inDir, const std::string& outDir, const std::string& operation) {
+bool comprobarArg(int num_args, const std::string& inDir, const std::string& outDir, const std::string& operation) {
     /* Función encargada de validar los argumentos introducidos,
      * devuelve false en caso de que algun arg sea incorrecto*/
     std::cout << "$image " <<  inDir << " " << outDir << " " <<  operation << "\n";
@@ -46,7 +47,7 @@
     return true;
 }
 
-contenido_BMP leerHeaderBMP(const std::string& filePath){
+contenido_BMP leerHeaderBMP(const std::string& filePath, std::vector<BYTE>& archivo_BMP){
     /* Funcion encargada de leer y comprobar los valores del header*/
     // Volcamos los primeros 54 bytes en header_bmp
     std::ifstream BMP_file;
@@ -54,13 +55,16 @@ contenido_BMP leerHeaderBMP(const std::string& filePath){
     unsigned char BMP_info[BMP_header_size];
     contenido_BMP imagen_BMP;
 
+    // Abrimos el archivo BMP para leer el header desde el principio
     BMP_file.open(filePath, std::ios::in | std::ios::binary);
 
     BMP_file.read(reinterpret_cast<char*> (BMP_info), BMP_header_size);
+    // Header info
     imagen_BMP.tamano = BMP_info[2];
+    imagen_BMP.dir_datos_imagen = BMP_info[10];
+    // Header DIB
     imagen_BMP.anchura = BMP_info[18];
     imagen_BMP.altura = BMP_info[22];
-    imagen_BMP.datos_imagen = BMP_info[10];
     imagen_BMP.numero_planos = BMP_info[26];
     imagen_BMP.compresion = BMP_info[30];
     imagen_BMP.t_punto = BMP_info[28];

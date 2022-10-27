@@ -3,6 +3,7 @@
 //
 
 #include "imageaos.h"
+#include "../common/progargs.h"
 
 #include <utility>
 
@@ -22,6 +23,11 @@ Imageaos::Imageaos(int num_args, const std::string& arg_1, const std::string& ar
 void Imageaos::executeProgram() {
     /* Función principal encargada de la ejecución del programa*/
 
+    // Guardar valres importantes
+    contenido_BMP imagen;
+    // Guardar todo el archivo
+    std::vector<BYTE> archivo_BMP;
+
     // Comenzamos comprobando los argumentos de entrada
     if (!comprobarArg(this->numArgumentos, this->inDirectory, this->outDirectory, this->operation))
         throw std::invalid_argument("Error: parámetros incorrectos");
@@ -31,14 +37,14 @@ void Imageaos::executeProgram() {
         // Actualizamos el archivo actual
         this->actualFile = currentFile.path();
         // Rellenamos los pixeles llama a leerBMP()
-        this->llenarPixeles();
+        imagen = this->llenarPixeles(archivo_BMP);
         // Realizar operacion seleccionada
-        this->realizarOperacion();
+        this->realizarOperacion(imagen, archivo_BMP);
     }
     std::cout << "Ejecución finalizada con exito" << std::endl;
 }
 
-void Imageaos::llenarPixeles() {
+void Imageaos::llenarPixeles(std::vector<BYTE>& archivo_BMP) {
     /* Función encargada de llenar el array con los pixeles del
      * archivo BMP de comun*/
 
@@ -46,7 +52,7 @@ void Imageaos::llenarPixeles() {
     int* pixeles;
     contenido_BMP header;
     // Leemos el header y abrimos el archivo en el que nos encontramos
-    header = leerHeaderBMP(this->actualFile);
+    header = leerHeaderBMP(this->actualFile, archivo_BMP);
     num_pixeles = header.tamano;
     pixeles = leerArrayBMP(header);
 
@@ -57,7 +63,7 @@ void Imageaos::llenarPixeles() {
     }
 }
 
-void Imageaos::realizarOperacion(contenido_BMP imagen_BMP) {
+void Imageaos::realizarOperacion(contenido_BMP imagen_BMP, std::vector<BYTE>& array_BMP) {
 
     std::chrono::high_resolution_clock::time_point t_inicio, t_fin;
 
@@ -76,7 +82,7 @@ void Imageaos::realizarOperacion(contenido_BMP imagen_BMP) {
     }
     if (this->operation == "copy"){
         t_inicio = std::chrono::high_resolution_clock::now();
-        this->copiarImagen(imagen_BMP);
+        this->copiarImagen(imagen_BMP, array_BMP);
         t_fin = std::chrono::high_resolution_clock::now();
         this->time.copyTime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
     }
@@ -90,7 +96,7 @@ void Imageaos::realizarOperacion(contenido_BMP imagen_BMP) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-void Imageaos::copiarImagen(contenido_BMP imagen_BMP) {
+void Imageaos::copiarImagen(contenido_BMP imagen_BMP, std::vector<BYTE>& array_BMP) {
     /* Función encargada de copiar la imagen actual en el directorio de salida*/
 
     // establecemos offstream con la ruta al archivo destino
@@ -105,7 +111,7 @@ void Imageaos::copiarImagen(contenido_BMP imagen_BMP) {
     archivo << imagen_BMP;
 
     // Escribimos los pixeles, recorriendo todo el array
-    for (int i=0; i<this->imagen_BMP.anchura * this->imagen_BMP.anchura; ++i) {
+    for (int i=0; i<imagen_BMP.anchura * imagen_BMP.anchura; ++i) {
         // Recordar que en un archivo BMP los pixeles van en orden BGR
         archivo << this->arrayPixeles[i].Blue;
         archivo << this->arrayPixeles[i].Green;
