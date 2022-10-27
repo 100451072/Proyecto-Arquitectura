@@ -22,7 +22,7 @@ typedef struct contenido_BMP {
     unsigned anchura;               // Anchura del bit map (2B) (offset 18B)
     unsigned altura;                // Altura del bit map (2B) (offset 20B)
     unsigned int numero_planos;     // (2B) (offset 22B) debe ser uno
-    unsigned int pix_por_bit        // (2B) (offset 24)
+    unsigned int pix_por_bit        // (2B) (offset 24) pixeles por bite
     int compresion;
     int t_punto;
     int t_padding;
