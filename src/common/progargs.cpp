@@ -67,13 +67,13 @@ contenido_BMP leerHeaderBMP(const std::string& filePath){
     imagen_BMP.t_padding = (4 - (imagen_BMP.anchura * 3) % 4) % 4;
 
     if (imagen_BMP.t_punto != 24){
-        throw "Error tamaño punto.";
+        throw std::invalid_argument("Error tamaño punto.");
     }
     if (imagen_BMP.compresion != 0){
-        throw "Error valor de compresion";
+        throw std::invalid_argument("Error valor de compresion");
     }
     if (imagen_BMP.numero_planos != 1){
-        throw "Error numero de planos.";
+        throw std::invalid_argument("Error numero de planos.");
     }
     return imagen_BMP;
 }
@@ -92,11 +92,11 @@ const std::vector<int>& leerArrayBMP(const std::string& filePath, contenido_BMP 
     // Continuamos con la lectura
     int fila = (imagen_BMP.anchura*3 + 3) & (~3);
     unsigned char aux; // variable ayuda a reordenar los pixeles de BGR a RGB
-    unsigned char* datos_imagen = unsigned char[fila];
+    unsigned char* datos_imagen[fila];
     std::vector<int> RGB;
     // lectura de la imagen
     for (int i = 0; i < altura; i++) {
-        fileRead >> datos_imagen;
+        BMP_file >> datos_imagen;
         for (int j = 0; j < anchura * 3; j += 3) {
             // es por tres ya que son tres: rgb; se reordenan
             aux = datos_imagen[j];
@@ -110,7 +110,7 @@ const std::vector<int>& leerArrayBMP(const std::string& filePath, contenido_BMP 
             RGB.push_back((int)datos_imagen[j + 2]);
         }
     }
-    fileRead.close();
+    BMP_file.close();
     return RGB;
 }
 

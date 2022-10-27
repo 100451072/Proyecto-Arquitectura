@@ -4,11 +4,14 @@
 
 #include "imageaos.h"
 
+#include <utility>
+
 
 // Constructor & Destructor
-Imageaos::Imageaos(int num_args, std::string arg_1, std::string arg_2, std::string arg_3) {
+Imageaos::Imageaos(int num_args, const std::string& arg_1, const std::string& arg_2, const std::string& arg_3) {
     /* Constructor, encargado de asigar a cada nodo de arrayPixeles
      * su valor de R, G, B*/
+
     this->numArgumentos = num_args;
     this->inDirectory = arg_1;
     this->outDirectory = arg_2;

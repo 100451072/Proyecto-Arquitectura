@@ -26,7 +26,6 @@ int mGauss[5][5] = {{1, 4, 7, 4, 1},
                     {7, 26, 41, 26, 7},
                     {4, 16, 26, 16, 4},
                     {1, 4, 7, 4, 1}};
-int w = 273;
 
 // Structura que almacenara tres enteros por pixel (R, G, B)
 struct Pixel
@@ -36,15 +35,14 @@ struct Pixel
     int Blue;
 };
 
-
 class Imageaos {
 private:
 
     // Como dice la definicion de aos, un solo array
-    Pixel arrayPixeles[MAX_SIZE];
+    Pixel arrayPixeles[MAX_SIZE]{};
 
     // Cronómetro
-    chronometro time;
+    chronometro time{};
 
     // Argumentos pasados por main
     int numArgumentos;
@@ -58,7 +56,7 @@ private:
 
 public:
     // Constructor & Destructor
-    Imageaos(int num_args, std::string arg_1, std::string arg_2, std::string arg_3);
+    Imageaos(int num_args, const std::string& arg_1, const std::string& arg_2, const std::string& arg_3);
 
     // Funciones
     void executeProgram();
@@ -66,7 +64,7 @@ public:
     void realizarOperacion(contenido_BMP imagen_BMP);
 
     // Operaciones
-    void copiarImagen(contenido_BMP imagen_BMP));
+    void copiarImagen(contenido_BMP imagen_BMP);
     void histograma(contenido_BMP imagen_BMP);
     void escalaGrises(contenido_BMP imagen_BMP);
     void difusionGaussiana(contenido_BMP imagen_BMP);

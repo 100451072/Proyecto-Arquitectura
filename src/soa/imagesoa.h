@@ -6,21 +6,22 @@
 #define UNTITLED_IMAGESOA_H
 
 #include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <dirent.h>
 #include <sys/types.h>
 #include <cmath>
 #include <chrono>
 #include <vector>
 #include <fstream>
+#include <filesystem>
 #include "common/progargs.h"
 #include "common/aux_functions.h"
 
 using namespace std;
 
 // Tamaño max para formar un array
-#define MAX_SIZE 1000000;
+constexpr int MAX_SIZE = 1000000;
 
 // variables no se si se pueden
 //
@@ -43,12 +44,12 @@ struct Pixeles {
 class Imagesoa {
 private:
     // atributos
-    Pixeles structPixels;
+    Pixeles structPixels{};
 
-    chronometro time;
+    chronometro time{};
 
     // componentes comunes
-    int numArgumentos;
+    int numArgumentos{};
     std::string image;
     std::string inDirectory;
     std::string outDirectory;

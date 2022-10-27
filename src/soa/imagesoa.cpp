@@ -9,10 +9,10 @@ Imagesoa::Imagesoa(int num_args, const std::string& arg_1, const std::string& ar
     /* Constructor, recibe tres vectores que conformarán
      * el structurePixels*/
     // Inicialización de los atributos de common
-    this->comun.numArgumentos = num_args;
-    this->comun.inDirectory = arg_1;
-    this->comun.outDirectory = arg_2;
-    this->comun.operation = arg_3;
+    this->numArgumentos = num_args;
+    this->inDirectory = arg_1;
+    this->outDirectory = arg_2;
+    this->operation = arg_3;
     this->actualFile = "";
 }
 

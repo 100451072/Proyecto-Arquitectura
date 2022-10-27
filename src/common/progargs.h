@@ -13,22 +13,24 @@
 #include <string>
 #include <fstream>
 
-typedef struct contenido_BMP{
+typedef struct contenido_BMP {
     // contenido del archivo bmp para usarlo en las lecturas NO SON TODOS SON LOS IMPORTANTES
-    int tamano;
-    int t_padding;
-    int anchura;
-    int altura;
-    int datos_imagen;
-    int numero_planos;
+    // Primer header
+    unsigned int tamano;             // Tamño archivo (4B) (offset 2B) (ojo que hay dos headers, de info, y el siguiente de bits)
+    unsigned int dir_datos_imagen;   // Start pixeles (4B) (offset 10)
+    // Segundo header
+    unsigned anchura;               // Anchura del bit map (2B) (offset 18B)
+    unsigned altura;                // Altura del bit map (2B) (offset 20B)
+    unsigned int numero_planos;     // (2B) (offset 22B) debe ser uno
+    unsigned int pix_por_bit        // (2B) (offset 24)
     int compresion;
     int t_punto;
+    int t_padding;
 
 } contenido_BMP;
 
 // Estructura que nos permite medir el tiempo
-typedef struct chronometro
-{
+typedef struct chronometro {
     int loadTime;
     int gaussTime;
     int histoTime;
