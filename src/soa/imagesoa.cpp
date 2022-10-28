@@ -128,7 +128,8 @@ void Imagesoa::histograma() {
         RGB[256 + i] = static_cast<char>(G[i]);
         RGB[512 + i] = static_cast<char>(B[i]);
     }
-    std::ofstream histo(this->outDir+"/"+this->fileName+".hst");
+    std::string histoName = this->outDir+"/"+this->fileName.substr(0, fileName.find("."))+".hst";
+    std::ofstream histo(histoName);
     histo << RGB << std::endl;
     histo.close();
     t_fin = std::chrono::high_resolution_clock::now();
