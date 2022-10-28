@@ -32,7 +32,6 @@ Imagesoa::Imagesoa(const std::string& fileName, const std::string& inDir, const 
     std::cout << "File: \"" << this->fileName << "\"" << std::endl;
     t_fin = std::chrono::high_resolution_clock::now();
     std::cout << "  Load time: " << std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count() << std::endl;
-
 }
 
 bool Imagesoa::checkHeader() {
@@ -96,7 +95,6 @@ void Imagesoa::guardar() {
     outFile.close();
     t_fin = std::chrono::high_resolution_clock::now();
     std::cout << "  Store time: " << std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count() << std::endl;
-
 }
 
 void Imagesoa::copiarImagen() {
@@ -167,56 +165,48 @@ int mGauss[5][5] = {{1, 4, 7, 4, 1},
 void Imagesoa::difusionGaussiana() {
     /* Función encargada de realizar la difusion gaussiana sobre
     la imagen de entrada*/
-
     std::chrono::high_resolution_clock::time_point t_inicio, t_fin;
     t_inicio = std::chrono::high_resolution_clock::now();
-
     int anchura = this->width;
     int altura = this->height;
     int total = anchura*altura;
-
     // Copia del resultado de la transformacion para no afectar a los siguientes valroes
     std::vector<int> temp1;
     std::vector<int> temp2;
     std::vector<int> temp3;
-
-
     // Recorremos el array de pixeles por completo
     for (int i=0; i<total; ++i) {
         temp1.push_back(0);
         temp2.push_back(0);
         temp3.push_back(0);
-
         //Filas
         for (int k=-2; k<2; ++k) {
             // Columnas
             for (int l=-2; l<2; ++l) {
-
                 // Nos desplazamos en el array de pixeles obteniendo las pos requeridas
                 // Para que los pixeles de fuera sumen cero, comprobamos cuando los valores se salen de la matriz
                 if (((0 <= i % anchura + l) && (i % anchura + l < anchura)) && ((0 <= i / anchura + k) && (i / anchura + k< altura))) {
                     // Multiplicar por el valor anchura nos permite desplazarnos entre las filas
                     temp1[i] += mGauss[k + 3][l + 3] * this->structPixeles.arrayR[i + (anchura * k + l)];
                     temp2[i] += mGauss[k + 3][l + 3] * this->structPixeles.arrayG[i + (anchura * k + l)];
-                    temp3[i] += mGauss[k + 3][l + 3] * this->structPixeles.arrayB[i + (anchura * k + l)];
-                }
-            }
-        }
+                    temp3[i] += mGauss[k + 3][l + 3] * this->structPixeles.arrayB[i + (anchura * k + l)];}}}
         // Dividimos entre w
         temp1[i] /= WEIGHT;
         temp2[i] /= WEIGHT;
-        temp3[i] /= WEIGHT;
-    }
-    // Asignamos al array global sus respectivos valores, no se puede hacer en el bucle de arriba
-    // ya que alterariamos el calculo de los siguientes valores
-    for (int i=0; i<total; ++i) {
-        this->structPixeles.arrayR[i] = temp1[i];
-        this->structPixeles.arrayG[i] = temp2[i];
-        this->structPixeles.arrayB[i] = temp3[i];
-    }
+        temp3[i] /= WEIGHT;}
+    inserarEnStruct(total, temp1, temp2, temp3);
     t_fin = std::chrono::high_resolution_clock::now();
     std::cout << "  Gauss time: " << std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count() << std::endl;
     this->guardar();
+}
+
+void Imagesoa::inserarEnStruct(int total, const std::vector<int> &temp1, const std::vector<int> &temp2,
+                               const std::vector<int> &temp3) {// Asignamos al array global sus respectivos valores, no se puede hacer en el bucle de arriba
+// ya que alterariamos el calculo de los siguientes valores
+    for (int i=0; i<total; ++i) {
+        structPixeles.arrayR[i] = temp1[i];
+        structPixeles.arrayG[i] = temp2[i];
+        structPixeles.arrayB[i] = temp3[i];}
 }
 
 

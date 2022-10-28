@@ -176,55 +176,48 @@ int mGauss[5][5] = {{1, 4, 7, 4, 1},
 void Imageaos::difusionGaussiana() {
     /* Función encargada de realizar la difusion gaussiana sobre
     la imagen de entrada*/
-
     std::chrono::high_resolution_clock::time_point t_inicio, t_fin;
     t_inicio = std::chrono::high_resolution_clock::now();
-
     int anchura = this->width;
     int altura = this->height;
     int total = anchura*altura;
-
     // Copia del resultado de la transformacion para no afectar a los siguientes valroes
     std::vector<int> temp1;
     std::vector<int> temp2;
     std::vector<int> temp3;
-
-
     // Recorremos el array de pixeles por completo
     for (int i=0; i<total; ++i) {
         temp1.push_back(0);
         temp2.push_back(0);
         temp3.push_back(0);
-
         //Filas
         for (int k=-2; k<2; ++k) {
             // Columnas
             for (int l=-2; l<2; ++l) {
-
                 // Nos desplazamos en el array de pixeles obteniendo las pos requeridas
                 // Para que los pixeles de fuera sumen cero, comprobamos cuando los valores se salen de la matriz
                 if (((0 <= i % anchura + l) && (i % anchura + l < anchura)) && ((0 <= i / anchura + k) && (i / anchura + k< altura))) {
                     // Multiplicar por el valor anchura nos permite desplazarnos entre las filas
                     temp1[i] += mGauss[k + 3][l + 3] * this->arrayPixeles[i + (anchura * k + l)].Red;
                     temp2[i] += mGauss[k + 3][l + 3] * this->arrayPixeles[i + (anchura * k + l)].Green;
-                    temp3[i] += mGauss[k + 3][l + 3] * this->arrayPixeles[i + (anchura * k + l)].Blue;
-                }
-            }
-        }
+                    temp3[i] += mGauss[k + 3][l + 3] * this->arrayPixeles[i + (anchura * k + l)].Blue;}}}
         // Dividimos entre w
         temp1[i] /= WEIGHT;
         temp2[i] /= WEIGHT;
-        temp3[i] /= WEIGHT;
-    }
-    // Asignamos al array global sus respectivos valores, no se puede hacer en el bucle de arriba
-    // ya que alterariamos el calculo de los siguientes valores
-    for (int i=0; i<total; ++i) {
-        this->arrayPixeles[i].Red = temp1[i];
-        this->arrayPixeles[i].Green = temp2[i];
-        this->arrayPixeles[i].Blue = temp3[i];
-    }
+        temp3[i] /= WEIGHT;}
+    insertarEnArray(total, temp1, temp2, temp3);
     t_fin = std::chrono::high_resolution_clock::now();
     std::cout << "  Gauss time: " << std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count() << std::endl;
     this->guardar();
+}
+
+void Imageaos::insertarEnArray(int total, const std::vector<int> &temp1, const std::vector<int> &temp2,
+                               const std::vector<int> &temp3) {// Asignamos al array global sus respectivos valores, no se puede hacer en el bucle de arriba
+// ya que alterariamos el calculo de los siguientes valores
+    for (int i=0; i<total; ++i) {
+        arrayPixeles[i].Red = temp1[i];
+        arrayPixeles[i].Green = temp2[i];
+        arrayPixeles[i].Blue = temp3[i];
+    }
 }
 

@@ -54,6 +54,10 @@ public:
     void histograma();
     void escalaGrises();
     void difusionGaussiana();
+
+    void
+    insertarEnArray(int total, const std::vector<int> &temp1, const std::vector<int> &temp2,
+                    const std::vector<int> &temp3);
 };
 
 #endif //UNTITLED_IMAGEAOS_H
