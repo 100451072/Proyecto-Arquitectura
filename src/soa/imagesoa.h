@@ -36,9 +36,9 @@ int w = 273;
 
 // estructura que almacenará tres vectores para cada valor r, g, b
 struct Pixeles {
-    int arrayR[MAX_SIZE];
-    int arrayG[MAX_SIZE];
-    int arrayB[MAX_SIZE];
+    std::vector<int> arrayR;
+    std::vector<int> arrayG;
+    std::vector<int> arrayB;
 };
 
 class Imagesoa {

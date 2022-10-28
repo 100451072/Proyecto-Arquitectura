@@ -56,9 +56,9 @@ contenido_BMP Imagesoa::llenarPixeles(std::vector<BYTE>& array_BMP) {
     // lo recorremos asi
     for (int i=0; i<num_pixeles * 3; i += 3) {
         // Añadimos los pixeles al array
-        this->structPixels.arrayR[i/3] = pixeles[i];
-        this->structPixels.arrayG[i/3] = pixeles[i + 1];
-        this->structPixels.arrayB[i/3] = pixeles[i + 2];
+        this->structPixels.arrayR.push_back(pixeles[i]);
+        this->structPixels.arrayG.push_back(pixeles[i + 1]);
+        this->structPixels.arrayB.push_back(pixeles[i + 2]);
     }
 
     return header;
@@ -184,7 +184,7 @@ void Imagesoa::escalaGrises(contenido_BMP imagen_BMP, std::vector<BYTE>& array_B
         cB = transformacionLineal(this->structPixels.arrayB[i] / 255);
         cg = correccionGama(cR, cG, cB); // sacada ahorro lineas
         g = cg * 255; // se vuelve a escala de 256 solucion por cada 3 pixeles
-        this->structPixels.arrayR[i] = static_cast<int>(g); // se guardan los pixeles en el char todos el mismo
+        this->structPixels.arrayR[i] =  static_cast<int>(g); // se guardan los pixeles en el char todos el mismo
         this->structPixels.arrayG[i] =  static_cast<int>(g); // se guardan los pixeles en el char todos el mismo
         this->structPixels.arrayB[i] =  static_cast<int>(g); // se guardan los pixeles en el char todos el mismo
     }
@@ -201,12 +201,14 @@ void Imagesoa::difusionGaussiana(contenido_BMP imagen_BMP, std::vector<BYTE>& ar
     int total = anchura*altura;
 
     // Copia del resultado de la transformacion para no afectar a los siguientes valroes
-    int temp1[MAX_SIZE] = {0};
-    int temp2[MAX_SIZE] = {0};
-    int temp3[MAX_SIZE] = {0};
-
+    std::vector<int> temp1;
+    std::vector<int> temp2;
+    std::vector<int> temp3;
     // Recorremos el array de pixeles por completo
     for (int i=0; i<total; ++i) {
+        temp1.push_back(0);
+        temp2.push_back(0);
+        temp3.push_back(0);
         //Filas
         for (int k=-2; k<2; ++k) {
             // Columnas

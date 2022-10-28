@@ -38,7 +38,7 @@ class Imageaos {
 private:
 
     // Como dice la definicion de aos, un solo array
-    Pixel arrayPixeles[MAX_SIZE]{};
+    std::vector<Pixel> arrayPixeles{};
 
     // Cronómetro
     chronometro time{};

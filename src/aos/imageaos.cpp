@@ -54,12 +54,15 @@ contenido_BMP Imageaos::llenarPixeles(std::vector<BYTE>& archivo_BMP) {
     int num_pixeles = (int)header.altura * (int)header.anchura;
     pixeles = leerArrayBMP(header, archivo_BMP);
 
+    Pixel temp{};
+
     // El vector pixeles es tres veces más largo que arrayPixeles, por eso
     // lo recorremos asi
     for (int i=0; i<num_pixeles * 3; i += 3) {
-        this->arrayPixeles[i/3].Red = pixeles[i];
-        this->arrayPixeles[i/3].Green = pixeles[i + 1];
-        this->arrayPixeles[i/3].Blue = pixeles[i + 2];
+        temp.Red = pixeles[i];
+        temp.Green = pixeles[i + 1];
+        temp.Blue = pixeles[i + 2];
+        this->arrayPixeles.push_back(temp);
     }
     return header;
 }
@@ -201,12 +204,15 @@ void Imageaos::difusionGaussiana(contenido_BMP imagen_BMP, std::vector<BYTE>& ar
     int total = anchura*altura;
 
     // Copia del resultado de la transformacion para no afectar a los siguientes valroes
-    int temp1[MAX_SIZE] = {0};
-    int temp2[MAX_SIZE] = {0};
-    int temp3[MAX_SIZE] = {0};
+    std::vector<int> temp1;
+    std::vector<int> temp2;
+    std::vector<int> temp3;
 
     // Recorremos el array de pixeles por completo
     for (int i=0; i<total; ++i) {
+        temp1.push_back(0);
+        temp2.push_back(0);
+        temp3.push_back(0);
         //Filas
         for (int k=-2; k<2; ++k) {
             // Columnas
