@@ -44,13 +44,13 @@ contenido_BMP Imagesoa::llenarPixeles(std::vector<BYTE>& array_BMP) {
     /* Función encargada de llenar el array con los pixeles del
      * archivo BMP de comun*/
 
-    int* pixeles;
+    std::vector<int> pixeles;
     contenido_BMP header;
     // Leemos el header y abrimos el archivo en el que nos encontramos
     header = leerHeaderBMP(this->actualFile, array_BMP);
     int num_pixeles = (int)header.anchura * (int)header.altura;
     // Recibe como parametro una referencia a un array
-    pixeles = leerArrayBMP(header);
+    pixeles = leerArrayBMP(header, array_BMP);
 
     // El vector pixeles es tres veces más largo que structPixeles, por eso
     // lo recorremos asi

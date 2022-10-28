@@ -47,7 +47,7 @@ contenido_BMP Imageaos::llenarPixeles(std::vector<BYTE>& archivo_BMP) {
     /* Función encargada de llenar el array con los pixeles del
      * archivo BMP de comun*/
 
-    int* pixeles;
+    std::vector<int> pixeles;
     contenido_BMP header;
     // Leemos el header y abrimos el archivo en el que nos encontramos
     header = leerHeaderBMP(this->actualFile, archivo_BMP);

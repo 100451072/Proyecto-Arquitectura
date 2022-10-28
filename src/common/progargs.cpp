@@ -95,7 +95,7 @@ contenido_BMP leerHeaderBMP(const std::string& filePath, std::vector<BYTE>& arra
 }
 
 
-const std::vector<int>& leerArrayBMP(contenido_BMP imagen_BMP, std::vector<BYTE>& archivo_BMP) {
+std::vector<int>& leerArrayBMP(contenido_BMP imagen_BMP, std::vector<BYTE>& archivo_BMP) {
     /* Continua la lectura del array BMP, leyendo los pixeles*/
     // Avanzamos a la posición donde empiezand los pixeles
 
