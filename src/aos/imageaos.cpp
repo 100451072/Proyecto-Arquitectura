@@ -6,8 +6,6 @@
 #include "imageaos.h"
 
 
-
-
 Imageaos::Imageaos(const std::string& fileName, const std::string& inDir, const std::string& outDir) {
     /* Función encargada de llenar el array con los píxeles del
      * archivo BMP de comun*/
@@ -122,7 +120,7 @@ void Imageaos::histograma() {
     int G[256] = { 0 };
     int B[256] = { 0 };
     // Inicializamos el vector RGB a cero
-    char RGB[768];
+    int RGB[768];
     // Sumamos un a cada valor de 0 a 255 de los arrays en caso de aparición
     for (int i=0; i<this->height * this->width ; ++i) {
         R[this->arrayPixeles[i].Red]++;
@@ -131,13 +129,13 @@ void Imageaos::histograma() {
     }
     // Con los valores anteriores llenamos el vector RGB
     for (int i=0; i<256; ++i) {
-        RGB[i] = static_cast<char>(R[i]);
-        RGB[256 + i] = static_cast<char>(G[i]);
-        RGB[512 + i] = static_cast<char>(B[i]);
+        RGB[i] = R[i];
+        RGB[256 + i] = G[i];
+        RGB[512 + i] = B[i];
     }
-    std::string histoName = this->outDir+"/"+this->fileName.substr(0, fileName.find("."))+".hst";
+    std::string histoName = this->outDir+"/"+this->fileName.substr(0, fileName.find('.'))+".hst";
     std::ofstream histo(histoName);
-    for (char i : RGB) {
+    for (int i : RGB) {
         histo << i << std::endl;
     }
     histo.close();

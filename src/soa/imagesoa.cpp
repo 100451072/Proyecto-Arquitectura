@@ -115,7 +115,7 @@ void Imagesoa::histograma() {
     int G[256] = { 0 };
     int B[256] = { 0 };
     // Inicializamos el vector RGB a cero
-    char RGB[768];
+    int RGB[768];
     // Sumamos un a cada valor de 0 a 255 de los arrays en caso de aparición
     for (int i=0; i<this->height * this->width ; ++i) {
         R[this->structPixeles.arrayR[i]]++;
@@ -124,13 +124,15 @@ void Imagesoa::histograma() {
     }
     // Con los valores anteriores llenamos el vector RGB
     for (int i=0; i<256; ++i) {
-        RGB[i] = static_cast<char>(R[i]);
-        RGB[256 + i] = static_cast<char>(G[i]);
-        RGB[512 + i] = static_cast<char>(B[i]);
+        RGB[i] = R[i];
+        RGB[256 + i] = G[i];
+        RGB[512 + i] = B[i];
     }
-    std::string histoName = this->outDir+"/"+this->fileName.substr(0, fileName.find("."))+".hst";
+    std::string histoName = this->outDir+"/"+this->fileName.substr(0, fileName.find('.'))+".hst";
     std::ofstream histo(histoName);
-    histo << RGB << std::endl;
+    for (int i : RGB) {
+        histo << i << std::endl;
+    }
     histo.close();
     t_fin = std::chrono::high_resolution_clock::now();
     std::cout << "  Histo time: " << std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count() << std::endl;
