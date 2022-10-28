@@ -56,7 +56,7 @@ bool Imagesoa::checkHeader() {
     return true;
 }
 
-void Imagesoa::realizarOperacion(std::string operation) {
+void Imagesoa::realizarOperacion(const std::string& operation) {
     /* Función encargada de escoger la operación */
     if (operation == "gauss"){
         this->difusionGaussiana();
@@ -119,7 +119,7 @@ void Imagesoa::histograma() {
     int B[256] = { 0 };
     // Inicializamos el vector RGB a cero
     char RGB[768];
-    // Sumamos un a cada valor de 0 a 256 de los arrays en caso de aparición
+    // Sumamos un a cada valor de 0 a 255 de los arrays en caso de aparición
     for (int i=0; i<this->height * this->width ; ++i) {
         R[this->structPixeles.arrayR[i]]++;
         G[this->structPixeles.arrayG[i]]++;
@@ -142,12 +142,12 @@ void Imagesoa::escalaGrises() {
     /* Función encargada de pasar la imagen a escala de grises */
     std::chrono::high_resolution_clock::time_point t_inicio, t_fin;
     t_inicio = std::chrono::high_resolution_clock::now();
-    float cR, cG, cB, cg, g;
+    double cR, cG, cB, cg, g;
     // Normalizacion
     for (int i=0; i<this->width * this->height; ++i) {
-        cR = transformacionLineal(this->structPixeles.arrayR[i] / 255); // transformacion lineal de los 3 colores
-        cG = transformacionLineal(this->structPixeles.arrayG[i] / 255);
-        cB = transformacionLineal(this->structPixeles.arrayB[i] / 255);
+        cR = transformacionLineal(static_cast<double>(this->structPixeles.arrayR[i]) / double(255)); // transformacion lineal de los 3 colores
+        cG = transformacionLineal(static_cast<double>(this->structPixeles.arrayG[i]) / double(255));
+        cB = transformacionLineal(static_cast<double>(this->structPixeles.arrayB[i]) / double(255));
         cg = correccionGamma(cR, cG, cB); // sacada ahorro lineas
         g = cg * 255; // se vuelve a escala de 256 solucion por cada 3 pixeles
         this->structPixeles.arrayR[i] =  static_cast<int>(g); // se guardan los pixeles en el char todos el mismo

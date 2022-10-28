@@ -124,7 +124,7 @@ void Imageaos::histograma() {
     int B[256] = { 0 };
     // Inicializamos el vector RGB a cero
     char RGB[768];
-    // Sumamos un a cada valor de 0 a 256 de los arrays en caso de aparición
+    // Sumamos un a cada valor de 0 a 255 de los arrays en caso de aparición
     for (int i=0; i<this->height * this->width ; ++i) {
         R[this->arrayPixeles[i].Red]++;
         G[this->arrayPixeles[i].Green]++;
@@ -149,12 +149,12 @@ void Imageaos::escalaGrises() {
     /* Función encargada de pasar la imagen a escala de grises */
     std::chrono::high_resolution_clock::time_point t_inicio, t_fin;
     t_inicio = std::chrono::high_resolution_clock::now();
-    float cR, cG, cB, cg, g;
+    double cR, cG, cB, cg, g;
     // Normalizacion
     for (int i=0; i<this->width * this->height; ++i) {
-        cR = transformacionLineal(this->arrayPixeles[i].Red / 255); // transformacion lineal de los 3 colores
-        cG = transformacionLineal(this->arrayPixeles[i].Green / 255);
-        cB = transformacionLineal(this->arrayPixeles[i].Blue / 255);
+        cR = transformacionLineal(static_cast<double>(this->arrayPixeles[i].Red) / double(255)); // transformacion lineal de los 3 colores
+        cG = transformacionLineal(static_cast<double>(this->arrayPixeles[i].Green) / double(255));
+        cB = transformacionLineal(static_cast<double>(this->arrayPixeles[i].Blue) / double(255));
         cg = correccionGamma(cR, cG, cB); // sacada ahorro lineas
         g = cg * 255; // se vuelve a escala de 256 solucion por cada 3 pixeles
         this->arrayPixeles[i].Red =  static_cast<int>(g); // se guardan los pixeles en el char todos el mismo

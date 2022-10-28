@@ -1,8 +1,8 @@
 #ifndef PROYECTO_ARQUITECTURA_AUX_FUNCTIONS_H
 #define PROYECTO_ARQUITECTURA_AUX_FUNCTIONS_H
 
-    float transformacionLineal(int value);
-    float correccionGamma(float cR, float cG, float cB);
+    double transformacionLineal(double value);
+    double correccionGamma(double cR, double cG, double cB);
 
 
 
