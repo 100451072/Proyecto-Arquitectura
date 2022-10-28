@@ -4,12 +4,12 @@
 #include <iostream>
 #include <chrono>
 #include "imageaos.h"
-#include "common/aux_functions.h"
+#include "../common/aux_functions.h"
 
 
 
 
-Imageaos::Imageaos(std::string fileName, std::string inDir, std::string outDir) {
+Imageaos::Imageaos(const std::string& fileName, const std::string& inDir, const std::string& outDir) {
     /* Función encargada de llenar el array con los píxeles del
      * archivo BMP de comun*/
     std::chrono::high_resolution_clock::time_point t_inicio, t_fin;
@@ -25,7 +25,7 @@ Imageaos::Imageaos(std::string fileName, std::string inDir, std::string outDir) 
     for(int i = 0; i < height; i++){
         for(int j = 0; j < width; j++){
             unsigned char pixelBuffer[3];
-            Pixel pixel;
+            Pixel pixel{};
             imageFile.read(reinterpret_cast<char*>(pixelBuffer), 3);
             pixel.Blue = static_cast<int>(pixelBuffer[0]);
             pixel.Green = static_cast<int>(pixelBuffer[1]);
@@ -137,7 +137,9 @@ void Imageaos::histograma() {
         RGB[512 + i] = static_cast<char>(B[i]);
     }
     std::ofstream histo(this->outDir+"/"+this->fileName+".hst");
-    histo << RGB << std::endl;
+    for (char i : RGB) {
+        histo << i << std::endl;
+    }
     histo.close();
     t_fin = std::chrono::high_resolution_clock::now();
     std::cout << "  Histo time: " << std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count() << std::endl;
@@ -170,47 +172,57 @@ int mGauss[5][5] = {{1, 4, 7, 4, 1},
                     {4, 16, 26, 16, 4},
                     {1, 4, 7, 4, 1}};
 
+
+//gauss aos
 void Imageaos::difusionGaussiana() {
-    /* Función encargada de generar el efecto de difusión
-     * gaussiana */
+    /* Función encargada de realizar la difusion gaussiana sobre
+    la imagen de entrada*/
+
     std::chrono::high_resolution_clock::time_point t_inicio, t_fin;
     t_inicio = std::chrono::high_resolution_clock::now();
 
-    int tmpR, tmpG, tmpB; // variables auxiliares
-    int l = this->width * 3; // pixeles por fila
-    int tamano = this->height * l; // tamaño total en bytes
-    int cByte, b, cGauss, fGauss; // columna byte, byte, columna gauss, fila gauss
-    for (int i = 0; i < this->height - 1; i += 1){
-        for (int j = 0; j < l - 1; j += 3){
-            tmpR = 0;
-            tmpG = 0;
-            tmpB = 0;
-            for (int s = -2; s <= 2; s++){
-                for (int t = -2; t <= 2; t++){
-                    fGauss = s + 2;
-                    cByte = j + t * 3;
-                    cGauss = t + 2;
-                    b = (i + s)*l + cByte;
-                    if (b >= 0 && cByte <= l - 1 && b <= tamano && 0 <= cByte) // PIXEL R
-                        tmpR += mGauss[fGauss][cGauss] * this->arrayPixeles[b].Red;
+    int anchura = this->width;
+    int altura = this->height;
+    int total = anchura*altura;
 
-                    if (b >= 0 && cByte <= l - 1 && b <= tamano && 0 <= cByte) // PIXEL G
-                        tmpG += mGauss[fGauss][cGauss] * this->arrayPixeles[b].Green;
-                    b += 1;
-                    cByte += 1;
-                    if (b >= 0 && cByte <= l - 1 && b <= tamano && 0 <= cByte) // PIXEL B
-                        tmpB += mGauss[fGauss][cGauss] * this->arrayPixeles[b].Blue;
-                    b += 1;
-                    cByte += 1;
+    // Copia del resultado de la transformacion para no afectar a los siguientes valroes
+    std::vector<int> temp1;
+    std::vector<int> temp2;
+    std::vector<int> temp3;
+
+
+    // Recorremos el array de pixeles por completo
+    for (int i=0; i<total; ++i) {
+        temp1.push_back(0);
+        temp2.push_back(0);
+        temp3.push_back(0);
+
+        //Filas
+        for (int k=-2; k<2; ++k) {
+            // Columnas
+            for (int l=-2; l<2; ++l) {
+
+                // Nos desplazamos en el array de pixeles obteniendo las pos requeridas
+                // Para que los pixeles de fuera sumen cero, comprobamos cuando los valores se salen de la matriz
+                if (((0 <= i % anchura + l) && (i % anchura + l < anchura)) && ((0 <= i / anchura + k) && (i / anchura + k< altura))) {
+                    // Multiplicar por el valor anchura nos permite desplazarnos entre las filas
+                    temp1[i] += mGauss[k + 3][l + 3] * this->arrayPixeles[i + (anchura * k + l)].Red;
+                    temp2[i] += mGauss[k + 3][l + 3] * this->arrayPixeles[i + (anchura * k + l)].Green;
+                    temp3[i] += mGauss[k + 3][l + 3] * this->arrayPixeles[i + (anchura * k + l)].Blue;
                 }
             }
-            tmpR = tmpR / WEIGHT; // se divide entre el peso
-            tmpG = tmpG / WEIGHT;
-            tmpB = tmpB / WEIGHT;
-            this->arrayPixeles[i].Red = tmpR; // se guardan los pixeles en el array de pixeles
-            this->arrayPixeles[i].Green = tmpG;
-            this->arrayPixeles[i].Blue = tmpB;
         }
+        // Dividimos entre w
+        temp1[i] /= WEIGHT;
+        temp2[i] /= WEIGHT;
+        temp3[i] /= WEIGHT;
+    }
+    // Asignamos al array global sus respectivos valores, no se puede hacer en el bucle de arriba
+    // ya que alterariamos el calculo de los siguientes valores
+    for (int i=0; i<total; ++i) {
+        this->arrayPixeles[i].Red = temp1[i];
+        this->arrayPixeles[i].Green = temp2[i];
+        this->arrayPixeles[i].Blue = temp3[i];
     }
     t_fin = std::chrono::high_resolution_clock::now();
     std::cout << "  Gauss time: " << std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count() << std::endl;

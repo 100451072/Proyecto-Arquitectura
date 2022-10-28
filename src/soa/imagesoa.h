@@ -5,8 +5,8 @@
 #include <cmath>
 #include <chrono>
 #include <vector>
-#include "common/progargs.h"
-#include "common/aux_functions.h"
+#include "../common/progargs.h"
+#include "../common/aux_functions.h"
 #include <filesystem>
 #include <fstream>
 
@@ -39,7 +39,7 @@ private:
 
 public:
     // Constructor & Destructor
-    Imagesoa(std::string fileName, std::string inDir, std::string outDir);
+    Imagesoa(const std::string& fileName, const std::string& inDir, const std::string& outDir);
 
     // Funciones
 

@@ -5,8 +5,8 @@
 #include <cmath>
 #include <chrono>
 #include <vector>
-#include "common/progargs.h"
-#include "common/aux_functions.h"
+#include "../common/progargs.h"
+#include "../common/aux_functions.h"
 #include <filesystem>
 #include <fstream>
 
@@ -31,16 +31,16 @@ private:
     std::string fileName, inDir, outDir;
 
     // Header del archivo
-    unsigned char header[HEADER_SIZE];
+    unsigned char header[HEADER_SIZE]{};
 
     // Como dice la definición de aos, un solo array
     std::vector<Pixel> arrayPixeles;
 
-    int width, height, padding;
+    int width{}, height{}, padding{};
 
 public:
     // Constructor & Destructor
-    Imageaos(std::string fileName, std::string inDir, std::string outDir);
+    Imageaos(const std::string& fileName, const std::string& inDir, const std::string& outDir);
 
     // Funciones
 
