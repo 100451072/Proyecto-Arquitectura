@@ -48,6 +48,6 @@ bool comprobarArg(int num_args, std::string& argv_1, std::string& argv_2, std::s
 
 contenido_BMP leerHeaderBMP(const std::string& filePath, std::vector<BYTE>& archivo_BMP);
 
-std::vector<int>& leerArrayBMP(contenido_BMP imagen_BMP, std::vector<BYTE>& archivo_BMP);
+void leerArrayBMP(contenido_BMP imagen_BMP, std::vector<BYTE>& archivo_BMP, std::vector<int>& RGB);
 
 #endif //UNTITLED_PROGARGS_H

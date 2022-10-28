@@ -95,7 +95,7 @@ contenido_BMP leerHeaderBMP(const std::string& filePath, std::vector<BYTE>& arra
 }
 
 
-std::vector<int>& leerArrayBMP(contenido_BMP imagen_BMP, std::vector<BYTE>& archivo_BMP) {
+void leerArrayBMP(contenido_BMP imagen_BMP, std::vector<BYTE>& archivo_BMP, std::vector<int>& RGB) {
     /* Continua la lectura del array BMP, leyendo los pixeles*/
     // Avanzamos a la posición donde empiezand los pixeles
 
@@ -104,9 +104,6 @@ std::vector<int>& leerArrayBMP(contenido_BMP imagen_BMP, std::vector<BYTE>& arch
     int altura = (int)imagen_BMP.altura;
     int anchura = (int)imagen_BMP.anchura;
     int padding = (int)imagen_BMP.t_padding;
-    int end_pixeles = (int)imagen_BMP.size_bitmap_data;  // En bytes
-
-    std::vector<int> RGB;
 
     // lectura de la imagen
     for (int i=0; i< altura; ++i) {
@@ -120,7 +117,4 @@ std::vector<int>& leerArrayBMP(contenido_BMP imagen_BMP, std::vector<BYTE>& arch
             RGB.push_back((int) archivo_BMP[inicio + i * (anchura * 3 + padding) + j]);
         }
     }
-    return RGB;
 }
-
-
