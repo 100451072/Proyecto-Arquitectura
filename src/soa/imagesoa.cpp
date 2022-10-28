@@ -2,7 +2,6 @@
 #include <iostream>
 #include <chrono>
 #include "imagesoa.h"
-#include "../common/aux_functions.h"
 
 
 

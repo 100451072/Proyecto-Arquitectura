@@ -44,7 +44,7 @@ public:
 
     // Funciones
 
-    void realizarOperacion(std::string operation);
+    void realizarOperacion(const std::string& operation);
     void guardar();
     bool checkHeader();
 

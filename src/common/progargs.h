@@ -35,7 +35,7 @@
 // Funciones
 
 void numeroIncorrectoArgs();
-bool comprobarArg(std::string inDir, std::string outDir, std::string operation);
+bool comprobarArg(const std::string& inDir, const std::string& outDir, const std::string& operation);
 
 
 #endif //UNTITLED_PROGARGS_H

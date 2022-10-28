@@ -11,7 +11,7 @@ void numeroIncorrectoArgs() {
     std::cout << "      Operation: copy, histo, mono, gauss" << "\n";
 }
 
-bool comprobarArg(std::string inDir, std::string outDir, std::string operation) {
+bool comprobarArg(const std::string& inDir, const std::string& outDir, const std::string& operation) {
     /* Función encargada de validar los argumentos introducidos,
      * devuelve false en caso de que algun arg sea incorrecto*/
     std::cout << "$image " <<  inDir << " " << outDir << " " <<  operation << "\n";

@@ -4,7 +4,6 @@
 #include <iostream>
 #include <chrono>
 #include "imageaos.h"
-#include "../common/aux_functions.h"
 
 
 
@@ -61,7 +60,7 @@ bool Imageaos::checkHeader() {
     return true;
 }
 
-void Imageaos::realizarOperacion(std::string operation) {
+void Imageaos::realizarOperacion(const std::string& operation) {
     /* Función encargada de escoger la operación */
     if (operation == "gauss"){
         this->difusionGaussiana();

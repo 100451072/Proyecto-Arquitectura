@@ -31,11 +31,11 @@ private:
     std::string fileName, inDir, outDir;
 
     // Header del archivo
-    unsigned char header[HEADER_SIZE];
+    unsigned char header[HEADER_SIZE]{};
 
     Pixeles structPixeles;
 
-    int width, height, padding;
+    int width{}, height{}, padding{};
 
 public:
     // Constructor & Destructor
