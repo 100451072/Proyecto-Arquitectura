@@ -11,8 +11,8 @@
 #include <chrono>
 #include <vector>
 #include <utility>
-#include "common/progargs.h"
-#include "common/aux_functions.h"
+#include "../common/progargs.h"
+#include "../common/aux_functions.h"
 #include <filesystem>
 #include <fstream>
 
@@ -63,9 +63,9 @@ public:
     void realizarOperacion(contenido_BMP imagen_BMP, std::vector<BYTE>& arhcivo_BMP);
 
     // Operaciones
-    void copiarImagen(contenido_BMP imagen_BMP, const std::vector<BYTE>& archivo_BMP);
+    void copiarImagen(contenido_BMP imagen_BMP, std::vector<BYTE>& archivo_BMP);
     void histograma(contenido_BMP imagen_BMP);
-    void escalaGrises(contenido_BMP imagen_BMP, std::vector<BYTE>& arraY_BMP));
+    void escalaGrises(contenido_BMP imagen_BMP, std::vector<BYTE>& arraY_BMP);
     void difusionGaussiana(contenido_BMP imagen_BMP, std::vector<BYTE>& arraY_BMP);
 };
 

@@ -51,7 +51,6 @@ contenido_BMP leerHeaderBMP(const std::string& filePath, std::vector<BYTE>& arra
     /* Funcion encargada de leer y comprobar los valores del header*/
     // Volcamos los primeros 54 bytes en header_bmp
     std::ifstream BMP_file;
-    long length = 0;
     BYTE temp = '0';
     contenido_BMP imagen_BMP;
 
@@ -59,7 +58,7 @@ contenido_BMP leerHeaderBMP(const std::string& filePath, std::vector<BYTE>& arra
     BMP_file.open(filePath, std::ios::in | std::ios::binary);
     // Obtenemos la longitud del archivo
     BMP_file.seekg(0, std::ifstream::end);
-    length = BMP_file.tellg();
+    long length = BMP_file.tellg();
     BMP_file.seekg(0, std::ifstream::beg);
 
     // Bucle para llenar nuestro array
@@ -114,11 +113,11 @@ const std::vector<int>& leerArrayBMP(contenido_BMP imagen_BMP, std::vector<BYTE>
         for (int j=0; j<anchura * 3; j += 3) {
             // Importante en archivo_BMP esta en BGR
             // r                                (bytes que ya hemos leido)
-            RGB.push_back((int) archivo_BMP[inicio + (i * anchura * 3 + i * padding) + j + 2]);
+            RGB.push_back((int) archivo_BMP[inicio + i * (anchura * 3 + padding) + j + 2]);
             // g
-            RGB.push_back((int) archivo_BMP[inicio + (i * anchura * 3 + i * padding) + j + 1]);
+            RGB.push_back((int) archivo_BMP[inicio + i * (anchura * 3 + padding) + j + 1]);
             // b
-            RGB.push_back((int) archivo_BMP[inicio + (i * anchura * 3 + i * padding) + j]);
+            RGB.push_back((int) archivo_BMP[inicio + i * (anchura * 3 + padding) + j]);
         }
     }
     return RGB;

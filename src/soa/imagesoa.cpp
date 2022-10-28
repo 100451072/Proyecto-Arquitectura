@@ -3,7 +3,6 @@
 //
 
 #include "imagesoa.h"
-#include "../common/progargs.h"
 
 //Constructor & Destructor
 Imagesoa::Imagesoa(int num_args, const std::string& arg_1, const std::string& arg_2, const std::string& arg_3) {
@@ -45,18 +44,17 @@ contenido_BMP Imagesoa::llenarPixeles(std::vector<BYTE>& array_BMP) {
     /* Función encargada de llenar el array con los pixeles del
      * archivo BMP de comun*/
 
-    int num_pixeles = 0;
     int* pixeles;
     contenido_BMP header;
     // Leemos el header y abrimos el archivo en el que nos encontramos
     header = leerHeaderBMP(this->actualFile, array_BMP);
-    num_pixeles = header.tamano;
+    int num_pixeles = (int)header.anchura * (int)header.altura;
     // Recibe como parametro una referencia a un array
     pixeles = leerArrayBMP(header);
 
     // El vector pixeles es tres veces más largo que structPixeles, por eso
     // lo recorremos asi
-    for (int i=0; i<num_pixeles; i += 3) {
+    for (int i=0; i<num_pixeles * 3; i += 3) {
         // Añadimos los pixeles al array
         this->structPixels.arrayR[i/3] = pixeles[i];
         this->structPixels.arrayG[i/3] = pixeles[i + 1];
@@ -74,7 +72,7 @@ void Imagesoa::realizarOperacion(contenido_BMP imagen_BMP, std::vector<BYTE>& ar
     // Función encargada de realizar la operación
     if (this->operation == "gauss"){
         t_inicio = std::chrono::high_resolution_clock::now();
-        this->difusionGaussiana(imagen_BMP);
+        this->difusionGaussiana(imagen_BMP, array_BMP);
         t_fin = std::chrono::high_resolution_clock::now();
         this->time.gaussTime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
     }
@@ -92,54 +90,52 @@ void Imagesoa::realizarOperacion(contenido_BMP imagen_BMP, std::vector<BYTE>& ar
     }
     if (this->operation == "mono"){
         t_inicio = std::chrono::high_resolution_clock::now();
-        this->escalaGrises(imagen_BMP);
+        this->escalaGrises(imagen_BMP, array_BMP);
         t_fin = std::chrono::high_resolution_clock::now();
         this->time.monoTime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
     }
 }
-}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-void Imagesoa::copiarImagen(contenido_BMP imagen_BMP, const std::vector<BYTE>& array_BMP) {
-    /* Función encargada de copiar la imagen actual en el directorio de salida*/
+void Imagesoa::copiarImagen(contenido_BMP imagen_BMP, std::vector<BYTE>& array_BMP) {
+    /* Función encargada de copiar la imagen actual en el directorio de salida,
+     * de forma que se puede utilizar para escribir la imagen despues de realizar
+     * cualquier operacion previamente*/
 
-    // Iterador para llenar el archivo de salida
-    int i = 0;
-
+    int anchura = (int)imagen_BMP.anchura;
+    int altura = (int)imagen_BMP.altura;
+    int inicio = (int)imagen_BMP.dir_datos_imagen;
+    int padding = (int)imagen_BMP.t_padding;
     // establecemos offstream con la ruta al archivo destino
     std::ofstream archivo;
+
+    // Actualizamos el array_BMP con los nuevos valores de pixel
+    for (int i=0; i<altura; ++i) {
+        for (int j=0; j<anchura * 3; ++j) {
+            // Importante: en BMP se guardan en orden BGR
+            array_BMP[inicio + i * (anchura * 3 + padding) + j + 2] = (BYTE)this->structPixels.arrayR[i*anchura + j/3];
+            array_BMP[inicio + i * (anchura * 3 + padding) + j + 1] = (BYTE)this->structPixels.arrayG[i*anchura + j/3];
+            array_BMP[inicio + i * (anchura * 3 + padding)  + j] = (BYTE)this->structPixels.arrayB[i*anchura + j/3];
+        }
+    }
+    // Abrimos el archivo de salida
     archivo.open(rutaArchivoSalida("bmp", this->outDirectory, this->actualFile), std::ofstream::out);
 
+    // Comprobamos si se abre
     if (!archivo.is_open()) {
         throw std::invalid_argument("Error: al abrir el archivo destino");
     }
 
-    // Escribimos el header en el archivo origen solo hasta la dirección de inicio de pixeles
-    for (i; i<imagen_BMP.dir_datos_imagen; ++i) {
-        archivo.write(reinterpret_cast<const char *>(array_BMP[i]), sizeof(BYTE));
-    }
-
-    // Escribimos los pixeles, recorriendo todo el array
-    for (i; i<imagen_BMP.anchura * imagen_BMP.anchura; ++i) {
-        // Recordar que en un archivo BMP los pixeles van en orden BGR
-        archivo << this->structPixels.arrayB[i];
-        archivo << this->structPixels.arrayG[i];
-        archivo << this->structPixels.arrayR[i];
-        if (fin_de_linea) {
-            // Añadir padding al final de liena en caso de que exista
-            archivo << imagen_BMP.t_padding;
-        }
-    }
-
-    // Añadimos la parte de después del array de pixeles en caso de que exista
-    for (i; i<imagen_BMP.tamano; ++i) {
+    // Añadimos el array_BMP al archivo de salida
+    for (int i=0; i<imagen_BMP.tamano; ++i) {
         archivo.write(reinterpret_cast<const char *>(array_BMP[i]), sizeof(BYTE));
     }
 
     // Cerramos el archivo de salida
     archivo.close();
 }
+
 
 void Imagesoa::histograma(contenido_BMP imagen_BMP) {
     /* Función encargada de crear el histograma y pasarselos al la
@@ -148,6 +144,8 @@ void Imagesoa::histograma(contenido_BMP imagen_BMP) {
     int R[256] = { 0 };
     int G[256] = { 0 };
     int B[256] = { 0 };
+
+    std::string outFile = rutaArchivoSalida("hst", this->outDirectory, this->actualFile);
 
     // Inicializamos el vector RGB a cero
     std::vector<int> RGB(768);
@@ -167,7 +165,7 @@ void Imagesoa::histograma(contenido_BMP imagen_BMP) {
     }
 
     // Llamamos a la pare comun del histograma
-    histograma(RGB, rutaArchivoSalida("hst", this->outDirectory, this->actualFile));
+    histograma_aux(RGB, outFile);
 }
 
 void Imagesoa::escalaGrises(contenido_BMP imagen_BMP, std::vector<BYTE>& array_BMP) { // revisar
@@ -198,13 +196,14 @@ void Imagesoa::difusionGaussiana(contenido_BMP imagen_BMP, std::vector<BYTE>& ar
     /* Función encargada de realizar la difusion gaussiana sobre
     la imagen de entrada*/
 
-    int anchura = imagen_BMP.anchura;
-    int altura = imagen_BMP.altura;
+    int anchura = (int)imagen_BMP.anchura;
+    int altura = (int)imagen_BMP.altura;
     int total = anchura*altura;
 
-    int temp1[imagen_BMP.altura * imagen_BMP.anchura] = {0};
-    int temp2[imagen_BMP.altura * imagen_BMP.anchura] = {0};
-    int temp3[imagen_BMP.altura * imagen_BMP.anchura] = {0};
+    // Copia del resultado de la transformacion para no afectar a los siguientes valroes
+    int temp1[MAX_SIZE] = {0};
+    int temp2[MAX_SIZE] = {0};
+    int temp3[MAX_SIZE] = {0};
 
     // Recorremos el array de pixeles por completo
     for (int i=0; i<total; ++i) {
@@ -214,12 +213,11 @@ void Imagesoa::difusionGaussiana(contenido_BMP imagen_BMP, std::vector<BYTE>& ar
             for (int l=-2; l<2; ++l) {
                 // Nos desplazamos en el array de pixeles obteniendo las pos requeridas
                 // Para que los pixeles de fuera sumen cero, comprobamos cuando los valores se salen de la matriz
-                //
                 if ((0 <= i % anchura + l < anchura) && (0 <= i / anchura + k < altura)) {
                     // Multiplicar por el valor anchura nos permite desplazarnos entre las filas
-                    temp1[i] += mGauss[k + 3][k + 3] * this->structPixels.arrayR[i + (anchura * k + l)];
-                    temp2[i] += mGauss[k + 3][k + 3] * this->structPixels.arrayG[i + (anchura * k + l)];
-                    temp3[i] += mGauss[k + 3][k + 3] * this->structPixels.arrayB[i + (anchura * k + l)];
+                    temp1[i] += mGauss[k + 3][l + 3] * this->structPixels.arrayR[i + (anchura * k + l)];
+                    temp2[i] += mGauss[k + 3][l + 3] * this->structPixels.arrayG[i + (anchura * k + l)];
+                    temp3[i] += mGauss[k + 3][l + 3] * this->structPixels.arrayB[i + (anchura * k + l)];
                 }
             }
         }

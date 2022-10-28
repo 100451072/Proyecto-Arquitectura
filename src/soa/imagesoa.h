@@ -15,8 +15,7 @@
 #include <vector>
 #include <fstream>
 #include <filesystem>
-#include "common/progargs.h"
-#include "common/aux_functions.h"
+#include "../common/aux_functions.h"
 #include "../common/progargs.h"
 
 using namespace std;
@@ -68,7 +67,7 @@ public:
     contenido_BMP llenarPixeles(std::vector<BYTE>& archivo_BMP);
     void realizarOperacion(contenido_BMP imagen_BMP, std::vector<BYTE>& archivo_BMP);
     // Operaciones
-    void copiarImagen(contenido_BMP imagen_BMP, const std::vector<BYTE>& array_BMP);
+    void copiarImagen(contenido_BMP imagen_BMP, std::vector<BYTE>& array_BMP);
     void histograma(contenido_BMP imagen_BMP);
     void escalaGrises(contenido_BMP imagen_BMP, std::vector<BYTE>& array_BMP);
     void difusionGaussiana(contenido_BMP imagen_BMP, std::vector<BYTE>& array_BMP);

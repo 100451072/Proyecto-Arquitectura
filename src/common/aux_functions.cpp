@@ -21,7 +21,7 @@ std::string rutaArchivoSalida(const std::string& type,
 
     filePath = outdir + slash;
     // Obtenemos el nombre del archivo de entrada
-    for (int i=infile.size(); i>0; --i) {
+    for (int i=(int)infile.size(); i>0; --i) {
         // recorrer this->actualFile desde atrás hasta encontrar /
         if (infile.at(i) == slash)
             // una vez obtenido el nombre del archivo terminamos y añadimos a filePath
@@ -30,7 +30,7 @@ std::string rutaArchivoSalida(const std::string& type,
     return filePath;
 }
 
-void histograma(const std::vector<int>& RGB,
+void histograma_aux(const std::vector<int>& RGB,
                 const std::string& outFile) {
     /* Función encargada de crear y escribir el histograma
      * sobre el archivo .hst*/

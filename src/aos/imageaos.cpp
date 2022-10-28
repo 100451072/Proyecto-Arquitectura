@@ -3,7 +3,6 @@
 //
 
 #include "imageaos.h"
-#include "../common/progargs.h"
 
 #include <utility>
 
@@ -48,17 +47,16 @@ contenido_BMP Imageaos::llenarPixeles(std::vector<BYTE>& archivo_BMP) {
     /* Función encargada de llenar el array con los pixeles del
      * archivo BMP de comun*/
 
-    int num_pixeles = 0;
     int* pixeles;
     contenido_BMP header;
     // Leemos el header y abrimos el archivo en el que nos encontramos
     header = leerHeaderBMP(this->actualFile, archivo_BMP);
-    num_pixeles = header.anchura * header.altura;
+    int num_pixeles = (int)header.altura * (int)header.anchura;
     pixeles = leerArrayBMP(header, archivo_BMP);
 
     // El vector pixeles es tres veces más largo que arrayPixeles, por eso
     // lo recorremos asi
-    for (int i=0; i<num_pixeles; i += 3) {
+    for (int i=0; i<num_pixeles * 3; i += 3) {
         this->arrayPixeles[i/3].Red = pixeles[i];
         this->arrayPixeles[i/3].Green = pixeles[i + 1];
         this->arrayPixeles[i/3].Blue = pixeles[i + 2];
@@ -99,41 +97,38 @@ void Imageaos::realizarOperacion(contenido_BMP imagen_BMP, std::vector<BYTE>& ar
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-void Imageaos::copiarImagen(contenido_BMP imagen_BMP, const std::vector<BYTE>& array_BMP) {
+void Imageaos::copiarImagen(contenido_BMP imagen_BMP,  std::vector<BYTE>& array_BMP) {
     /* Función encargada de copiar la imagen actual en el directorio de salida,
      * de forma que se puede utilizar para escribir la imagen despues de realizar
      * cualquier operacion previamente*/
 
-    // Iterador para ir llenando cada posición del archivo
-    int i = 0;
-
+    int anchura = (int)imagen_BMP.anchura;
+    int altura = (int)imagen_BMP.altura;
+    int inicio = (int)imagen_BMP.dir_datos_imagen;
+    int padding = (int)imagen_BMP.t_padding;
     // establecemos offstream con la ruta al archivo destino
     std::ofstream archivo;
+
+
+    // Actualizamos el array_BMP con los nuevos valores de pixel
+    for (int i=0; i<altura; ++i) {
+        for (int j=0; j<anchura * 3; ++j) {
+            // Importante: en BMP se guardan en orden BGR
+            array_BMP[inicio + i * (anchura * 3 + padding) + j + 2] = (BYTE)this->arrayPixeles[i*anchura + j/3].Red;
+            array_BMP[inicio + i * (anchura * 3 + padding) + j + 1] = (BYTE)this->arrayPixeles[i*anchura + j/3].Green;
+            array_BMP[inicio + i * (anchura * 3 + padding)  + j] = (BYTE)this->arrayPixeles[i*anchura + j/3].Blue;
+        }
+    }
+    // Abrimos el archivo de salida
     archivo.open(rutaArchivoSalida("bmp", this->outDirectory, this->actualFile), std::ofstream::out);
 
+    // Comprobamos si se abre
     if (!archivo.is_open()) {
         throw std::invalid_argument("Error: al abrir el archivo destino");
     }
 
-    // Escribimos el header en el archivo origen solo hasta la dirección de inicio de pixeles
-    for (i; i<imagen_BMP.dir_datos_imagen; ++i) {
-        archivo.write(reinterpret_cast<const char *>(array_BMP[i]), sizeof(BYTE));
-    }
-
-    // Escribimos los pixeles, recorriendo todo el array
-    for (i; i<imagen_BMP.anchura * imagen_BMP.anchura; ++i) {
-        // Recordar que en un archivo BMP los pixeles van en orden BGR
-        archivo << this->arrayPixeles[i].Blue;
-        archivo << this->arrayPixeles[i].Green;
-        archivo << this->arrayPixeles[i].Red;
-        if (fin_linea) {
-            // Añadir padding al final de liena en caso de que exista
-            archivo << imagen_BMP.t_padding;
-        }
-    }
-
-    // Añadimos la parte de después del array de pixeles en caso de que exista
-    for (i; i<imagen_BMP.tamano; ++i) {
+    // Añadimos el array_BMP al archivo de salida
+    for (int i=0; i<imagen_BMP.tamano; ++i) {
         archivo.write(reinterpret_cast<const char *>(array_BMP[i]), sizeof(BYTE));
     }
 
@@ -148,6 +143,8 @@ void Imageaos::histograma(contenido_BMP imagen_BMP) {
     int R[256] = { 0 };
     int G[256] = { 0 };
     int B[256] = { 0 };
+
+    std::string outFile = rutaArchivoSalida("hst", this->outDirectory, this->actualFile);
 
     // Inicializamos el vector RGB a cero
     std::vector<int> RGB(768);
@@ -167,7 +164,7 @@ void Imageaos::histograma(contenido_BMP imagen_BMP) {
     }
 
     // Llamamos a la pare comun del histograma
-    histograma(RGB, rutaArchivoSalida("hst", this->outDirectory, this->actualFile));
+    histograma_aux(RGB, outFile);
 }
 
 void Imageaos::escalaGrises(contenido_BMP imagen_BMP, std::vector<BYTE>& arraY_BMP){ // revisar
@@ -199,13 +196,14 @@ void Imageaos::difusionGaussiana(contenido_BMP imagen_BMP, std::vector<BYTE>& ar
     /* Función encargada de realizar la difusion gaussiana sobre
     la imagen de entrada*/
 
-    int anchura = imagen_BMP.anchura;
-    int altura = imagen_BMP.altura;
+    int anchura = (int)imagen_BMP.anchura;
+    int altura = (int)imagen_BMP.altura;
     int total = anchura*altura;
 
-    int temp1[imagen_BMP.anchura*imagen_BMP.altura] = {0};
-    int temp2[imagen_BMP.anchura*imagen_BMP.altura] = {0};
-    int temp3[imagen_BMP.anchura*imagen_BMP.altura] = {0};
+    // Copia del resultado de la transformacion para no afectar a los siguientes valroes
+    int temp1[MAX_SIZE] = {0};
+    int temp2[MAX_SIZE] = {0};
+    int temp3[MAX_SIZE] = {0};
 
     // Recorremos el array de pixeles por completo
     for (int i=0; i<total; ++i) {
@@ -217,9 +215,9 @@ void Imageaos::difusionGaussiana(contenido_BMP imagen_BMP, std::vector<BYTE>& ar
                 // Para que los pixeles de fuera sumen cero, comprobamos cuando los valores se salen de la matriz
                 if ((0 <= i % anchura + l < anchura) && (0 <= i / anchura + k < altura)) {
                     // Multiplicar por el valor anchura nos permite desplazarnos entre las filas
-                    temp1[i] += mGauss[k + 3][k + 3] * this->arrayPixeles[i + (anchura * k + l)].Red;
-                    temp2[i] += mGauss[k + 3][k + 3] * this->arrayPixeles[i + (anchura * k + l)].Green;
-                    temp3[i] += mGauss[k + 3][k + 3] * this->arrayPixeles[i + (anchura * k + l)].Blue;
+                    temp1[i] += mGauss[k + 3][l + 3] * this->arrayPixeles[i + (anchura * k + l)].Red;
+                    temp2[i] += mGauss[k + 3][l + 3] * this->arrayPixeles[i + (anchura * k + l)].Green;
+                    temp3[i] += mGauss[k + 3][l + 3] * this->arrayPixeles[i + (anchura * k + l)].Blue;
                 }
             }
         }
