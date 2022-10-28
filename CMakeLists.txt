@@ -6,6 +6,8 @@ set(CMAKE_CXX_EXTENSIONS_OFF)
 add_compile_options(-Wall -Wextra -Werror -pedantic -pedantic-errors)
 set(CMAKE_CXX_FLAGS_RELEASE "-march=native")
 
+
+
 include_directories(src)
 
 add_subdirectory(src)

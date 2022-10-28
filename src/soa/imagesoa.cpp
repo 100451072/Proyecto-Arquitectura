@@ -1,240 +1,214 @@
-//
-//
-//
 
+#include <iostream>
+#include <chrono>
 #include "imagesoa.h"
+#include "common/aux_functions.h"
 
-//Constructor & Destructor
-Imagesoa::Imagesoa(int num_args, const std::string& arg_1, const std::string& arg_2, const std::string& arg_3) {
-    /* Constructor, recibe tres vectores que conformarán
-     * el structurePixels*/
-    // Inicialización de los atributos de common
-    this->numArgumentos = num_args;
-    this->inDirectory = arg_1;
-    this->outDirectory = arg_2;
-    this->operation = arg_3;
-    this->actualFile = "";
-}
 
-void Imagesoa::executeProgram() {
-    /* Función principal encargada de la ejecución del programa*/
 
-    // Almacen de valores importantes
-    contenido_BMP imagen;
-    // Almacen de todo el archivo para poder copiar
-    std::vector<BYTE> array_BMP;
-
-    // Comenzamos comprobando los argumentos de entrada
-    if (!comprobarArg(this->numArgumentos, this->inDirectory, this->outDirectory, this->operation))
-        throw std::invalid_argument("Error: parámetros incorrectos");
-
-    // bucle que nos permitirá operar cada imagen del dir de entrada
-    for (auto const &currentFile: std::filesystem::directory_iterator{this->inDirectory}) {
-        // Actualizamos el archivo actual
-        this->actualFile = currentFile.path();
-        // Rellenamos los pixeles llama a leerBMP()
-        imagen = this->llenarPixeles(array_BMP);
-        // Realizar operacion seleccionada
-        this->realizarOperacion(imagen, array_BMP);
-    }
-    std::cout << "Ejecución finalizada con exito" << std::endl;
-}
-
-contenido_BMP Imagesoa::llenarPixeles(std::vector<BYTE>& array_BMP) {
-    /* Función encargada de llenar el array con los pixeles del
+Imagesoa::Imagesoa(std::string fileName, std::string inDir, std::string outDir) {
+    /* Función encargada de llenar el array con los píxeles del
      * archivo BMP de comun*/
-
-    std::vector<int> RGB_pixeles;
-    contenido_BMP header;
-    // Leemos el header y abrimos el archivo en el que nos encontramos
-    header = leerHeaderBMP(this->actualFile, array_BMP);
-    int num_pixeles = (int)header.anchura * (int)header.altura;
-    // Recibe como parametro una referencia a un array
-    leerArrayBMP(header, array_BMP, RGB_pixeles);
-
-    // El vector pixeles es tres veces más largo que structPixeles, por eso
-    // lo recorremos asi
-    for (int i=0; i<num_pixeles * 3; i += 3) {
-        // Añadimos los pixeles al array
-        this->structPixels.arrayR.push_back(RGB_pixeles[i]);
-        this->structPixels.arrayG.push_back(RGB_pixeles[i + 1]);
-        this->structPixels.arrayB.push_back(RGB_pixeles[i + 2]);
-    }
-
-    return header;
-}
-
-void Imagesoa::realizarOperacion(contenido_BMP imagen_BMP, std::vector<BYTE>& array_BMP) {
-    // Función encargada de realizar la operación
-
     std::chrono::high_resolution_clock::time_point t_inicio, t_fin;
+    this->fileName = fileName;
+    this->inDir = inDir;
+    this->outDir = outDir;
+    t_inicio = std::chrono::high_resolution_clock::now();
+    std::ifstream imageFile;
+    imageFile.open(this->inDir, std::ios::in | std::ios::binary);
+    imageFile.read(reinterpret_cast<char*>(this->header), 54);
+    if (!this->checkHeader())
+        throw std::invalid_argument("HEADER INCORRECTO");
+    for(int i = 0; i < height; i++){
+        for(int j = 0; j < width; j++){
+            unsigned char pixelBuffer[3];
+            imageFile.read(reinterpret_cast<char*>(pixelBuffer), 3);
+            structPixeles.arrayB.push_back(static_cast<int>(pixelBuffer[0]));
+            structPixeles.arrayG.push_back(static_cast<int>(pixelBuffer[1]));
+            structPixeles.arrayR.push_back(static_cast<int>(pixelBuffer[2]));
+        }
+        imageFile.ignore(this->padding);
+    }
+    imageFile.close();
+    std::cout << "File: \"" << this->fileName << "\"" << std::endl;
+    t_fin = std::chrono::high_resolution_clock::now();
+    std::cout << "  Load time: " << std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count() << std::endl;
 
-    // Función encargada de realizar la operación
-    if (this->operation == "gauss"){
-        t_inicio = std::chrono::high_resolution_clock::now();
-        this->difusionGaussiana(imagen_BMP, array_BMP);
-        t_fin = std::chrono::high_resolution_clock::now();
-        this->time.gaussTime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
+}
+
+bool Imagesoa::checkHeader() {
+    // Comprobamos si empieza por BM
+    if(this->header[0] != 'B' || this->header[1] != 'M')
+        return false;
+    // Comprobamos si el número de planos es igual a 1
+    if((this->header[26] + (this->header[27] << 8)) != 1)
+        return false;
+    // Comprobamos si el tamaño de punto es de 24 bits
+    if((this->header[28] + (this->header[29] << 8)) != 24)
+        return false;
+    // Comprobamos si el valor de compresión es igual a 0
+    if((this->header[30] + (this->header[31] << 8) + (this->header[32] << 16) + (this->header[33] << 24)) != 0)
+        return false;
+    // Guardamos los valores una vez nos hemos asegurado de que el formato es correcto
+    this->width = this->header[18] + (this->header[19] << 8) + (this->header[20] << 16) + (this->header[21] << 24);
+    this->height = this->header[22] + (this->header[23] << 8) + (this->header[24] << 16) + (this->header[25] << 24);
+    this->padding = (4 - 3*width % 4)%4;
+    return true;
+}
+
+void Imagesoa::realizarOperacion(std::string operation) {
+    /* Función encargada de escoger la operación */
+    if (operation == "gauss"){
+        this->difusionGaussiana();
     }
-    if (this->operation == "histo"){
-        t_inicio = std::chrono::high_resolution_clock::now();
-        this->histograma(imagen_BMP);
-        t_fin = std::chrono::high_resolution_clock::now();
-        this->time.histoTime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
+    if (operation == "histo"){
+        this->histograma();
     }
-    if (this->operation == "copy"){
-        t_inicio = std::chrono::high_resolution_clock::now();
-        this->copiarImagen(imagen_BMP, array_BMP);
-        t_fin = std::chrono::high_resolution_clock::now();
-        this->time.copyTime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
+    if (operation == "copy"){
+        this->copiarImagen();
     }
-    if (this->operation == "mono"){
-        t_inicio = std::chrono::high_resolution_clock::now();
-        this->escalaGrises(imagen_BMP, array_BMP);
-        t_fin = std::chrono::high_resolution_clock::now();
-        this->time.monoTime = std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count();
+    if (operation == "mono"){
+        this->escalaGrises();
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-void Imagesoa::copiarImagen(contenido_BMP imagen_BMP, std::vector<BYTE>& array_BMP) {
-    /* Función encargada de copiar la imagen actual en el directorio de salida,
-     * de forma que se puede utilizar para escribir la imagen despues de realizar
-     * cualquier operacion previamente*/
-
-    int anchura = (int)imagen_BMP.anchura;
-    int altura = (int)imagen_BMP.altura;
-    int inicio = (int)imagen_BMP.dir_datos_imagen;
-    int padding = (int)imagen_BMP.t_padding;
-    // establecemos offstream con la ruta al archivo destino
-    std::ofstream archivo;
-
-    // Actualizamos el array_BMP con los nuevos valores de pixel
-    for (int i=0; i<altura; ++i) {
-        for (int j=0; j<anchura * 3; ++j) {
-            // Importante: en BMP se guardan en orden BGR
-            array_BMP[inicio + i * (anchura * 3 + padding) + j + 2] = (BYTE)this->structPixels.arrayR[i*anchura + j/3];
-            array_BMP[inicio + i * (anchura * 3 + padding) + j + 1] = (BYTE)this->structPixels.arrayG[i*anchura + j/3];
-            array_BMP[inicio + i * (anchura * 3 + padding)  + j] = (BYTE)this->structPixels.arrayB[i*anchura + j/3];
+void Imagesoa::guardar() {
+    /* Función encargada de guardar la imagen resultante
+     * y cronometrar el proceso */
+    std::chrono::high_resolution_clock::time_point t_inicio, t_fin;
+    t_inicio = std::chrono::high_resolution_clock::now();
+    std::ofstream outFile;
+    outFile.open(this->outDir+"/"+this->fileName, std::ios::out | std::ios::binary);
+    outFile.write(reinterpret_cast<char*>(this->header), HEADER_SIZE);
+    for(int i = 0; i < height; i++){
+        for(int j = 0; j < width; j++){
+            unsigned char pixelBuffer[3];
+            pixelBuffer[0] = this->structPixeles.arrayB[i*width + j];
+            pixelBuffer[1] = this->structPixeles.arrayG[i*width + j];
+            pixelBuffer[2] = this->structPixeles.arrayR[i*width + j];
+            outFile.write(reinterpret_cast<char*>(pixelBuffer), 3);
+        }
+        for(int k = 0; k < padding; k++) {
+            unsigned char paddingByte[1];
+            paddingByte[0] = 0;
+            outFile.write(reinterpret_cast<char *>(paddingByte), 1);
         }
     }
-    // Abrimos el archivo de salida
-    archivo.open(rutaArchivoSalida("bmp", this->outDirectory, this->actualFile), std::ofstream::out);
+    outFile.close();
+    t_fin = std::chrono::high_resolution_clock::now();
+    std::cout << "  Store time: " << std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count() << std::endl;
 
-    // Comprobamos si se abre
-    if (!archivo.is_open()) {
-        throw std::invalid_argument("Error: al abrir el archivo destino");
-    }
-
-    // Añadimos el array_BMP al archivo de salida
-    for (int i=0; i<imagen_BMP.tamano; ++i) {
-        archivo.write(reinterpret_cast<const char *>(array_BMP[i]), sizeof(BYTE));
-    }
-
-    // Cerramos el archivo de salida
-    archivo.close();
 }
 
+void Imagesoa::copiarImagen() {
+    /* Función encargada de copiar la imagen en el directorio de salida */
+    std::chrono::high_resolution_clock::time_point t_inicio, t_fin;
+    t_inicio = std::chrono::high_resolution_clock::now();
+    t_fin = std::chrono::high_resolution_clock::now();
+    std::cout << "  Copy time: " << std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count() << std::endl;
+    this->guardar();
+}
 
-void Imagesoa::histograma(contenido_BMP imagen_BMP) {
-    /* Función encargada de crear el histograma y pasarselos al la
-     * función de comon histrograma*/
-
+void Imagesoa::histograma() {
+    /* Función encargada de crear el histograma y pasárselos a la
+     * función de common histograma */
+    std::chrono::high_resolution_clock::time_point t_inicio, t_fin;
+    t_inicio = std::chrono::high_resolution_clock::now();
     int R[256] = { 0 };
     int G[256] = { 0 };
     int B[256] = { 0 };
-
-    std::string outFile = rutaArchivoSalida("hst", this->outDirectory, this->actualFile);
-
     // Inicializamos el vector RGB a cero
-    std::vector<int> RGB(768);
-
-    // Sumamos un a cada valor de 0 a 256 de los arrays en caso de aparaición
-    for (int i=0; i<imagen_BMP.altura * imagen_BMP.anchura ; ++i) {
-        R[this->structPixels.arrayR[i]]++;
-        G[this->structPixels.arrayG[i]]++;
-        B[this->structPixels.arrayB[i]]++;
+    char RGB[768];
+    // Sumamos un a cada valor de 0 a 256 de los arrays en caso de aparición
+    for (int i=0; i<this->height * this->width ; ++i) {
+        R[this->structPixeles.arrayR[i]]++;
+        G[this->structPixeles.arrayG[i]]++;
+        B[this->structPixeles.arrayB[i]]++;
     }
-
     // Con los valores anteriores llenamos el vector RGB
     for (int i=0; i<256; ++i) {
-        RGB[i] = R[i];
-        RGB[256 + i] = G[i];
-        RGB[512 + i] = B[i];
+        RGB[i] = static_cast<char>(R[i]);
+        RGB[256 + i] = static_cast<char>(G[i]);
+        RGB[512 + i] = static_cast<char>(B[i]);
     }
-
-    // Llamamos a la pare comun del histograma
-    histograma_aux(RGB, outFile);
+    std::ofstream histo(this->outDir+"/"+this->fileName+".hst");
+    histo << RGB << std::endl;
+    histo.close();
+    t_fin = std::chrono::high_resolution_clock::now();
+    std::cout << "  Histo time: " << std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count() << std::endl;
 }
 
-void Imagesoa::escalaGrises(contenido_BMP imagen_BMP, std::vector<BYTE>& array_BMP) { // revisar
-    /* Función encargada de hacer la transformación de grises de una imagen*/
-
-    float cR = 0;
-    float cG = 0;
-    float cB = 0;
-    float cg = 0;
-    float g = 0;
-
-    // paso 1 normalizacion
-    for (int i=0; i<imagen_BMP.anchura * imagen_BMP.altura; ++i) {
-        cR = transformacionLineal(this->structPixels.arrayR[i] / 255); // transformacion lineal de los 3 colores
-        cG = transformacionLineal(this->structPixels.arrayG[i] / 255);
-        cB = transformacionLineal(this->structPixels.arrayB[i] / 255);
-        cg = correccionGama(cR, cG, cB); // sacada ahorro lineas
+void Imagesoa::escalaGrises() {
+    /* Función encargada de pasar la imagen a escala de grises */
+    std::chrono::high_resolution_clock::time_point t_inicio, t_fin;
+    t_inicio = std::chrono::high_resolution_clock::now();
+    float cR, cG, cB, cg, g;
+    // Normalizacion
+    for (int i=0; i<this->width * this->height; ++i) {
+        cR = transformacionLineal(this->structPixeles.arrayR[i] / 255); // transformacion lineal de los 3 colores
+        cG = transformacionLineal(this->structPixeles.arrayG[i] / 255);
+        cB = transformacionLineal(this->structPixeles.arrayB[i] / 255);
+        cg = correccionGamma(cR, cG, cB); // sacada ahorro lineas
         g = cg * 255; // se vuelve a escala de 256 solucion por cada 3 pixeles
-        this->structPixels.arrayR[i] =  static_cast<int>(g); // se guardan los pixeles en el char todos el mismo
-        this->structPixels.arrayG[i] =  static_cast<int>(g); // se guardan los pixeles en el char todos el mismo
-        this->structPixels.arrayB[i] =  static_cast<int>(g); // se guardan los pixeles en el char todos el mismo
+        this->structPixeles.arrayR[i] =  static_cast<int>(g); // se guardan los pixeles en el char todos el mismo
+        this->structPixeles.arrayG[i] = static_cast<int>(g); // se guardan los pixeles en el char todos el mismo
+        this->structPixeles.arrayB[i] = static_cast<int>(g); // se guardan los pixeles en el char todos el mismo
     }
-    // Copiamos la imagen en el directorio de salida
-    this->copiarImagen(imagen_BMP, array_BMP);
+    t_fin = std::chrono::high_resolution_clock::now();
+    std::cout << "  Mono time: " << std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count() << std::endl;
+    this->guardar();
 }
 
-void Imagesoa::difusionGaussiana(contenido_BMP imagen_BMP, std::vector<BYTE>& array_BMP) {
-    /* Función encargada de realizar la difusion gaussiana sobre
-    la imagen de entrada*/
+int mGauss[5][5] = {{1, 4, 7, 4, 1},
+                    {4, 16, 26, 16, 4},
+                    {7, 26, 41, 26, 7},
+                    {4, 16, 26, 16, 4},
+                    {1, 4, 7, 4, 1}};
 
-    int anchura = (int)imagen_BMP.anchura;
-    int altura = (int)imagen_BMP.altura;
-    int total = anchura*altura;
+void Imagesoa::difusionGaussiana() {
+    /* Función encargada de generar el efecto de difusión
+     * gaussiana */
+    std::chrono::high_resolution_clock::time_point t_inicio, t_fin;
+    t_inicio = std::chrono::high_resolution_clock::now();
 
-    // Copia del resultado de la transformacion para no afectar a los siguientes valroes
-    std::vector<int> temp1;
-    std::vector<int> temp2;
-    std::vector<int> temp3;
-    // Recorremos el array de pixeles por completo
-    for (int i=0; i<total; ++i) {
-        temp1.push_back(0);
-        temp2.push_back(0);
-        temp3.push_back(0);
-        //Filas
-        for (int k=-2; k<2; ++k) {
-            // Columnas
-            for (int l=-2; l<2; ++l) {
-                // Nos desplazamos en el array de pixeles obteniendo las pos requeridas
-                // Para que los pixeles de fuera sumen cero, comprobamos cuando los valores se salen de la matriz
-                if ((0 <= i % anchura + l < anchura) && (0 <= i / anchura + k < altura)) {
-                    // Multiplicar por el valor anchura nos permite desplazarnos entre las filas
-                    temp1[i] += mGauss[k + 3][l + 3] * this->structPixels.arrayR[i + (anchura * k + l)];
-                    temp2[i] += mGauss[k + 3][l + 3] * this->structPixels.arrayG[i + (anchura * k + l)];
-                    temp3[i] += mGauss[k + 3][l + 3] * this->structPixels.arrayB[i + (anchura * k + l)];
+    int tmpR, tmpG, tmpB; // variables auxiliares
+    int l = this->width * 3; // pixeles por fila
+    int tamano = this->height * l; // tamaño total en bytes
+    int cByte, b, cGauss, fGauss; // columna byte, byte, columna gauss, fila gauss
+    for (int i = 0; i < this->height - 1; i += 1){
+        for (int j = 0; j < l - 1; j += 3){
+            tmpR = 0;
+            tmpG = 0;
+            tmpB = 0;
+            for (int s = -2; s <= 2; s++){
+                for (int t = -2; t <= 2; t++){
+                    fGauss = s + 2;
+                    cByte = j + t * 3;
+                    cGauss = t + 2;
+                    b = (i + s)*l + cByte;
+                    if (b >= 0 && cByte <= l - 1 && b <= tamano && 0 <= cByte) // PIXEL R
+                        tmpR += mGauss[fGauss][cGauss] * this->structPixeles.arrayR[b];
+
+                    if (b >= 0 && cByte <= l - 1 && b <= tamano && 0 <= cByte) // PIXEL G
+                        tmpG += mGauss[fGauss][cGauss] * this->structPixeles.arrayG[b];
+                    b += 1;
+                    cByte += 1;
+                    if (b >= 0 && cByte <= l - 1 && b <= tamano && 0 <= cByte) // PIXEL B
+                        tmpB += mGauss[fGauss][cGauss] * this->structPixeles.arrayB[b];
+                    b += 1;
+                    cByte += 1;
                 }
             }
+            tmpR = tmpR / WEIGHT; // se divide entre el peso
+            tmpG = tmpG / WEIGHT;
+            tmpB = tmpB / WEIGHT;
+            this->structPixeles.arrayR[i] = tmpR; // se guardan los pixeles en el array de pixeles
+            this->structPixeles.arrayG[i] = tmpG;
+            this->structPixeles.arrayB[i] = tmpB;
         }
-        // Dividimos entre w
-        temp1[i] /= 273;
-        temp2[i] /= 273;
-        temp3[i] /= 273;
     }
-    // Asignamos al array global sus respectivos valores, no se puede hacer arriba
-    // ya que alterariamos los siguientes valores
-    for (int i=0; i<total; ++i) {
-        this->structPixels.arrayR[i] = temp1[i];
-        this->structPixels.arrayG[i] = temp2[i];
-        this->structPixels.arrayB[i] = temp3[i];
-    }
-    // Finalmente creamos el archivo de salida
-    this->copiarImagen(imagen_BMP, array_BMP);
+    t_fin = std::chrono::high_resolution_clock::now();
+    std::cout << "  Gauss time: " << std::chrono::duration_cast<std::chrono::microseconds>(t_fin - t_inicio).count() << std::endl;
+    this->guardar();
 }
+

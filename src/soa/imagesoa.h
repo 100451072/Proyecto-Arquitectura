@@ -1,41 +1,25 @@
-//
-//
-//
-
 #ifndef UNTITLED_IMAGESOA_H
 #define UNTITLED_IMAGESOA_H
 
 #include <iostream>
-#include <cstdio>
-#include <cstdlib>
-#include <dirent.h>
-#include <sys/types.h>
 #include <cmath>
 #include <chrono>
 #include <vector>
-#include <fstream>
+#include "common/progargs.h"
+#include "common/aux_functions.h"
 #include <filesystem>
-#include "../common/aux_functions.h"
-#include "../common/progargs.h"
+#include <fstream>
 
-using namespace std;
 
-// Tamaño max para formar un array
-constexpr int MAX_SIZE = 1000000;
+// Tamaño del header
+#define HEADER_SIZE 54
 
-// variables no se si se pueden
-//
+#define WEIGHT 273
 
-// matriz y peso gauss
-int mGauss[5][5] = {{1, 4, 7, 4, 1},
-                    {4, 16, 26, 16, 4},
-                    {7, 26, 41, 26, 7},
-                    {4, 16, 26, 16, 4},
-                    {1, 4, 7, 4, 1}};
-int w = 273;
 
-// estructura que almacenará tres vectores para cada valor r, g, b
-struct Pixeles {
+// Estructura que almacenara tres enteros por pixel (R, G, B)
+struct Pixeles
+{
     std::vector<int> arrayR;
     std::vector<int> arrayG;
     std::vector<int> arrayB;
@@ -43,35 +27,32 @@ struct Pixeles {
 
 class Imagesoa {
 private:
-    // atributos
-    Pixeles structPixels{};
+    // Ruta al archivo sobre el que estamos trabajando en el momento
+    std::string fileName, inDir, outDir;
 
-    chronometro time{};
+    // Header del archivo
+    unsigned char header[HEADER_SIZE];
 
-    // componentes comunes
-    int numArgumentos{};
-    std::string image;
-    std::string inDirectory;
-    std::string outDirectory;
-    std::string operation;
+    Pixeles structPixeles;
 
-    // Ruta al archivo de trabajo actual
-    std::string actualFile;
+    int width, height, padding;
 
 public:
-    // constructor & destructor
-    Imagesoa(int num_args, const std::string& arg_1, const std::string& arg_2, const std::string& arg_3);
+    // Constructor & Destructor
+    Imagesoa(std::string fileName, std::string inDir, std::string outDir);
 
     // Funciones
-    void executeProgram();
-    contenido_BMP llenarPixeles(std::vector<BYTE>& archivo_BMP);
-    void realizarOperacion(contenido_BMP imagen_BMP, std::vector<BYTE>& archivo_BMP);
-    // Operaciones
-    void copiarImagen(contenido_BMP imagen_BMP, std::vector<BYTE>& array_BMP);
-    void histograma(contenido_BMP imagen_BMP);
-    void escalaGrises(contenido_BMP imagen_BMP, std::vector<BYTE>& array_BMP);
-    void difusionGaussiana(contenido_BMP imagen_BMP, std::vector<BYTE>& array_BMP);
-};
 
+    void realizarOperacion(std::string operation);
+    void guardar();
+    bool checkHeader();
+
+
+    // Operaciones
+    void copiarImagen();
+    void histograma();
+    void escalaGrises();
+    void difusionGaussiana();
+};
 
 #endif //UNTITLED_IMAGESOA_H

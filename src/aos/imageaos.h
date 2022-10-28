@@ -1,32 +1,23 @@
-//
-//
-//
-
 #ifndef UNTITLED_IMAGEAOS_H
 #define UNTITLED_IMAGEAOS_H
-
 
 #include <iostream>
 #include <cmath>
 #include <chrono>
 #include <vector>
-#include <utility>
-#include "../common/progargs.h"
-#include "../common/aux_functions.h"
+#include "common/progargs.h"
+#include "common/aux_functions.h"
 #include <filesystem>
 #include <fstream>
 
-// Tamaño max de un array
-#define MAX_SIZE 1000000
 
-// matriz y peso gauss
-int mGauss[5][5] = {{1, 4, 7, 4, 1},
-                    {4, 16, 26, 16, 4},
-                    {7, 26, 41, 26, 7},
-                    {4, 16, 26, 16, 4},
-                    {1, 4, 7, 4, 1}};
+// Tamaño del header
+#define HEADER_SIZE 54
 
-// Structura que almacenara tres enteros por pixel (R, G, B)
+#define WEIGHT 273
+
+
+// Estructura que almacenara tres enteros por pixel (R, G, B)
 struct Pixel
 {
     int Red;
@@ -36,37 +27,33 @@ struct Pixel
 
 class Imageaos {
 private:
+    // Ruta al archivo sobre el que estamos trabajando en el momento
+    std::string fileName, inDir, outDir;
 
-    // Como dice la definicion de aos, un solo array
-    std::vector<Pixel> arrayPixeles{};
+    // Header del archivo
+    unsigned char header[HEADER_SIZE];
 
-    // Cronómetro
-    chronometro time{};
+    // Como dice la definición de aos, un solo array
+    std::vector<Pixel> arrayPixeles;
 
-    // Argumentos pasados por main
-    int numArgumentos;
-    std::string image;
-    std::string inDirectory;
-    std::string outDirectory;
-    std::string operation;
-
-    // Ruta al archivo sobre el que estamos trabajando en el momneto
-    std::string actualFile;
+    int width, height, padding;
 
 public:
     // Constructor & Destructor
-    Imageaos(int num_args, const std::string& arg_1, const std::string& arg_2, const std::string& arg_3);
+    Imageaos(std::string fileName, std::string inDir, std::string outDir);
 
     // Funciones
-    void executeProgram();
-    contenido_BMP llenarPixeles(std::vector<BYTE>& archivo_BMP);
-    void realizarOperacion(contenido_BMP imagen_BMP, std::vector<BYTE>& arhcivo_BMP);
+
+    void realizarOperacion(std::string operation);
+    void guardar();
+    bool checkHeader();
+
 
     // Operaciones
-    void copiarImagen(contenido_BMP imagen_BMP, std::vector<BYTE>& archivo_BMP);
-    void histograma(contenido_BMP imagen_BMP);
-    void escalaGrises(contenido_BMP imagen_BMP, std::vector<BYTE>& arraY_BMP);
-    void difusionGaussiana(contenido_BMP imagen_BMP, std::vector<BYTE>& arraY_BMP);
+    void copiarImagen();
+    void histograma();
+    void escalaGrises();
+    void difusionGaussiana();
 };
 
 #endif //UNTITLED_IMAGEAOS_H

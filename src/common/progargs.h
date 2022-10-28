@@ -1,10 +1,27 @@
-//
-//
-//
-
 #ifndef UNTITLED_PROGARGS_H
 #define UNTITLED_PROGARGS_H
 
+/*
+ *  Descripcion de esta parte en la memoria:
+ *  La aplicacion leera todos los archivos del directorio de
+ *  entrada, aplicará la transformaciones correspondientes y
+ *  escribirán los archivos correspondientes con el mismo nombre
+ *  en el dir de salida
+ *
+ *  Comprobar que el numero de parametros es tres
+ *
+ *  Si el tercer argumento no toma el valor adecuado (copy,
+ *  histo, mono, gauss), se presentará un mensaje de error y se terminará
+ *
+ *  Si el dir de entrada no existe o no puede abrirse, se presentará un mensaje
+ *  de error y se terminará
+ *
+ *  Si el directorio de salida no existe, se presentará un mensaje de error y
+ *  se termina
+ *
+ *  En cualquier otro caso, se procesarán todos los archivos del dir de entrada y se
+ *  dejarán los resultados en el dir de salida. Para cada archivo
+ */
 
 #include "progargs.h"
 #include <iostream>
@@ -13,41 +30,12 @@
 #include <string>
 #include <fstream>
 
-typedef unsigned char BYTE;
 
-typedef struct contenido_BMP {
-    // contenido del archivo bmp para usarlo en las lecturas NO SON TODOS SON LOS IMPORTANTES
-    // Primer header
-    double tamano;                // Tamño archivo (4B) (offset 2B) (ojo que hay dos headers, de info, y el siguiente de bits)
-    double dir_datos_imagen;      // Start pixeles (4B) (offset 10)
-    // Segundo header
-    double anchura;               // Anchura del bit map (4B) (offset 18B) signed int
-    double altura;                // Altura del bit map (3B) (offset 22B) signed int
-    double  numero_planos;         // (2B) (offset 26B) debe ser uno
-    double  t_punto;           // (2B) (offset 28B) pixeles por bite
-    double  compresion;            // (4B) (offset 30B)
-    double  size_bitmap_data;      // (4B) (offset 34B) tamño del espacio de bits
-    int t_padding;
-
-} contenido_BMP;
-
-// Estructura que nos permite medir el tiempo
-typedef struct chronometro {
-    int loadTime;
-    int gaussTime;
-    int histoTime;
-    int monoTime;
-    int copyTime;
-    int storeTime;
-    int total;
-
-} chronometro;
 
 // Funciones
-bool comprobarArg(int num_args, std::string& argv_1, std::string& argv_2, std::string& argv_3);
 
-contenido_BMP leerHeaderBMP(const std::string& filePath, std::vector<BYTE>& archivo_BMP);
+void numeroIncorrectoArgs();
+bool comprobarArg(std::string inDir, std::string outDir, std::string operation);
 
-void leerArrayBMP(contenido_BMP imagen_BMP, std::vector<BYTE>& archivo_BMP, std::vector<int>& RGB);
 
 #endif //UNTITLED_PROGARGS_H
